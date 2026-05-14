@@ -1,0 +1,12 @@
+[submodule "components/YOBA"]
+	path = components/YOBA
+	url = https://github.com/IgorTimofeev/YOBA.git
+[submodule "components/ESP-IDF-NVSExtensions"]
+	path = components/ESP-IDF-NVSExtensions
+	url = https://github.com/IgorTimofeev/ESP-IDF-NVSExtensions.git
+[submodule "components/ESP-IDF-Battery"]
+	path = components/ESP-IDF-Battery
+	url = https://github.com/IgorTimofeev/ESP-IDF-Battery.git
+[submodule "components/ESP-IDF-BuzzerAudio"]
+	path = components/ESP-IDF-BuzzerAudio
+	url = https://github.com/IgorTimofeev/ESP-IDF-BuzzerAudio.git

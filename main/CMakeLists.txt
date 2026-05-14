@@ -10,6 +10,9 @@ idf_component_register(
         nvs_flash
         esp_adc
         YOBA
+        ESP-IDF-NVSExtensions
+        ESP-IDF-Battery
+        ESP-IDF-BuzzerAudio
 )
 
 target_compile_options(${COMPONENT_LIB} PUBLIC -std=gnu++26)

@@ -5,11 +5,12 @@
 
 #include <YOBA/main.h>
 #include <YOBA/UI.h>
-#include <YOBA/hardware/displays/ILI9341Display.h>
-#include <YOBA/hardware/touchPanels/FT6336UTouchPanel.h>
+#include <YOBA/hardware/displays/ST7789Display.h>
 #include <YOBA/hardware/encoder.h>
 
 #include "config.h"
+#include "UI/thermalView.h"
+#include "hardware/MLX90640.h"
 
 namespace pizda {
 	using namespace YOBA;
@@ -20,13 +21,9 @@ namespace pizda {
 
 			[[noreturn]] void start();
 
-		private:
-			constexpr static auto _logTag = "Thermaller";
-			
-			Thermaller() = default;
 			// -------------------------------- Hardware --------------------------------
-
-			// ILI9341Display _display {
+			//
+			// ST7789Display display {
 			// 	config::SPI::MOSI,
 			// 	config::SPI::MISO,
 			// 	config::SPI::SCK,
@@ -34,10 +31,17 @@ namespace pizda {
 			// 	config::screen::SS,
 			// 	config::screen::DC,
 			// 	config::screen::RST,
-			// 	config::screen::frequency
+			// 	config::screen::SPIFrequency,
+			//
+			// 	Size(240, 320),
+			// 	ViewportRotation::clockwise0
 			// };
 			//
-			// Bit8PaletteRenderer _renderer { 32 };
+			// Bit8PaletteRenderer renderer { 32 };
+
+			// Thermal sensor
+			MLX90640 MLX {};
+
 			//
 			// // Battery
 			// Battery _battery {
@@ -58,15 +62,23 @@ namespace pizda {
 			// };
 			//
 			// AudioPlayer _audioPlayer { &_buzzer };
-			//
-			// // -------------------------------- UI --------------------------------
-			//
-			// Application _application {};
-			//
+
+			// -------------------------------- UI --------------------------------
+
+			// Application application {};
+			// ThermalView thermalView {};
+
 			// const Route* _route = nullptr;
-			//
-			// // -------------------------------- Other shit --------------------------------
-			//
+
+			// -------------------------------- Other shit --------------------------------
+
+			i2c_master_bus_handle_t I2CMasterBusHandle {};
+
 			// Settings _settings;
+
+		private:
+			constexpr static auto _logTag = "Thermaller";
+			
+			Thermaller() = default;
 	};
 }
