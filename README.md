@@ -1,0 +1,3 @@
+# Thermaller
+
+DIY thermal imager
