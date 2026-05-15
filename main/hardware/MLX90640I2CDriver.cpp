@@ -1,4 +1,7 @@
 #include "MLX90640I2CDriver.h"
+
+#include <bit>
+
 #include "driver/i2c_master.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -38,15 +41,10 @@ int MLX90640_I2CRead(uint8_t slaveAddr, uint16_t startAddress, uint16_t nMemAddr
 
     ESP_ERROR_CHECK(state);
 
-    uint16_t* dataPtr = data;
-    uint16_t bufferIndex = 0;
+	const auto bufferUint16 = reinterpret_cast<uint16_t*>(buffer);
 
-    for (uint16_t wordIndex = 0; wordIndex < nMemAddressRead; wordIndex++){
-        *dataPtr = (static_cast<uint16_t>(buffer[bufferIndex]) << 8) | buffer[bufferIndex + 1];
-
-        dataPtr++;
-        bufferIndex += 2;
-    }
+    for (uint16_t wordIndex = 0; wordIndex < nMemAddressRead; wordIndex++)
+        data[wordIndex] = std::byteswap(bufferUint16[wordIndex]);
 
     return state;
 }

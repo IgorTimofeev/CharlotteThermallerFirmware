@@ -23,8 +23,10 @@ namespace pizda {
 
     		std::array<float, frameWidth * frameHeight> frame {};
 
+    		SemaphoreHandle_t frameMutex = nullptr;
+
 	        void setup(i2c_master_bus_handle_t* I2CMasterBusHandle) {
-        		_temperaturesMutex = xSemaphoreCreateMutex();
+        		frameMutex = xSemaphoreCreateMutex();
 
 	            MLX90640_I2CInit(I2CMasterBusHandle, _slaveAddress, 800'000);
 
@@ -37,24 +39,17 @@ namespace pizda {
 	            MLX90640_ExtractParameters(_ee, &_params);
 	        }
 
-    		void lockTemperatures() const {
-	        	xSemaphoreTake(_temperaturesMutex, portMAX_DELAY);
-	        }
-
-    		void releaseTemperatures() const {
-	        	xSemaphoreGive(_temperaturesMutex);
-	        }
-
 	        void tick() {
-	        	lockTemperatures();
 
 	            // Fetching frame
 	            MLX90640_GetFrameData(_slaveAddress, _frameData);
 
 	            // Processing temperatures
 	            const auto tr = MLX90640_GetTa(_frameData, &_params) - _TA_SHIFT;
+
+	        	xSemaphoreTake(frameMutex, portMAX_DELAY);
 	        	MLX90640_CalculateTo(_frameData, &_params, emissivity, tr, frame.data());
-	        	// MLX90640_BadPixelsCorrection(_mlx90640.brokenPixels, temperatures.data(), 1, &_mlx90640);
+	        	xSemaphoreGive(frameMutex);
 
 	     //        ESP_LOGI("MLX", "min = %f, max = %f, 766 = %f, 767 = %f", minTemperature, maxTemperature, temperatures[766], temperatures[767]);
 	     //
@@ -66,7 +61,6 @@ namespace pizda {
 	     //    		printf("\n");
 	     //    	}
 
-	        	releaseTemperatures();
 	        }
 
 	    private:
@@ -74,7 +68,5 @@ namespace pizda {
     		constexpr static uint8_t _TA_SHIFT = 8;
 	        uint16_t _frameData[834] {};
 	        paramsMLX90640 _params {};
-
-    		SemaphoreHandle_t _temperaturesMutex = nullptr;
 	    };
 }

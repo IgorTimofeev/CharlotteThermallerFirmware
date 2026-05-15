@@ -18,11 +18,13 @@ namespace pizda {
 
 		private:
 			constexpr static auto _font = &Theme::fontNormal;
+			constexpr static auto _palette = &Theme::thermalPaletteIronbow;
+
 			constexpr static uint8_t _shadowOffset = 1;
 
-			float _tMin = 0;
-			float _tMax = 0;
-			float _tAvg = 0;
+			bool _histogramLPFProcessed = false;
+			float _hMin = 0;
+			float _hMax = 0;
 			float _tCross = 0;
 
 			static void renderShadowedText(Renderer* renderer, const Point& position, std::wstring_view text);

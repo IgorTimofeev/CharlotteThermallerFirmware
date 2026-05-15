@@ -1,5 +1,7 @@
 #include "thermalView.h"
 
+#include <ranges>
+
 #include "thermaller.h"
 #include "UI/theme.h"
 
@@ -21,76 +23,98 @@ namespace pizda {
 	void ThermalView::onRender(Renderer* renderer, const Bounds& bounds) {
 		auto& th = Thermaller::getInstance();
 
+		std::array<float, th.MLX.frame.size()> frame {};
+
+		xSemaphoreTake(th.MLX.frameMutex, portMAX_DELAY);
+		std::ranges::copy(th.MLX.frame, frame.begin());
+		xSemaphoreGive(th.MLX.frameMutex);
+		
 		const auto x2 = bounds.getX2();
 		const auto y2 = bounds.getY2();
 		const auto center = bounds.getCenter();
 
-		// Min / max / avg
+		float tAvg = 0;
+
 		{
 			float tMin = 99999;
 			float tMax = -99999;
-			float tAvg = 0;
 
-			for (uint16_t i = 0; i < th.MLX.frame.size(); ++i) {
-				float t = th.MLX.frame[i];
+			for (uint16_t i = 0; i < frame.size(); ++i) {
+				if (std::isnan(frame[i]))
+					continue;
 
-				if (!std::isnan(t)) {
-					tMin = std::min(tMin, t);
-					tMax = std::max(tMax, t);
-					tAvg += t;
+				tMin = std::min(tMin, frame[i]);
+				tMax = std::max(tMax, frame[i]);
+				tAvg += frame[i];
+			}
+
+			tAvg /= frame.size();
+
+			const bool autoHistorgam = true;
+
+			if (autoHistorgam) {
+				// Applying LPF
+				if (false && _histogramLPFProcessed) {
+					constexpr static float LPFFactor = 0.2f;
+
+					_hMin = LowPassFilter::apply(_hMin, tMin, LPFFactor);
+					_hMax = LowPassFilter::apply(_hMax, tMax, LPFFactor);
+				}
+				else {
+					_hMin = tMin;
+					_hMax = tMax;
+
+					_histogramLPFProcessed = true;
 				}
 			}
-
-			tAvg /= th.MLX.frame.size();
-
-			// Applying LPF
-			if (true) {
-				constexpr static float LPFFactor = 0.1f;
-
-				_tMin = LowPassFilter::apply(_tMin, tMin, LPFFactor);
-				_tMax = LowPassFilter::apply(_tMax, tMax, LPFFactor);
-				_tAvg = LowPassFilter::apply(_tAvg, tAvg, LPFFactor);
-			}
+			// Manual histogram
 			else {
-				_tMin = tMin;
-				_tMax = tMax;
-				_tAvg = tAvg;
+				_hMin = 26;
+				_hMax = 32;
 			}
 		}
 
-		const float tMinMaxDelta = std::max<float>(_tMax - _tMin, 1);
+		const float tMinMaxDelta = std::max<float>(_hMax - _hMin, 1);
 
 		// ESP_LOGI("afa", "tmin = %f, tmax = %f, tavg = %f", tMin, tMax, tAvg);
 
 		const uint16_t pSize = bounds.getWidth() / MLX90640::frameHeight;
 
-		const auto getTAt = [&th, this](const uint8_t x, const uint8_t y) -> float {
-			const uint16_t index = y * MLX90640::frameWidth + x;
-
-			return std::isnan(th.MLX.frame[index]) ? _tAvg : th.MLX.frame[index];
+		const auto getTAt = [&frame](const uint8_t x, const uint8_t y) -> float {
+			return frame[y * MLX90640::frameWidth + x];
 		};
 
-		const auto tToColor = [tMinMaxDelta, this](const float t) -> const RGB565Color* {
-			const auto ratio = (t - _tMin) / tMinMaxDelta;
-			auto index = static_cast<uint16_t>(static_cast<float>(Theme::thermal.size()) * ratio);
+		const auto getColor = [tMinMaxDelta, this, tAvg](float t) -> const RGB565Color* {
+			if (std::isnan(t))
+				return &Theme::bg1;
 
-			if (index >= Theme::thermal.size())
-				index = Theme::thermal.size() - 1;
+			t = std::clamp(std::isnan(t) ? tAvg : t, _hMin, _hMax);
 
-			return &Theme::thermal[index];
+			const auto ratio = (t - _hMin) / tMinMaxDelta;
+			auto index = static_cast<uint16_t>(std::round(static_cast<float>(_palette->size()) * ratio));
+
+			if (index >= _palette->size())
+				index = _palette->size() - 1;
+
+			return &(*_palette)[index];
 		};
 
-		if (false) {
-			for (uint8_t tY = 0; tY < MLX90640::frameHeight - 1; ++tY) {
+		bool interpolation = false;
+
+		if (interpolation) {
+			for (uint8_t tY = 0; tY < MLX90640::frameHeight; ++tY) {
 				const int32_t pX = x2 - tY * pSize;
 
-				for (uint8_t tX = 0; tX < MLX90640::frameWidth - 1; ++tX) {
+				for (uint8_t tX = 0; tX < MLX90640::frameWidth; ++tX) {
 					const int32_t pY = y2 - tX * pSize;
 
+					const uint8_t tX1 = std::min<uint8_t>(tX + 1, MLX90640::frameWidth - 1);
+					const uint8_t tY1 = std::min<uint8_t>(tY + 1, MLX90640::frameHeight - 1);
+
 					const float t11 = getTAt(tX, tY);
-					const float t12 = getTAt(tX, tY + 1);
-					const float t21 = getTAt(tX + 1, tY);
-					const float t22 = getTAt(tX + 1, tY + 1);
+					const float t12 = getTAt(tX, tY1);
+					const float t21 = getTAt(tX1, tY);
+					const float t22 = getTAt(tX1, tY1);
 
 					for (uint8_t iY = 0; iY < pSize; ++iY) {
 						const float ratioX = static_cast<float>(iY) / static_cast<float>(pSize);
@@ -104,7 +128,7 @@ namespace pizda {
 								+ (1 - ratioX) * ratioY * t12
 								+ ratioX * ratioY * t22;
 
-							renderer->renderPixel(Point(pX - iX, pY - iY), tToColor(tI));
+							renderer->renderPixel(Point(pX - iX, pY - iY), getColor(tI));
 						}
 					}
 				}
@@ -119,10 +143,7 @@ namespace pizda {
 				for (uint8_t tX = 0; tX < MLX90640::frameWidth; ++tX) {
 					pBounds.setY(y2 - pSize - tX * pSize);
 
-					renderer->renderFilledRectangle(
-						pBounds,
-						tToColor(getTAt(tX, tY))
-					);
+					renderer->renderFilledRectangle(pBounds, getColor(getTAt(tX, tY)));
 				}
 			}
 		}
@@ -130,7 +151,7 @@ namespace pizda {
 		// Cross
 		{
 			constexpr static uint8_t crossThickness = 2;
-			constexpr static uint8_t crossLength = crossThickness * 3;
+			constexpr static uint8_t crossLength = crossThickness * 4;
 
 			const auto renderCross = [renderer](const Point& position, const Color* color) {
 				renderer->renderFilledRectangle(
@@ -159,7 +180,9 @@ namespace pizda {
 
 			// Text
 			const float tCross = getTAt(MLX90640::frameWidth / 2, MLX90640::frameHeight / 2);
-			_tCross = LowPassFilter::apply(_tCross, tCross, 0.1f);
+
+			if (!std::isnan(tCross))
+				_tCross = LowPassFilter::apply(_tCross, tCross, 0.1f);
 
 			constexpr static uint8_t textLength = 8;
 			wchar_t text[textLength];
@@ -186,7 +209,7 @@ namespace pizda {
 			const uint16_t paletteWidth = bounds.getWidth() - paletteMargin * 2;
 
 			float paletteIndex = 0;
-			const float paletteIndexStep = static_cast<float>(Theme::thermal.size() - 1) / static_cast<float>(paletteWidth - 2);
+			const float paletteIndexStep = static_cast<float>(_palette->size() - 1) / static_cast<float>(paletteWidth - 2);
 
 			renderer->renderFilledRectangle(
 				Bounds(paletteX, paletteY, paletteWidth, paletteHeight),
@@ -197,7 +220,7 @@ namespace pizda {
 				renderer->renderVerticalLine(
 					Point(paletteX + 1 + i, paletteY + 1),
 					paletteHeight - 2,
-					&Theme::thermal[static_cast<uint16_t>(paletteIndex)]
+					&(*_palette)[static_cast<uint16_t>(paletteIndex)]
 				);
 
 				paletteIndex += paletteIndexStep;
@@ -210,7 +233,7 @@ namespace pizda {
 			const auto textY = paletteY - paletteTextMargin - _font->getHeight();
 
 			// Left
-			std::swprintf(text, textLength, L"%.1f", _tMin);
+			std::swprintf(text, textLength, L"%.1f", _hMin);
 
 			renderShadowedText(
 				renderer,
@@ -222,7 +245,7 @@ namespace pizda {
 			);
 
 			// Right
-			std::swprintf(text, textLength, L"%.1f", _tMax);
+			std::swprintf(text, textLength, L"%.1f", _hMax);
 
 			renderShadowedText(
 				renderer,
