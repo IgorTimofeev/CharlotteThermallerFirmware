@@ -33,6 +33,8 @@ namespace pizda {
 		const auto y2 = bounds.getY2();
 		const auto center = bounds.getCenter();
 
+		float hMin  = 0;
+		float hMax  = 0;
 		float tAvg = 0;
 
 		{
@@ -53,28 +55,17 @@ namespace pizda {
 			const bool autoHistorgam = true;
 
 			if (autoHistorgam) {
-				// Applying LPF
-				if (false && _histogramLPFProcessed) {
-					constexpr static float LPFFactor = 0.2f;
-
-					_hMin = LowPassFilter::apply(_hMin, tMin, LPFFactor);
-					_hMax = LowPassFilter::apply(_hMax, tMax, LPFFactor);
-				}
-				else {
-					_hMin = tMin;
-					_hMax = tMax;
-
-					_histogramLPFProcessed = true;
-				}
+				hMin = tMin;
+				hMax = tMax;
 			}
 			// Manual histogram
 			else {
-				_hMin = 26;
-				_hMax = 32;
+				hMin = 25;
+				hMax = 36;
 			}
 		}
 
-		const float tMinMaxDelta = std::max<float>(_hMax - _hMin, 1);
+		const float tMinMaxDelta = std::max<float>(hMax - hMin, 1);
 
 		// ESP_LOGI("afa", "tmin = %f, tmax = %f, tavg = %f", tMin, tMax, tAvg);
 
@@ -84,13 +75,13 @@ namespace pizda {
 			return frame[y * MLX90640::frameWidth + x];
 		};
 
-		const auto getColor = [tMinMaxDelta, this, tAvg](float t) -> const RGB565Color* {
+		const auto getColor = [tMinMaxDelta, tAvg, hMin, hMax](float t) -> const RGB565Color* {
 			if (std::isnan(t))
 				return &Theme::bg1;
 
-			t = std::clamp(std::isnan(t) ? tAvg : t, _hMin, _hMax);
+			t = std::clamp(std::isnan(t) ? tAvg : t, hMin, hMax);
 
-			const auto ratio = (t - _hMin) / tMinMaxDelta;
+			const auto ratio = (t - hMin) / tMinMaxDelta;
 			auto index = static_cast<uint16_t>(std::round(static_cast<float>(_palette->size()) * ratio));
 
 			if (index >= _palette->size())
@@ -191,8 +182,8 @@ namespace pizda {
 			renderShadowedText(
 				renderer,
 				{
-					center.getX() - _font->getWidth(text) / 2,
-					center.getY() - crossLength / 2 - 8 - _font->getHeight()
+					center.getX() - _font->getWidth(text, _fontScale) / 2,
+					center.getY() - crossLength / 2 - 8 - _font->getHeight(_fontScale)
 				},
 				text
 			);
@@ -230,10 +221,10 @@ namespace pizda {
 			constexpr static uint8_t textLength = 8;
 			wchar_t text[textLength];
 
-			const auto textY = paletteY - paletteTextMargin - _font->getHeight();
+			const auto textY = paletteY - paletteTextMargin - _font->getHeight(_fontScale);
 
 			// Left
-			std::swprintf(text, textLength, L"%.1f", _hMin);
+			std::swprintf(text, textLength, L"%.1f", hMin);
 
 			renderShadowedText(
 				renderer,
@@ -245,12 +236,12 @@ namespace pizda {
 			);
 
 			// Right
-			std::swprintf(text, textLength, L"%.1f", _hMax);
+			std::swprintf(text, textLength, L"%.1f", hMax);
 
 			renderShadowedText(
 				renderer,
 				{
-					paletteX + paletteWidth - _font->getWidth(text),
+					paletteX + paletteWidth - _font->getWidth(text, _fontScale),
 					textY
 				},
 				text
@@ -263,14 +254,16 @@ namespace pizda {
 			position + Point(_shadowOffset, _shadowOffset),
 			_font,
 			&Theme::bg1,
-			text
+			text,
+			_fontScale
 		);
 
 		renderer->renderString(
 			position,
 			_font,
 			&Theme::fg1,
-			text
+			text,
+			_fontScale
 		);
 	}
 }

@@ -17,14 +17,12 @@ namespace pizda {
 			void onRender(Renderer* renderer, const Bounds& bounds) override;
 
 		private:
-			constexpr static auto _font = &Theme::fontNormal;
-			constexpr static auto _palette = &Theme::thermalPaletteIronbow;
+			constexpr static auto _font = &Theme::fontSmall;
+			constexpr static uint8_t _fontScale = 2;
+			constexpr static auto _palette = &Theme::govno;
 
 			constexpr static uint8_t _shadowOffset = 1;
 
-			bool _histogramLPFProcessed = false;
-			float _hMin = 0;
-			float _hMax = 0;
 			float _tCross = 0;
 
 			static void renderShadowedText(Renderer* renderer, const Point& position, std::wstring_view text);

@@ -83,7 +83,7 @@ namespace pizda {
 
 		// Rendering splash screen
 		renderer.clear(&Theme::bg1);
-		// renderer.renderImage(Point(), &resources::images::splashScreen);
+		renderer.renderImage(Point(), &resources::images::splashScreen);
 		renderer.flush();
 
 		// Turning display on
