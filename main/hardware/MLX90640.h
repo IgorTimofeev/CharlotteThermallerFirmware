@@ -10,57 +10,51 @@
 #include <freertos/task.h>
 
 namespace pizda {
-	class MLX90640 {
-		public:
-			MLX90640() = default;
+    class MLX90640 {
+	    public:
+	        MLX90640() = default;
 
-			void setup(i2c_master_bus_handle_t* I2CMasterBusHandle) {
-				MLX90640_I2CInit(I2CMasterBusHandle, slaveAddress, 100'000);
+	        float emissivity = 0.95f;
+	        constexpr static uint8_t frameWidth = 32;
+	        constexpr static uint8_t frameHeight = 24;
+	        constexpr static uint16_t temperaturesLength = frameWidth * frameHeight;
+	        float temperatures[temperaturesLength] {};
+    		SemaphoreHandle_t temperaturesMutex = nullptr;
 
+	        void setup(i2c_master_bus_handle_t* I2CMasterBusHandle) {
+        		temperaturesMutex = xSemaphoreCreateMutex();
 
-			}
+	            MLX90640_I2CInit(I2CMasterBusHandle, slaveAddress, 800'000);
 
-			void tick() {
-				vTaskDelay(pdMS_TO_TICKS(1000));
+	            MLX90640_SetResolution(slaveAddress, MLX90640_RESOLUTION_16_BIT);
+	            MLX90640_SetRefreshRate(slaveAddress, MLX90640_REFRESH_RATE_32_HZ);
+	            MLX90640_SetChessMode(slaveAddress);
 
-				MLX90640_I2CGeneralReset();
-				MLX90640_SetResolution(slaveAddress, 0x00);
-				MLX90640_SetRefreshRate(slaveAddress, 0x03);
-				MLX90640_SetChessMode(slaveAddress);
+	            MLX90640_DumpEE(slaveAddress, eeMLX90640);
+	            MLX90640_ExtractParameters(eeMLX90640, &mlx90640);
+	        }
 
-				MLX90640_DumpEE(slaveAddress, eeMLX90640);
-				MLX90640_ExtractParameters(eeMLX90640, &mlx90640);
+	        void tick() {
+        		xSemaphoreTake(temperaturesMutex, portMAX_DELAY);
 
-				vTaskDelay(pdMS_TO_TICKS(1000));
+	            // Fetching frame
+	            MLX90640_GetFrameData(slaveAddress, mlx90640Frame);
 
-				ESP_LOGI("MLX", "MLX90640_GetFrameData");
-				uint16_t mlx90640Frame[834] {};
-				MLX90640_GetFrameData(slaveAddress, mlx90640Frame);
+	            // Processing temperatures
+	            tr = MLX90640_GetTa(mlx90640Frame, &mlx90640) - TA_SHIFT;
+	        	MLX90640_CalculateTo(mlx90640Frame, &mlx90640, emissivity, tr, temperatures);
 
-				ESP_LOGI("MLX", "MLX90640_GetTa");
-				tr = MLX90640_GetTa(mlx90640Frame, &mlx90640) - TA_SHIFT;
+        		xSemaphoreGive(temperaturesMutex);
 
-				ESP_LOGI("MLX", "MLX90640_CalculateTo");
-				MLX90640_CalculateTo(mlx90640Frame, &mlx90640, emissivity, tr, frameBuffer);
+	            ESP_LOGI("MLX", "766 = %f, 767 = %f", temperatures[766], temperatures[767]);
+	        }
 
-				for(int i=0;i< frameBufferLength; i++)
-				{
-					ESP_LOGI("MLX","%d = %f", i, frameBuffer[i]);
-				}
-
-			}
-
-		private:
-			constexpr static uint8_t TA_SHIFT = 8;
-			float emissivity = 0.95;
-			float tr = 0;
-			unsigned char slaveAddress = 0x33;
-			uint16_t eeMLX90640[832] {};
-			paramsMLX90640 mlx90640 {};
-
-			constexpr static uint8_t frameWidth = 32;
-			constexpr static uint8_t frameHeight = 24;
-			constexpr static uint16_t frameBufferLength = frameWidth * frameHeight;
-			float frameBuffer[frameBufferLength] {};
-	};
+	    private:
+	        constexpr static uint8_t TA_SHIFT = 8;
+	        float tr = 0.f;
+	        unsigned char slaveAddress = 0x33;
+	        uint16_t eeMLX90640[832] {};
+	        uint16_t mlx90640Frame[834] {};
+	        paramsMLX90640 mlx90640 {};
+	    };
 }

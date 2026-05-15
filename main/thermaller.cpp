@@ -51,17 +51,17 @@ namespace pizda {
 		}
 
 		// SPI
-		// {
-		// 	spi_bus_config_t config {};
-		// 	config.mosi_io_num = config::SPI::MOSI;
-		// 	config.miso_io_num = config::SPI::MISO;
-		// 	config.sclk_io_num = config::SPI::SCK;
-		// 	config.quadwp_io_num = -1;
-		// 	config.quadhd_io_num = -1;
-		// 	config.max_transfer_sz = static_cast<int>(display.getSize().getSquare() * 2);
-		//
-		// 	ESP_ERROR_CHECK(spi_bus_initialize(config::SPI::hostDevice, &config, SPI_DMA_CH_AUTO));
-		// }
+		{
+			spi_bus_config_t config {};
+			config.mosi_io_num = config::SPI::MOSI;
+			config.miso_io_num = config::SPI::MISO;
+			config.sclk_io_num = config::SPI::SCK;
+			config.quadwp_io_num = -1;
+			config.quadhd_io_num = -1;
+			config.max_transfer_sz = static_cast<int>(display.getSize().getSquare() * 2);
+
+			ESP_ERROR_CHECK(spi_bus_initialize(config::SPI::hostDevice, &config, SPI_DMA_CH_AUTO));
+		}
 
 		// GPIO
 		{
@@ -77,44 +77,35 @@ namespace pizda {
 			// gpio_set_level(config::screen::SS, true);
 		}
 
-		// // Display
-		// display.setup();
-		// renderer.setTarget(&display);
-		//
-		// // Rendering splash screen
-		// Theme::setup(&renderer);
-		// renderer.clear(&Theme::bg1);
-		// renderer.renderImage(Point(), &resources::images::splashScreen);
-		// renderer.flush();
-		//
-		// // Turning display on
-		// display.turnOn();
+		// Display
+		display.setup();
+		renderer.setTarget(&display);
 
-		// while (true) {
-		// 	ESP_LOGI(_logTag, "Pizda");
-		//
-		// 	vTaskDelay(pdMS_TO_TICKS(1000));
-		// }
+		// Rendering splash screen
+		Theme::setup(&renderer);
+		renderer.clear(&Theme::bg1);
+		renderer.renderImage(Point(), &resources::images::splashScreen);
+		renderer.flush();
+
+		// Turning display on
+		display.turnOn();
 
 		// -------------------------------- Hardware --------------------------------
 
-		// Thermal sensor
-		MLX.setup(&I2CMasterBusHandle);
-
 		// NVS is required by settings & Wi-Fi
-		// {
-		// 	const auto status = nvs_flash_init();
-		//
-		// 	if (status == ESP_ERR_NVS_NO_FREE_PAGES || status == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-		// 		// NVS partition was truncated and needs to be erased
-		// 		ESP_ERROR_CHECK(nvs_flash_erase());
-		// 		// Retry init
-		// 		ESP_ERROR_CHECK(nvs_flash_init());
-		// 	}
-		// 	else {
-		// 		ESP_ERROR_CHECK(status);
-		// 	}
-		// }
+		{
+			const auto status = nvs_flash_init();
+
+			if (status == ESP_ERR_NVS_NO_FREE_PAGES || status == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+				// NVS partition was truncated and needs to be erased
+				ESP_ERROR_CHECK(nvs_flash_erase());
+				// Retry init
+				ESP_ERROR_CHECK(nvs_flash_init());
+			}
+			else {
+				ESP_ERROR_CHECK(status);
+			}
+		}
 
 		// // ADC
 		// {
@@ -128,31 +119,42 @@ namespace pizda {
 		// // Settings come first because they contain XCVR modulation params, ADC axes calibration data, etc.
 		// _settings.readAll();
 
+		// Thermal sensor
+		MLX.setup(&I2CMasterBusHandle);
+
+		xTaskCreatePinnedToCore(
+			[](void* arg) {
+				while (true) {
+					static_cast<MLX90640*>(arg)->tick();
+				}
+			},
+			"MLX",
+			4 * 1024,
+			&MLX,
+			20,
+			nullptr,
+			1
+		);
+
 		// -------------------------------- UI --------------------------------
 
-		// application.setRenderer(&renderer);
-		// application.setBackgroundColor(&Theme::bg1);
-		//
-		// application += &thermalView;
+		application.setRenderer(&renderer);
+		application.setBackgroundColor(&Theme::bg1);
+
+		application += &thermalView;
 
 		// -------------------------------- Main loop --------------------------------
 
 		// _audioPlayer.play(&resources::sounds::boot);
 
 		// This shit is blazingly 🔥 fast 🚀, so letting user enjoy logo for a few moments
-		// vTaskDelay(pdMS_TO_TICKS(500));
+		vTaskDelay(pdMS_TO_TICKS(500));
 
 		while (true) {
-			// application.tick();
-			// application.render();
+			application.tick();
+			application.render();
 
-			ESP_LOGI("TICK!", "before");
-
-			MLX.tick();
-
-			ESP_LOGI("TICK!", "AFTER");
-
-			// vTaskDelay(pdMS_TO_TICKS(1'000));
+			vTaskDelay(pdMS_TO_TICKS(1'000 / 30));
 		}
 	}
 

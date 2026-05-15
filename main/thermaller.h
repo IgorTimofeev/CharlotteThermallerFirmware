@@ -22,22 +22,22 @@ namespace pizda {
 			[[noreturn]] void start();
 
 			// -------------------------------- Hardware --------------------------------
-			//
-			// ST7789Display display {
-			// 	config::SPI::MOSI,
-			// 	config::SPI::MISO,
-			// 	config::SPI::SCK,
-			//
-			// 	config::screen::SS,
-			// 	config::screen::DC,
-			// 	config::screen::RST,
-			// 	config::screen::SPIFrequency,
-			//
-			// 	Size(240, 320),
-			// 	ViewportRotation::clockwise0
-			// };
-			//
-			// Bit8PaletteRenderer renderer { 32 };
+
+			ST7789Display display {
+				config::SPI::MOSI,
+				config::SPI::MISO,
+				config::SPI::SCK,
+
+				config::screen::SS,
+				config::screen::DC,
+				config::screen::RST,
+				config::screen::SPIFrequency,
+
+				Size(240, 320),
+				ViewportRotation::clockwise0
+			};
+
+			Bit8PaletteRenderer renderer { 39 };
 
 			// Thermal sensor
 			MLX90640 MLX {};
@@ -65,8 +65,8 @@ namespace pizda {
 
 			// -------------------------------- UI --------------------------------
 
-			// Application application {};
-			// ThermalView thermalView {};
+			Application application {};
+			ThermalView thermalView {};
 
 			// const Route* _route = nullptr;
 

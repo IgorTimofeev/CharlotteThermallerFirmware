@@ -32,21 +32,24 @@ int MLX90640_I2CRead(uint8_t slaveAddr, uint16_t startAddress, uint16_t nMemAddr
         command,
         2,
         buffer,
-        nMemAddressRead,
+        nMemAddressRead * 2,
         500
     );
 
     ESP_ERROR_CHECK(state);
 
-    uint16_t *p = data;
+    uint16_t* dataPtr = data;
+    uint16_t bufferIndex = 0;
 
-    for(int count = 0; count < nMemAddressRead; count++){
-        const int i = count << 1;
-        *p++ = (static_cast<uint16_t>(buffer[i]) << 8) | buffer[i+1];
+    for (uint16_t wordIndex = 0; wordIndex < nMemAddressRead; wordIndex++){
+        *dataPtr = (static_cast<uint16_t>(buffer[bufferIndex]) << 8) | buffer[bufferIndex + 1];
+
+        dataPtr++;
+        bufferIndex += 2;
     }
 
     return state;
-} 
+}
 
 int MLX90640_I2CWrite(uint8_t slaveAddr, uint16_t writeAddress, uint16_t data)
 {

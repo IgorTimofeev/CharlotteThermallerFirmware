@@ -126,12 +126,6 @@ int MLX90640_GetFrameData(uint8_t slaveAddr, uint16_t *frameData)
     uint16_t data[64];
     uint8_t cnt = 0;
 
-    // error = MLX90640_I2CRead(slaveAddr, MLX90640_STATUS_REG, 1, &statusRegister);
-    // if(error != MLX90640_NO_ERROR)
-    // {
-    //     return error;
-    // }
-
     while(dataReady == 0)
     {
         error = MLX90640_I2CRead(slaveAddr, MLX90640_STATUS_REG, 1, &statusRegister);
@@ -139,13 +133,13 @@ int MLX90640_GetFrameData(uint8_t slaveAddr, uint16_t *frameData)
         {
             return error;
         }
-        //dataReady = statusRegister & 0x0008;
+        // dataReady = statusRegister & 0x0008;
         dataReady = MLX90640_GET_DATA_READY(statusRegister);
 
         if (dataReady == 0)
         {
-            ESP_LOGI("MLX!!", "data ready = 0");
-            vTaskDelay(pdMS_TO_TICKS(1000));
+            // ESP_LOGI("MLX", "data ready = 0");
+            vTaskDelay(1);
         }
     }
 
