@@ -10,3 +10,6 @@
 [submodule "components/ESP-IDF-BuzzerAudio"]
 	path = components/ESP-IDF-BuzzerAudio
 	url = https://github.com/IgorTimofeev/ESP-IDF-BuzzerAudio.git
+[submodule "components/ESP-IDF-LowPassFilter"]
+	path = components/ESP-IDF-LowPassFilter
+	url = https://github.com/IgorTimofeev/ESP-IDF-LowPassFilter.git

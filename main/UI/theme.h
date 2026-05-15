@@ -4,7 +4,7 @@
 #include <YOBA/UI.h>
 #include <YOBA/resources/fonts/PIXY10Font.h>
 #include <YOBA/resources/fonts/Vaticanus8Font.h>
-#include <YOBA/resources/fonts/unscii16.h>
+#include <YOBA/resources/fonts/unscii16Font.h>
 
 namespace pizda {
 	using namespace YOBA;
@@ -26,6 +26,14 @@ namespace pizda {
 			constexpr static RGB565Color fg5 = RGB888Color(0x777777).toRGB565();
 			constexpr static RGB565Color fg6 = RGB888Color(0x666666).toRGB565();
 			constexpr static RGB565Color fg7 = RGB888Color(0x555555).toRGB565();
+
+			constexpr static unscii16Font fontNormal {};
+			constexpr static Vaticanus8Font fontSmall {};
+
+			constexpr static uint16_t elementHeight = 27;
+			constexpr static uint16_t cornerRadius = 3;
+			constexpr static uint16_t verticalGap = 9;
+			constexpr static uint16_t horizontalGap = 7;
 
 			constexpr static std::array<RGB565Color, 433> thermal {
 				RGB888Color(0x00000a).toRGB565(),
@@ -462,14 +470,5 @@ RGB888Color(0xfffef1).toRGB565(),
 RGB888Color(0xfffef4).toRGB565(),
 RGB888Color(0xfffff6).toRGB565(),
 			};
-
-			constexpr static unscii16Font fontBig {};
-			constexpr static PIXY10Font fontNormal {};
-			constexpr static Vaticanus8Font fontSmall {};
-
-			constexpr static uint16_t elementHeight = 27;
-			constexpr static uint16_t cornerRadius = 3;
-			constexpr static uint16_t verticalGap = 9;
-			constexpr static uint16_t horizontalGap = 7;
 	};
 }
