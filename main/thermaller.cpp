@@ -152,7 +152,7 @@ namespace pizda {
 
 			ESP_LOGI("TICK!", "AFTER");
 
-			vTaskDelay(pdMS_TO_TICKS(1'000));
+			// vTaskDelay(pdMS_TO_TICKS(1'000));
 		}
 	}
 

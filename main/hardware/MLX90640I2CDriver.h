@@ -1,19 +1,27 @@
-#ifndef _I2C_DRIVER_
-#define _I2C_DRIVER_
+/**
+* @copyright (C) 2017 Melexis N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+#ifndef _MLX90640_I2C_Driver_H_
+#define _MLX90640_I2C_Driver_H_
 
-
-#define SDA_PIN 21
-#define SCL_PIN 22
-#define I2C_BUS_FREQUENCY_HZ 1000000
-#define ACK_CHECK_EN 0x1
-#define ACK_CHECK_DIS 0x0
-#define ACK_VAL 0x0
-#define NACK_VAL 0x1
-#define I2C_MASTER_TIMEOUT_MS 1000
-
-#include <stdint.h>
+#include <cstdint>
 #include <driver/i2c_master.h>
-void MLX90640I2CDriverInit(i2c_master_bus_handle_t* bus, uint8_t address, uint32_t clockSpeedHz);
-int MLX90640I2CDriverRead(uint8_t slaveAddr,uint16_t startAddress, uint16_t nMemAddressRead, uint16_t *data);
-int MLX90640I2CDriverWrite(uint8_t slaveAddr,uint16_t writeAddress, uint16_t data);
+extern void MLX90640_I2CInit(i2c_master_bus_handle_t* bus, uint8_t address, uint32_t clockSpeedHz);
+extern int MLX90640_I2CGeneralReset();
+extern int MLX90640_I2CRead(uint8_t slaveAddr,uint16_t startAddress, uint16_t nMemAddressRead, uint16_t *data);
+extern int MLX90640_I2CWrite(uint8_t slaveAddr,uint16_t writeAddress, uint16_t data);
+extern void MLX90640_I2CFreqSet(int freq);
 #endif
