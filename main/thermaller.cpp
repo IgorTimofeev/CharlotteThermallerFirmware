@@ -82,9 +82,8 @@ namespace pizda {
 		renderer.setTarget(&display);
 
 		// Rendering splash screen
-		Theme::setup(&renderer);
 		renderer.clear(&Theme::bg1);
-		renderer.renderImage(Point(), &resources::images::splashScreen);
+		// renderer.renderImage(Point(), &resources::images::splashScreen);
 		renderer.flush();
 
 		// Turning display on
@@ -154,7 +153,7 @@ namespace pizda {
 			application.tick();
 			application.render();
 
-			vTaskDelay(pdMS_TO_TICKS(1'000 / 30));
+			vTaskDelay(pdMS_TO_TICKS(1'000 / 60));
 		}
 	}
 

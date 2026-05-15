@@ -11,6 +11,7 @@ namespace pizda {
 			ThermalView();
 
 		protected:
+			void onTick() override;
 			void onRender(Renderer* renderer, const Bounds& bounds) override;
 	};
 }

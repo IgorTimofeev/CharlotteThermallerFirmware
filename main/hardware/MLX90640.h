@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include <esp_log.h>
 #include <driver/i2c_master.h>
 
@@ -15,46 +17,65 @@ namespace pizda {
 	        MLX90640() = default;
 
 	        float emissivity = 0.95f;
+
 	        constexpr static uint8_t frameWidth = 32;
 	        constexpr static uint8_t frameHeight = 24;
-	        constexpr static uint16_t temperaturesLength = frameWidth * frameHeight;
-	        float temperatures[temperaturesLength] {};
-    		SemaphoreHandle_t temperaturesMutex = nullptr;
+
+    		std::array<float, frameWidth * frameHeight> temperatures {};
 
 	        void setup(i2c_master_bus_handle_t* I2CMasterBusHandle) {
-        		temperaturesMutex = xSemaphoreCreateMutex();
+        		_temperaturesMutex = xSemaphoreCreateMutex();
 
-	            MLX90640_I2CInit(I2CMasterBusHandle, slaveAddress, 800'000);
+	            MLX90640_I2CInit(I2CMasterBusHandle, _slaveAddress, 800'000);
 
-	            MLX90640_SetResolution(slaveAddress, MLX90640_RESOLUTION_16_BIT);
-	            MLX90640_SetRefreshRate(slaveAddress, MLX90640_REFRESH_RATE_32_HZ);
-	            MLX90640_SetChessMode(slaveAddress);
+	            MLX90640_SetResolution(_slaveAddress, MLX90640_RESOLUTION_16_BIT);
+	            MLX90640_SetRefreshRate(_slaveAddress, MLX90640_REFRESH_RATE_32_HZ);
+	            MLX90640_SetChessMode(_slaveAddress);
 
-	            MLX90640_DumpEE(slaveAddress, eeMLX90640);
-	            MLX90640_ExtractParameters(eeMLX90640, &mlx90640);
+	            MLX90640_DumpEE(_slaveAddress, _eeMLX90640);
+	            MLX90640_ExtractParameters(_eeMLX90640, &_mlx90640);
+	        }
+
+    		void lockTemperatures() const {
+	        	xSemaphoreTake(_temperaturesMutex, portMAX_DELAY);
+	        }
+
+    		void releaseTemperatures() const {
+	        	xSemaphoreGive(_temperaturesMutex);
 	        }
 
 	        void tick() {
-        		xSemaphoreTake(temperaturesMutex, portMAX_DELAY);
+	        	lockTemperatures();
 
 	            // Fetching frame
-	            MLX90640_GetFrameData(slaveAddress, mlx90640Frame);
+	            MLX90640_GetFrameData(_slaveAddress, _mlx90640Frame);
 
 	            // Processing temperatures
-	            tr = MLX90640_GetTa(mlx90640Frame, &mlx90640) - TA_SHIFT;
-	        	MLX90640_CalculateTo(mlx90640Frame, &mlx90640, emissivity, tr, temperatures);
+	            _tr = MLX90640_GetTa(_mlx90640Frame, &_mlx90640) - _TA_SHIFT;
+	        	MLX90640_CalculateTo(_mlx90640Frame, &_mlx90640, emissivity, _tr, temperatures.data());
+	        	// MLX90640_BadPixelsCorrection(_mlx90640.brokenPixels, temperatures.data(), 1, &_mlx90640);
 
-        		xSemaphoreGive(temperaturesMutex);
+	     //        ESP_LOGI("MLX", "min = %f, max = %f, 766 = %f, 767 = %f", minTemperature, maxTemperature, temperatures[766], temperatures[767]);
+	     //
+	     //    	for (uint16_t y = 0; y < frameHeight; ++y) {
+	     //    		for (uint16_t x = 0; x < frameWidth; ++x) {
+						// printf("%.2f ", temperatures[y * frameWidth + x]);
+	     //    		}
+	     //
+	     //    		printf("\n");
+	     //    	}
 
-	            ESP_LOGI("MLX", "766 = %f, 767 = %f", temperatures[766], temperatures[767]);
+	        	releaseTemperatures();
 	        }
 
 	    private:
-	        constexpr static uint8_t TA_SHIFT = 8;
-	        float tr = 0.f;
-	        unsigned char slaveAddress = 0x33;
-	        uint16_t eeMLX90640[832] {};
-	        uint16_t mlx90640Frame[834] {};
-	        paramsMLX90640 mlx90640 {};
+	        constexpr static uint8_t _slaveAddress = 0x33;
+    		constexpr static uint8_t _TA_SHIFT = 8;
+	        float _tr = 0.f;
+	        uint16_t _eeMLX90640[832] {};
+	        uint16_t _mlx90640Frame[834] {};
+	        paramsMLX90640 _mlx90640 {};
+
+    		SemaphoreHandle_t _temperaturesMutex = nullptr;
 	    };
 }

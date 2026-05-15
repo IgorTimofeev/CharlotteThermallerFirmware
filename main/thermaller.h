@@ -37,7 +37,7 @@ namespace pizda {
 				ViewportRotation::clockwise0
 			};
 
-			Bit8PaletteRenderer renderer { 39 };
+			RGB565PixelBufferRenderer renderer { };
 
 			// Thermal sensor
 			MLX90640 MLX {};
