@@ -6,11 +6,18 @@
 #include <YOBA/main.h>
 #include <YOBA/UI.h>
 #include <YOBA/hardware/displays/ST7789Display.h>
-#include <YOBA/hardware/encoder.h>
+
+#include <audioPlayer.h>
+#include <buzzer.h>
+#include <battery.h>
 
 #include "config.h"
+#include "UI/route.h"
 #include "UI/thermalView.h"
-#include "hardware/MLX90640.h"
+#include "UI/menu/menu.h"
+#include "hardware/MLX90640/MLX90640.h"
+#include "hardware/joystick/joystick.h"
+#include "settings/settings.h"
 
 namespace pizda {
 	using namespace YOBA;
@@ -42,43 +49,50 @@ namespace pizda {
 			// Thermal sensor
 			MLX90640 MLX {};
 
-			//
-			// // Battery
-			// Battery _battery {
-			// 	config::battery::remote::unit,
-			// 	getAssignedADCOneshotUnit(config::battery::remote::unit),
-			// 	config::battery::remote::channel,
-			//
-			// 	config::battery::remote::voltageMin,
-			// 	config::battery::remote::voltageMax,
-			// 	config::battery::remote::voltageDividerR1,
-			// 	config::battery::remote::voltageDividerR2
-			// };
-			//
-			// // Audio
-			// Buzzer _buzzer {
-			// 	config::buzzer::gpio,
-			// 	config::buzzer::channel
-			// };
-			//
-			// AudioPlayer _audioPlayer { &_buzzer };
+			// Battery
+			Battery battery {
+				config::battery::unit,
+				&ADCOneshotUnit1,
+				config::battery::channel,
+
+				config::battery::voltageMin,
+				config::battery::voltageMax,
+				config::battery::voltageDividerR1,
+				config::battery::voltageDividerR2
+			};
+
+			// Audio
+			Buzzer buzzer {
+				config::buzzer::gpio,
+				config::buzzer::channel
+			};
+
+			AudioPlayer audioPlayer { &buzzer };
+
+			// Joystick
+			Joystick joystick {};
 
 			// -------------------------------- UI --------------------------------
 
 			Application application {};
 			ThermalView thermalView {};
+			Menu menu {};
 
-			// const Route* _route = nullptr;
+			void setRoute(const Route route);
 
 			// -------------------------------- Other shit --------------------------------
 
-			i2c_master_bus_handle_t I2CMasterBusHandle {};
+			i2c_master_bus_handle_t I2CMasterBus {};
+			adc_oneshot_unit_handle_t ADCOneshotUnit1 {};
 
-			// Settings _settings;
+			Settings settings;
 
 		private:
 			constexpr static auto _logTag = "Thermaller";
-			
+
 			Thermaller() = default;
+
+			Route _route = Route::none;
+			bool _menuAdded = false;
 	};
 }

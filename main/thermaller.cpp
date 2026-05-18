@@ -15,6 +15,7 @@
 #include "config.h"
 #include "UI/theme.h"
 #include "resources/images.h"
+#include "resources/sounds.h"
 
 namespace pizda {
 	using namespace YOBA;
@@ -46,7 +47,7 @@ namespace pizda {
 			bus.glitch_ignore_cnt = 7;
 			bus.flags.enable_internal_pullup = true;
 
-			const auto state = i2c_new_master_bus(&bus, &I2CMasterBusHandle);
+			const auto state = i2c_new_master_bus(&bus, &I2CMasterBus);
 			ESP_ERROR_CHECK_WITHOUT_ABORT(state);
 		}
 
@@ -106,20 +107,29 @@ namespace pizda {
 			}
 		}
 
-		// // ADC
-		// {
-		// 	adc_oneshot_unit_init_cfg_t unitConfig {};
-		// 	unitConfig.unit_id = ADC_UNIT_1;
-		// 	unitConfig.clk_src = ADC_RTC_CLK_SRC_DEFAULT;
-		// 	unitConfig.ulp_mode = ADC_ULP_MODE_DISABLE;
-		// 	ESP_ERROR_CHECK(adc_oneshot_new_unit(&unitConfig, &_ADCOneshotUnit1));
-		// }
+		// Settings come first because they contain XCVR modulation params, ADC axes calibration data, etc.
+		settings.read();
 
-		// // Settings come first because they contain XCVR modulation params, ADC axes calibration data, etc.
-		// _settings.readAll();
+		// ADC
+		{
+			adc_oneshot_unit_init_cfg_t unitConfig {};
+			unitConfig.unit_id = ADC_UNIT_1;
+			unitConfig.clk_src = ADC_RTC_CLK_SRC_DEFAULT;
+			unitConfig.ulp_mode = ADC_ULP_MODE_DISABLE;
+			ESP_ERROR_CHECK(adc_oneshot_new_unit(&unitConfig, &ADCOneshotUnit1));
+		}
+
+		// Battery
+		battery.setup();
+
+		// Audio
+		audioPlayer.setup();
+
+		// Joystick
+		joystick.setup();
 
 		// Thermal sensor
-		MLX.setup(&I2CMasterBusHandle);
+		MLX.setup(&I2CMasterBus);
 
 		xTaskCreatePinnedToCore(
 			[](void* arg) {
@@ -144,7 +154,7 @@ namespace pizda {
 
 		// -------------------------------- Main loop --------------------------------
 
-		// _audioPlayer.play(&resources::sounds::boot);
+		audioPlayer.play(&resources::sounds::boot);
 
 		// This shit is blazingly 🔥 fast 🚀, so letting user enjoy logo for a few moments
 		vTaskDelay(pdMS_TO_TICKS(500));
@@ -152,10 +162,28 @@ namespace pizda {
 		while (true) {
 			application.tick();
 			application.render();
+			joystick.tick();
 
 			vTaskDelay(pdMS_TO_TICKS(1'000 / 60));
 		}
 	}
 
+	void Thermaller::setRoute(const Route route) {
+		_route = route;
 
+		if (_route == Route::none) {
+			if (_menuAdded) {
+				application -= &menu;
+				_menuAdded = false;
+			}
+		}
+		else {
+			if (!_menuAdded) {
+				application += &menu;
+				_menuAdded = true;
+			}
+
+			menu.setRoute(_route);
+		}
+	}
 }

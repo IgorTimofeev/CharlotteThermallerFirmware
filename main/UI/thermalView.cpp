@@ -1,6 +1,7 @@
 #include "thermalView.h"
 
 #include <ranges>
+#include <span>
 
 #include "thermaller.h"
 #include "UI/theme.h"
@@ -9,7 +10,8 @@
 #include <freertos/task.h>
 #include <lowPassFilter.h>
 
-#include "hardware/MLX90640.h"
+#include "hardware/MLX90640/MLX90640.h"
+#include "hardware/joystick/joystick.h"
 
 namespace pizda {
 	ThermalView::ThermalView() {
@@ -18,6 +20,23 @@ namespace pizda {
 
 	void ThermalView::onTick() {
 		invalidate();
+	}
+
+	void ThermalView::onEvent(Event* event) {
+		Control::onEvent(event);
+
+		if (event->getTypeID() != JoystickEvent::typeID)
+			return;
+
+		const auto joystickEvent = static_cast<JoystickEvent*>(event);
+
+		if (joystickEvent->type == JoystickEventType::press) {
+			auto& th = Thermaller::getInstance();
+
+			th.setRoute(Route::main);
+		}
+
+		event->setHandled(true);
 	}
 
 	void ThermalView::onRender(Renderer* renderer, const Bounds& bounds) {
@@ -32,6 +51,20 @@ namespace pizda {
 		const auto x2 = bounds.getX2();
 		const auto y2 = bounds.getY2();
 		const auto center = bounds.getCenter();
+
+		std::span<const RGB565Color> palette;
+
+		switch (th.settings.thermalPalette) {
+			case ThermalPalette::govno:
+				palette = { Theme::thermalPaletteGovno };
+				break;
+			case ThermalPalette::ironbow:
+				palette = { Theme::thermalPaletteIronbow };
+				break;
+			case ThermalPalette::whiteHot:
+				palette = { Theme::thermalPaletteWhiteHot };
+				break;
+		}
 
 		float hMin  = 0;
 		float hMax  = 0;
@@ -75,19 +108,19 @@ namespace pizda {
 			return frame[y * MLX90640::frameWidth + x];
 		};
 
-		const auto getColor = [tMinMaxDelta, tAvg, hMin, hMax](float t) -> const RGB565Color* {
+		const auto getColor = [tMinMaxDelta, tAvg, hMin, hMax, palette](float t) -> const RGB565Color* {
 			if (std::isnan(t))
 				return &Theme::bg1;
 
 			t = std::clamp(std::isnan(t) ? tAvg : t, hMin, hMax);
 
 			const auto ratio = (t - hMin) / tMinMaxDelta;
-			auto index = static_cast<uint16_t>(std::round(static_cast<float>(_palette->size()) * ratio));
+			auto index = static_cast<uint16_t>(std::round(static_cast<float>(palette.size()) * ratio));
 
-			if (index >= _palette->size())
-				index = _palette->size() - 1;
+			if (index >= palette.size())
+				index = palette.size() - 1;
 
-			return &(*_palette)[index];
+			return &palette[index];
 		};
 
 		bool interpolation = false;
@@ -173,7 +206,7 @@ namespace pizda {
 			const float tCross = getTAt(MLX90640::frameWidth / 2, MLX90640::frameHeight / 2);
 
 			if (!std::isnan(tCross))
-				_tCross = LowPassFilter::apply(_tCross, tCross, 0.1f);
+				_tCross = tCross;
 
 			constexpr static uint8_t textLength = 8;
 			wchar_t text[textLength];
@@ -200,7 +233,7 @@ namespace pizda {
 			const uint16_t paletteWidth = bounds.getWidth() - paletteMargin * 2;
 
 			float paletteIndex = 0;
-			const float paletteIndexStep = static_cast<float>(_palette->size() - 1) / static_cast<float>(paletteWidth - 2);
+			const float paletteIndexStep = static_cast<float>(palette.size() - 1) / static_cast<float>(paletteWidth - 2);
 
 			renderer->renderFilledRectangle(
 				Bounds(paletteX, paletteY, paletteWidth, paletteHeight),
@@ -211,7 +244,7 @@ namespace pizda {
 				renderer->renderVerticalLine(
 					Point(paletteX + 1 + i, paletteY + 1),
 					paletteHeight - 2,
-					&(*_palette)[static_cast<uint16_t>(paletteIndex)]
+					&palette[static_cast<uint16_t>(paletteIndex)]
 				);
 
 				paletteIndex += paletteIndexStep;

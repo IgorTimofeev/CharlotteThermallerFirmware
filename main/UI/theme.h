@@ -35,7 +35,7 @@ namespace pizda {
 			constexpr static uint16_t verticalGap = 9;
 			constexpr static uint16_t horizontalGap = 7;
 
-			constexpr static std::array<RGB565Color, 240> govno {
+			constexpr static std::array<RGB565Color, 240> thermalPaletteGovno {
 				RGB888Color(0x000000).toRGB565(), RGB888Color(0x000101).toRGB565(), RGB888Color(0x010101).toRGB565(), RGB888Color(0x010102).toRGB565(), RGB888Color(0x010202).toRGB565(), RGB888Color(0x020202).toRGB565(), RGB888Color(0x020203).toRGB565(), RGB888Color(0x020303).toRGB565(),
 				RGB888Color(0x030304).toRGB565(), RGB888Color(0x030405).toRGB565(), RGB888Color(0x040405).toRGB565(), RGB888Color(0x040406).toRGB565(), RGB888Color(0x040506).toRGB565(), RGB888Color(0x050507).toRGB565(), RGB888Color(0x050507).toRGB565(), RGB888Color(0x050607).toRGB565(),
 				RGB888Color(0x060608).toRGB565(), RGB888Color(0x060608).toRGB565(), RGB888Color(0x060709).toRGB565(), RGB888Color(0x060709).toRGB565(), RGB888Color(0x07070A).toRGB565(), RGB888Color(0x07080A).toRGB565(), RGB888Color(0x07080B).toRGB565(), RGB888Color(0x08080B).toRGB565(),
