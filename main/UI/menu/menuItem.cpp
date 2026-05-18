@@ -110,7 +110,7 @@ namespace pizda {
 				bounds.getYCenter() - Theme::fontNormal.getHeight() / 2
 			),
 			&Theme::fontNormal,
-			isActive() ? &Theme::bg1 : &Theme::bg5,
+			isActive() ? &Theme::bg1 : &Theme::bg4,
 			text
 		);
 	}
@@ -139,9 +139,9 @@ namespace pizda {
 			return;
 
 		renderer->renderFilledCircle(
-			Point(bounds.getX2() - 20, bounds.getYCenter()),
-			4,
-			isActive() ? &Theme::bg1 : &Theme::green
+			Point(bounds.getX2() - 20 - 3, bounds.getYCenter()),
+			3,
+			&Theme::green
 		);
 	}
 }

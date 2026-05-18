@@ -5,6 +5,7 @@
 namespace pizda {
 	AutoRangeMenuItem::AutoRangeMenuItem() {
 		setText(L"Auto");
+		setValue(Thermaller::getInstance().settings.rangeAuto);
 	}
 
 	void AutoRangeMenuItem::onJoystickEvent(JoystickEvent* event) {
@@ -26,6 +27,7 @@ namespace pizda {
 
 	MinRangeMenuItem::MinRangeMenuItem() {
 		setText(L"Minimum");
+		setValue(Thermaller::getInstance().settings.rangeMin);
 	}
 
 	void MinRangeMenuItem::onJoystickEvent(JoystickEvent* event) {
@@ -41,6 +43,7 @@ namespace pizda {
 
 	MaxRangeMenuItem::MaxRangeMenuItem() {
 		setText(L"Maximum");
+		setValue(Thermaller::getInstance().settings.rangeMax);
 	}
 
 	void MaxRangeMenuItem::onJoystickEvent(JoystickEvent* event) {

@@ -17,11 +17,12 @@ namespace pizda {
 
 	class JoystickEvent : public Event {
 		public:
-			JoystickEvent(const JoystickEventType type);
+			JoystickEvent(const JoystickEventType type, const bool multi = false);
 
 			static uint16_t typeID;
 
 			const JoystickEventType type;
+			const bool multi;
 	};
 
 	class Joystick {

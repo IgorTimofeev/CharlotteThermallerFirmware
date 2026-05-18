@@ -3,7 +3,6 @@
 #include <limits>
 #include <algorithm>
 #include <esp_log.h>
-
 #include <esp_timer.h>
 
 #include <lowPassFilter.h>
@@ -58,35 +57,42 @@ namespace pizda {
 
 	}
 
-	void ButtonAxis::tick(bool& positivePressed, bool& negativePressed) {
-		Axis::tick();
-
+	void ButtonAxis::check(bool& positivePressed, bool& negativePressed) {
 		const auto value = std::clamp<uint16_t>(getValue(), _min, _max);
 		const uint32_t threshold = static_cast<uint32_t>(_max - _min) * 15 / 100;
 		const uint16_t middle = _min + (_max - _min) / 2;
 
-		if (value >= middle + threshold) {
-			// ESP_LOGI("pos", "value: %d, middle: %d, threshold: %d", value, middle, threshold);
+		auto handle = [this](const bool triggerCondition, bool& pressedOld, bool& pressedResult) {
+			if (triggerCondition) {
+				if (pressedOld) {
+					if (_multiTimeUs > 0 && esp_timer_get_time() >= _multiTimeUs) {
+						pressedResult = true;
 
-			if (!_posPressed) {
-				positivePressed = true;
-				_posPressed = true;
+						_multiTimeUs = esp_timer_get_time() + _multiTimeIntervalUs;
+					}
+				}
+				else {
+					pressedOld = true;
+
+					pressedResult = true;
+					_multiTimeUs = esp_timer_get_time() + _multiTimeDelayUs;
+				}
 			}
-		}
-		else {
-			_posPressed = false;
-		}
-
-		if (value <= middle - threshold) {
-			// ESP_LOGI("neg", "value: %d, middle: %d, threshold: %d", value, middle, threshold);
-
-			if (!_negPressed) {
-				negativePressed = true;
-				_negPressed = true;
+			else {
+				pressedOld = false;
 			}
-		}
-		else {
-			_negPressed = false;
-		}
+		};
+
+		handle(
+			value >= middle + threshold,
+			_posPressed,
+			positivePressed
+		);
+
+		handle(
+			value <= middle - threshold,
+			_negPressed,
+			negativePressed
+		);
 	}
 }

@@ -27,8 +27,6 @@ namespace pizda {
 	}
 
 	[[noreturn]] void Thermaller::start() {
-		ESP_LOGI(_logTag, "1");
-
 		// -------------------------------- Splash screen --------------------------------
 
 		// First, let's render a splash screen while we wait for the peripherals to finish warming up
@@ -53,8 +51,6 @@ namespace pizda {
 			ESP_ERROR_CHECK_WITHOUT_ABORT(state);
 		}
 
-		ESP_LOGI(_logTag, "2");
-
 		// SPI
 		{
 			spi_bus_config_t config {};
@@ -68,25 +64,17 @@ namespace pizda {
 			ESP_ERROR_CHECK(spi_bus_initialize(config::SPI::hostDevice, &config, SPI_DMA_CH_AUTO));
 		}
 
-		ESP_LOGI(_logTag, "3");
-
 		// Display
 		display.setup();
 		renderer.setTarget(&display);
-
-		ESP_LOGI(_logTag, "4");
 
 		// Rendering splash screen
 		renderer.clear(&Theme::bg1);
 		renderer.renderImage(Point(), &resources::images::splashScreen);
 		renderer.flush();
 
-		ESP_LOGI(_logTag, "5");
-
 		// Turning display on
 		display.turnOn();
-
-		ESP_LOGI(_logTag, "6");
 
 		// -------------------------------- Hardware --------------------------------
 
@@ -170,18 +158,19 @@ namespace pizda {
 		_route = route;
 
 		if (_route == Route::none) {
-			if (_menuAdded) {
-				application -= &menu;
-				_menuAdded = false;
+			if (_menu) {
+				application -= _menu;
+				delete _menu;
+				_menu = nullptr;
 			}
 		}
 		else {
-			if (!_menuAdded) {
-				application += &menu;
-				_menuAdded = true;
+			if (!_menu) {
+				_menu = new Menu();
+				application += _menu;
 			}
 
-			menu.setRoute(_route);
+			_menu->setRoute(_route);
 		}
 	}
 }

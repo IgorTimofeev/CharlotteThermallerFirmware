@@ -85,16 +85,13 @@ namespace pizda {
 
 			tAvg /= frame.size();
 
-			const bool autoHistorgam = true;
-
-			if (autoHistorgam) {
+			if (th.settings.rangeAuto) {
 				hMin = tMin;
 				hMax = tMax;
 			}
-			// Manual histogram
 			else {
-				hMin = 25;
-				hMax = 36;
+				hMin = th.settings.rangeMin;
+				hMax = th.settings.rangeMax;
 			}
 		}
 

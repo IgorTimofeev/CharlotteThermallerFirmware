@@ -7,11 +7,13 @@ namespace pizda {
 		setText(L"Emissivity");
 		setMin(0);
 		setMax(100);
-		setStep(10);
+		setStep(1);
 		setValue(Thermaller::getInstance().settings.emissivityPercent);
 	}
 
 	void EmissivityMenuItem::onJoystickEvent(JoystickEvent* event) {
+		IntMenuItem::onJoystickEvent(event);
+
 		if (event->type != JoystickEventType::left && event->type != JoystickEventType::right)
 			return;
 

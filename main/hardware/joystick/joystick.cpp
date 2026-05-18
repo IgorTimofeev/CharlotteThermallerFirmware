@@ -7,7 +7,7 @@
 #include "config.h"
 
 namespace pizda {
-	JoystickEvent::JoystickEvent(const JoystickEventType type) : Event(typeID), type(type) {
+	JoystickEvent::JoystickEvent(const JoystickEventType type, const bool multi) : Event(typeID), type(type), multi(multi) {
 
 	}
 
@@ -48,7 +48,8 @@ namespace pizda {
 			bool positivePressed = false;
 			bool negativePressed = false;
 
-			axis.tick(positivePressed, negativePressed);
+			axis.tick();
+			axis.check(positivePressed, negativePressed);
 
 			if (positivePressed || negativePressed) {
 				JoystickEvent event { positivePressed ? positiveType : negativeType };

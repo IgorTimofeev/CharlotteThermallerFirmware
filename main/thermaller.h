@@ -76,7 +76,6 @@ namespace pizda {
 
 			Application application {};
 			ThermalView thermalView {};
-			Menu menu {};
 
 			void setRoute(const Route route);
 
@@ -92,7 +91,7 @@ namespace pizda {
 
 			Thermaller() = default;
 
+			Menu* _menu = nullptr;
 			Route _route = Route::none;
-			bool _menuAdded = false;
 	};
 }

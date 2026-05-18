@@ -28,9 +28,9 @@ namespace pizda {
 
 		if (Thermaller::getInstance().settings.thermalPalette == _palette) {
 			renderer->renderFilledCircle(
-				Point(bounds.getX(), bounds.getYCenter()),
-				4,
-				isActive() ? &Theme::bg1 : &Theme::green
+				Point(bounds.getX2() - 20 - 3, bounds.getYCenter()),
+				3,
+				&Theme::green
 			);
 		}
 	}

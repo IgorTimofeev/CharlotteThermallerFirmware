@@ -59,7 +59,7 @@ namespace pizda {
 						public:
 							constexpr static adc_unit_t unit = ADC_UNIT_1;
 							constexpr static adc_channel_t channel = ADC_CHANNEL_2;
-							constexpr static bool invertInput = false;
+							constexpr static bool invertInput = true;
 					};
 
 					class axisY {
