@@ -1,11 +1,7 @@
 #include "UI/menu/menuPage.h"
 
-#include <span>
-#include <functional>
-
 #include <YOBA/main.h>
 #include <YOBA/UI.h>
-
 #include "UI/route.h"
 #include "UI/theme.h"
 #include "hardware/joystick/joystick.h"
@@ -14,14 +10,18 @@
 
 namespace pizda {
 	MenuPage::MenuPage() {
-		setGap(1);
+		setScrollBarThumbColor(&Theme::bg3);
+		setHorizontalScrollMode(ScrollMode::disabled);
+
+		rows.setGap(1);
+		*this += &rows;
 	}
 
 	void MenuPage::addItems(const std::initializer_list<MenuItem*>& items) {
-		removeChildren();
+		rows.removeChildren();
 
 		for (MenuItem* item : items) {
-			*this += item;
+			rows += item;
 		}
 
 		updateSelection();
@@ -38,19 +38,19 @@ namespace pizda {
 	}
 
 	void MenuPage::onEventBeforeChildren(Event* event) {
-		StackLayout::onEventBeforeChildren(event);
+		ScrollView::onEventBeforeChildren(event);
 
 		if (event->getTypeID() != JoystickEvent::typeID)
 			return;
 
 		const auto joystickEvent = static_cast<JoystickEvent*>(event);
 
-		if (getChildrenCount() == 0)
+		if (rows.getChildrenCount() == 0)
 			return;
 
 		if (joystickEvent->type == JoystickEventType::up) {
 			if (_selectedIndex == 0) {
-				_selectedIndex = getChildrenCount() - 1;
+				_selectedIndex = rows.getChildrenCount() - 1;
 			}
 			else {
 				_selectedIndex--;
@@ -59,7 +59,7 @@ namespace pizda {
 			updateSelection();
 		}
 		else if (joystickEvent->type == JoystickEventType::down) {
-			if (_selectedIndex >= getChildrenCount() - 1) {
+			if (_selectedIndex >= rows.getChildrenCount() - 1) {
 				_selectedIndex = 0;
 			}
 			else {
@@ -69,15 +69,18 @@ namespace pizda {
 			updateSelection();
 		}
 
-		const auto selectedItem = dynamic_cast<MenuItem*>(getChildAt(_selectedIndex));
+		const auto selectedItem = dynamic_cast<MenuItem*>(rows.getChildAt(_selectedIndex));
 		selectedItem->onJoystickEvent(joystickEvent);
+
+		if (joystickEvent->type == JoystickEventType::up || joystickEvent->type == JoystickEventType::down)
+			scrollTo(selectedItem);
 
 		joystickEvent->setHandled(true);
 	}
 
 	void MenuPage::updateSelection() const {
-		for (uint8_t i = 0; i < getChildrenCount(); i++) {
-			const auto menuItem = dynamic_cast<MenuItem*>(getChildAt(i));
+		for (uint8_t i = 0; i < rows.getChildrenCount(); i++) {
+			const auto menuItem = dynamic_cast<MenuItem*>(rows.getChildAt(i));
 
 			menuItem->setActive(i == _selectedIndex);
 		}

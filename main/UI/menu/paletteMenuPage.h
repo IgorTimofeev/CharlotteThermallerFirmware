@@ -16,6 +16,9 @@ namespace pizda {
 
 			void onJoystickEvent(JoystickEvent* event) override;
 
+		protected:
+			void onRender(Renderer* renderer, const Bounds& bounds) override;
+
 		private:
 			const ThermalPalette _palette;
 	};
@@ -27,4 +30,5 @@ namespace pizda {
 			PaletteMenuItem govnoItem { L"Govno", ThermalPalette::govno };
 			PaletteMenuItem ironbowItem { L"Ironbow", ThermalPalette::ironbow };
 			PaletteMenuItem whiteHotItem { L"White hot", ThermalPalette::whiteHot };
+			RouteMenuItem backItem { L"Back", Route::main };
 	};}

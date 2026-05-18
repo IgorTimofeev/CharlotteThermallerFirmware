@@ -21,20 +21,14 @@ namespace pizda {
 		*this += &_backgroundRectangle;
 
 		// Title
-		_title.setMargin(Margin(20, 10, 0, 0));
+		_title.setMargin(Margin(20, 20, 0, 10));
 		_title.setFont(&Theme::fontNormal);
 		_title.setTextColor(&Theme::fg1);
 		_titleAndItemLayout.setAutoSize(&_title);
 		_titleAndItemLayout += &_title;
 
 		// Title and item layout
-		_titleAndItemLayout.setGap(2);
 		*this += &_titleAndItemLayout;
-
-		// Item scroll view
-		_itemScrollView.setScrollBarThumbColor(&Theme::bg3);
-		_itemScrollView.setHorizontalScrollMode(ScrollMode::disabled);
-		_titleAndItemLayout += &_itemScrollView;
 
 		// Item layout
 	}
@@ -50,14 +44,14 @@ namespace pizda {
 				break;
 			}
 			case Route::palette: {
-				_title.setText(L"Palette");
+				_title.setText(L"Color palette");
 				setPage(&_palettePage);
 
 				break;
 			}
-			case Route::emissivity: {
-				_title.setText(L"Emissivity");
-				setPage(&_emissivityPage);
+			case Route::range: {
+				_title.setText(L"Temperature range");
+				setPage(&_rangePage);
 
 				break;
 			}
@@ -66,7 +60,10 @@ namespace pizda {
 	}
 
 	void Menu::setPage(MenuPage* page) {
-		_itemScrollView.removeChildren();
-		_itemScrollView += page;
+		if (_menuPage)
+			_titleAndItemLayout -= _menuPage;
+
+		_menuPage = page;
+		_titleAndItemLayout += _menuPage;
 	}
 }

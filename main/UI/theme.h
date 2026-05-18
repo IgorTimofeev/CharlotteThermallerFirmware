@@ -27,6 +27,8 @@ namespace pizda {
 			constexpr static RGB565Color fg6 = RGB888Color(0x666666).toRGB565();
 			constexpr static RGB565Color fg7 = RGB888Color(0x555555).toRGB565();
 
+			constexpr static RGB565Color green = RGB888Color(0x42fc48).toRGB565();
+
 			constexpr static unscii16Font fontNormal {};
 			constexpr static Vaticanus8Font fontSmall {};
 

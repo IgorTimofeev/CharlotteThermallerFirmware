@@ -1,19 +1,11 @@
 #pragma once
 
-#include <span>
-#include <functional>
-#include <UI/thermalView.h>
-
-#include <YOBA/main.h>
 #include <YOBA/UI.h>
 
-#include "UI/route.h"
-#include "UI/theme.h"
 #include "UI/menu/menuItem.h"
-#include "hardware/joystick/joystick.h"
 
 namespace pizda {
-	class MenuPage : public StackLayout {
+	class MenuPage : public ScrollView {
 		public:
 			MenuPage();
 
@@ -28,6 +20,8 @@ namespace pizda {
 
 		private:
 			uint8_t _selectedIndex = 0;
+
+			StackLayout rows {};
 
 			void updateSelection() const;
 	};

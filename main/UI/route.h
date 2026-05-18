@@ -5,6 +5,6 @@ namespace pizda {
 		none,
 		main,
 		palette,
-		emissivity
+		range
 	};
 }

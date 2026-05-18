@@ -8,7 +8,7 @@
 
 #include "UI/menu/mainMenuPage.h"
 #include "UI/menu/paletteMenuPage.h"
-#include "UI/menu/emissivityMenuPage.h"
+#include "UI/menu/rangeMenuPage.h"
 
 namespace pizda {
 	class Menu : public Layout {
@@ -21,13 +21,14 @@ namespace pizda {
 			Rectangle _backgroundRectangle {};
 			RelativeStackLayout _titleAndItemLayout {};
 			TextView _title {};
-			ScrollView _itemScrollView {};
 
 			MainMenuPage _mainPage {};
 			PaletteMenuPage _palettePage {};
-			EmissivityMenuPage _emissivityPage {};
+			RangeMenuPage _rangePage {};
 
 			Route _route = Route::none;
+
+			MenuPage* _menuPage = nullptr;
 
 			void setPage(MenuPage* page);
 	};

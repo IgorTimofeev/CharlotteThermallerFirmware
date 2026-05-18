@@ -27,6 +27,8 @@ namespace pizda {
 	}
 
 	[[noreturn]] void Thermaller::start() {
+		ESP_LOGI(_logTag, "1");
+
 		// -------------------------------- Splash screen --------------------------------
 
 		// First, let's render a splash screen while we wait for the peripherals to finish warming up
@@ -51,6 +53,8 @@ namespace pizda {
 			ESP_ERROR_CHECK_WITHOUT_ABORT(state);
 		}
 
+		ESP_LOGI(_logTag, "2");
+
 		// SPI
 		{
 			spi_bus_config_t config {};
@@ -64,31 +68,25 @@ namespace pizda {
 			ESP_ERROR_CHECK(spi_bus_initialize(config::SPI::hostDevice, &config, SPI_DMA_CH_AUTO));
 		}
 
-		// GPIO
-		{
-			// // Slave selects
-			// gpio_config_t g = {};
-			// g.pin_bit_mask = 1ULL << config::screen::SS;
-			// g.mode = GPIO_MODE_OUTPUT;
-			// g.pull_up_en = GPIO_PULLUP_DISABLE;
-			// g.pull_down_en = GPIO_PULLDOWN_DISABLE;
-			// g.intr_type = GPIO_INTR_DISABLE;
-			// gpio_config(&g);
-			//
-			// gpio_set_level(config::screen::SS, true);
-		}
+		ESP_LOGI(_logTag, "3");
 
 		// Display
 		display.setup();
 		renderer.setTarget(&display);
+
+		ESP_LOGI(_logTag, "4");
 
 		// Rendering splash screen
 		renderer.clear(&Theme::bg1);
 		renderer.renderImage(Point(), &resources::images::splashScreen);
 		renderer.flush();
 
+		ESP_LOGI(_logTag, "5");
+
 		// Turning display on
 		display.turnOn();
+
+		ESP_LOGI(_logTag, "6");
 
 		// -------------------------------- Hardware --------------------------------
 
