@@ -42,42 +42,23 @@ namespace pizda {
 	void ThermalView::onRender(Renderer* renderer, const Bounds& bounds) {
 		auto& th = Thermaller::getInstance();
 
+		// Keeping this shit for later use
+		const auto x2 = bounds.getX2();
+		const auto y2 = bounds.getY2();
+		const auto center = bounds.getCenter();
+
+		// Fetching latest MLX frame. Since rendering might take a while,
+		// it would be nice to copy it
 		std::array<float, th.MLX.frame.size()> frame {};
 
 		xSemaphoreTake(th.MLX.frameMutex, portMAX_DELAY);
 		std::ranges::copy(th.MLX.frame, frame.begin());
 		xSemaphoreGive(th.MLX.frameMutex);
-		
-		const auto x2 = bounds.getX2();
-		const auto y2 = bounds.getY2();
-		const auto center = bounds.getCenter();
 
-		std::span<const RGB565Color> palette;
-
-		switch (th.settings.thermalPalette) {
-			case ThermalPalette::hunting:
-				palette = { Theme::thermalPaletteHunting };
-				break;
-			case ThermalPalette::ironbow:
-				palette = { Theme::thermalPaletteIronbow };
-				break;
-			case ThermalPalette::rainbow:
-				palette = { Theme::thermalPaletteRainbow };
-				break;
-			case ThermalPalette::arctic:
-				palette = { Theme::thermalPaletteArctic };
-				break;
-			case ThermalPalette::whiteHot:
-				palette = { Theme::thermalPaletteWhiteHot };
-				break;
-			case ThermalPalette::blackHot:
-				palette = { Theme::thermalPaletteBlackHot };
-				break;
-		}
-
-		float hMin  = 0;
-		float hMax  = 0;
-		float tAvg = 0;
+		// Fetching histogram data
+		float hMin = 0;
+		float hMax = 0;
+		float hAvg = 0;
 
 		{
 			float tMin = 99999;
@@ -89,10 +70,10 @@ namespace pizda {
 
 				tMin = std::min(tMin, frame[i]);
 				tMax = std::max(tMax, frame[i]);
-				tAvg += frame[i];
+				hAvg += frame[i];
 			}
 
-			tAvg /= frame.size();
+			hAvg /= frame.size();
 
 			if (th.settings.rangeAuto) {
 				hMin = tMin;
@@ -104,79 +85,95 @@ namespace pizda {
 			}
 		}
 
-		const float tMinMaxDelta = std::max<float>(hMax - hMin, 1);
+		const float hMinMaxDelta = std::max<float>(hMax - hMin, 1);
 
-		// ESP_LOGI("afa", "tmin = %f, tmax = %f, tavg = %f", tMin, tMax, tAvg);
-
-		const uint16_t pSize = bounds.getWidth() / MLX90640::frameHeight;
-
-		const auto getTAt = [&frame](const uint8_t x, const uint8_t y) -> float {
+		const auto getFrameTemperature = [&frame](const uint8_t x, const uint8_t y) -> float {
 			return frame[y * MLX90640::frameWidth + x];
 		};
 
-		const auto getColor = [tMinMaxDelta, tAvg, hMin, hMax, palette](float t) -> const RGB565Color* {
-			if (std::isnan(t))
-				return &Theme::bg1;
+		// Determining which palette to use
+		std::span<const RGB565Color> palette;
 
-			t = std::clamp(std::isnan(t) ? tAvg : t, hMin, hMax);
+		switch (th.settings.thermalPalette) {
+			case ThermalPalette::hunting: palette = Theme::thermalPaletteHunting; break;
+			case ThermalPalette::ironbow: palette =Theme::thermalPaletteIronbow; break;
+			case ThermalPalette::rainbow: palette = Theme::thermalPaletteRainbow; break;
+			case ThermalPalette::arctic: palette = Theme::thermalPaletteArctic ; break;
+			case ThermalPalette::whiteHot: palette = Theme::thermalPaletteWhiteHot; break;
+			case ThermalPalette::blackHot: palette = Theme::thermalPaletteBlackHot; break;
+		}
 
-			const auto ratio = (t - hMin) / tMinMaxDelta;
-			auto index = static_cast<uint16_t>(std::round(static_cast<float>(palette.size()) * ratio));
+		// Rendering frame
+		{
+			const uint16_t pSize = bounds.getWidth() / MLX90640::frameHeight;
 
-			if (index >= palette.size())
-				index = palette.size() - 1;
+			const auto getTemperatureColor = [hMinMaxDelta, hAvg, hMin, hMax, palette](float t) -> const RGB565Color* {
+				if (std::isnan(t))
+					return &Theme::bg1;
 
-			return &palette[index];
-		};
+				t = std::clamp(std::isnan(t) ? hAvg : t, hMin, hMax);
 
-		if (th.settings.interpolation) {
-			for (uint8_t tY = 0; tY < MLX90640::frameHeight; ++tY) {
-				const int32_t pX = x2 - tY * pSize;
+				const auto ratio = (t - hMin) / hMinMaxDelta;
+				auto index = static_cast<uint16_t>(std::round(static_cast<float>(palette.size()) * ratio));
 
-				for (uint8_t tX = 0; tX < MLX90640::frameWidth; ++tX) {
-					const int32_t pY = y2 - tX * pSize;
+				if (index >= palette.size())
+					index = palette.size() - 1;
 
-					const uint8_t tX1 = std::min<uint8_t>(tX + 1, MLX90640::frameWidth - 1);
-					const uint8_t tY1 = std::min<uint8_t>(tY + 1, MLX90640::frameHeight - 1);
+				return &palette[index];
+			};
 
-					const float t11 = getTAt(tX, tY);
-					const float t12 = getTAt(tX, tY1);
-					const float t21 = getTAt(tX1, tY);
-					const float t22 = getTAt(tX1, tY1);
+			// Interpolation is SOOO FREAKING SLOW, even with direct pixel buffer access
+			// Totally not recommended, -nan/10 experience
+			if (th.settings.interpolation) {
+				for (uint8_t tY = 0; tY < MLX90640::frameHeight; ++tY) {
+					const int32_t pX = x2 - tY * pSize;
 
-					for (uint8_t iY = 0; iY < pSize; ++iY) {
-						const float ratioX = static_cast<float>(iY) / static_cast<float>(pSize);
+					for (uint8_t tX = 0; tX < MLX90640::frameWidth; ++tX) {
+						const int32_t pY = y2 - tX * pSize;
 
-						for (uint8_t iX = 0; iX < pSize; ++iX) {
-							const float ratioY = static_cast<float>(iX) / static_cast<float>(pSize);
+						const uint8_t tX1 = std::min<uint8_t>(tX + 1, MLX90640::frameWidth - 1);
+						const uint8_t tY1 = std::min<uint8_t>(tY + 1, MLX90640::frameHeight - 1);
 
-							const float tI =
-								(1 - ratioX) * (1 - ratioY) * t11
-								+ ratioX * (1 - ratioY) * t21
-								+ (1 - ratioX) * ratioY * t12
-								+ ratioX * ratioY * t22;
+						const float t11 = getFrameTemperature(tX, tY);
+						const float t12 = getFrameTemperature(tX, tY1);
+						const float t21 = getFrameTemperature(tX1, tY);
+						const float t22 = getFrameTemperature(tX1, tY1);
 
-							renderer->renderPixel(Point(pX - iX, pY - iY), getColor(tI));
+						for (uint8_t tIY = 0; tIY < pSize; ++tIY) {
+							const float tIRatioX = static_cast<float>(tIY) / static_cast<float>(pSize);
+
+							for (uint8_t tIX = 0; tIX < pSize; ++tIX) {
+								const float tIRatioY = static_cast<float>(tIX) / static_cast<float>(pSize);
+
+								const float tIValue =
+									(1 - tIRatioX) * (1 - tIRatioY) * t11
+									+ tIRatioX * (1 - tIRatioY) * t21
+									+ (1 - tIRatioX) * tIRatioY * t12
+									+ tIRatioX * tIRatioY * t22;
+
+								renderer->renderPixel(Point(pX - tIX, pY - tIY), getTemperatureColor(tIValue));
+							}
 						}
 					}
 				}
 			}
-		}
-		else {
-			Bounds pBounds { 0, 0, pSize, pSize};
+			// Blazingly 🔥 fast 🚀 as diarrhea, HOLD THIS
+			else {
+				Bounds pBounds { 0, 0, pSize, pSize};
 
-			for (uint8_t tY = 0; tY < MLX90640::frameHeight; ++tY) {
-				pBounds.setX(x2 - pSize - tY * pSize);
+				for (uint8_t tY = 0; tY < MLX90640::frameHeight; ++tY) {
+					pBounds.setX(x2 - pSize - tY * pSize);
 
-				for (uint8_t tX = 0; tX < MLX90640::frameWidth; ++tX) {
-					pBounds.setY(y2 - pSize - tX * pSize);
+					for (uint8_t tX = 0; tX < MLX90640::frameWidth; ++tX) {
+						pBounds.setY(y2 - pSize - tX * pSize);
 
-					renderer->renderFilledRectangle(pBounds, getColor(getTAt(tX, tY)));
+						renderer->renderFilledRectangle(pBounds, getTemperatureColor(getFrameTemperature(tX, tY)));
+					}
 				}
 			}
 		}
 
-		// Cross
+		// Rendering cross & frame center temperature
 		{
 			constexpr static uint8_t crossThickness = 2;
 			constexpr static uint8_t crossLength = crossThickness * 4;
@@ -207,7 +204,7 @@ namespace pizda {
 			renderCross(center, &Theme::fg1);
 
 			// Text
-			const float tCross = getTAt(MLX90640::frameWidth / 2, MLX90640::frameHeight / 2);
+			const float tCross = getFrameTemperature(MLX90640::frameWidth / 2, MLX90640::frameHeight / 2);
 
 			if (!std::isnan(tCross))
 				_tCross = tCross;
@@ -226,62 +223,61 @@ namespace pizda {
 			);
 		}
 
-		// Toolbar
+		// Rendering histogram & battery indicator
 		{
 			constexpr static uint8_t toolbarMargin = 8;
 			constexpr static uint8_t toolbarGap = 10;
 
-			constexpr static uint8_t paletteHeight = 10;
-			constexpr static uint8_t paletteTextMargin = 5;
+			constexpr static uint8_t histogramHeight = 10;
+			constexpr static uint8_t histogramTextMargin = 5;
 
 			constexpr static uint8_t batteryWidth = 22;
-			constexpr static uint8_t batteryHeight = paletteHeight;
+			constexpr static uint8_t batteryHeight = histogramHeight;
 			constexpr static uint8_t batteryTipWidth = 2;
 			constexpr static uint8_t batteryTipHeight = 4;
 
-			const int32_t paletteX = bounds.getX() + toolbarMargin;
-			const int32_t paletteY = y2 - toolbarMargin - paletteHeight;
-			const uint16_t paletteWidth = bounds.getWidth() - toolbarMargin - toolbarGap - batteryWidth - toolbarMargin;
+			const int32_t histogramX = bounds.getX() + toolbarMargin;
+			const int32_t histogramY = y2 - toolbarMargin - histogramHeight;
+			const uint16_t histogramWidth = bounds.getWidth() - toolbarMargin - toolbarGap - batteryWidth - toolbarMargin;
 
 			const int32_t batteryX = x2 - toolbarMargin - batteryWidth;
-			const int32_t batteryY = paletteY;
+			const int32_t batteryY = histogramY;
 			const int32_t batteryYCenter = batteryY + batteryHeight / 2;
 			constexpr int32_t batteryMaxChargeWidth = batteryWidth - batteryTipWidth - 1 * 2;
 
+			// Rendering histogram
 			{
 				float paletteIndex = 0;
-				const float paletteIndexStep = static_cast<float>(palette.size() - 1) / static_cast<float>(paletteWidth - 2);
+				const float paletteIndexStep = static_cast<float>(palette.size() - 1) / static_cast<float>(histogramWidth - 2);
 
 				renderer->renderFilledRectangle(
-					Bounds(paletteX, paletteY, paletteWidth, paletteHeight),
+					Bounds(histogramX, histogramY, histogramWidth, histogramHeight),
 					&Theme::bg1
 				);
 
-				for (uint16_t i = 0; i < paletteWidth - 2; ++i) {
+				for (uint16_t i = 0; i < histogramWidth - 2; ++i) {
 					renderer->renderVerticalLine(
-						Point(paletteX + 1 + i, paletteY + 1),
-						paletteHeight - 2,
+						Point(histogramX + 1 + i, histogramY + 1),
+						histogramHeight - 2,
 						&palette[static_cast<uint16_t>(paletteIndex)]
 					);
 
 					paletteIndex += paletteIndexStep;
 				}
-			}
 
-			// Texts
-			constexpr static uint8_t textLength = 8;
-			wchar_t text[textLength];
+				// Texts
+				constexpr static uint8_t textLength = 8;
+				wchar_t text[textLength];
 
-			const auto textY = paletteY - paletteTextMargin - _font->getHeight(_fontScale);
+				const auto textY = histogramY - histogramTextMargin - _font->getHeight(_fontScale);
 
-			{
 				// Left
 				std::swprintf(text, textLength, L"%.1f", hMin);
 
 				renderShadowedText(
 					renderer,
 					{
-						paletteX,
+						histogramX,
 						textY
 					},
 					text
@@ -293,14 +289,14 @@ namespace pizda {
 				renderShadowedText(
 					renderer,
 					{
-						paletteX + paletteWidth - _font->getWidth(text, _fontScale),
+						histogramX + histogramWidth - _font->getWidth(text, _fontScale),
 						textY
 					},
 					text
 				);
 			}
 
-			// Battery
+			// Rendering battery
 			{
 				// Tip
 				renderer->renderFilledRectangle(
