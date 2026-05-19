@@ -9,6 +9,10 @@
 #include "UI/route.h"
 #include "UI/theme.h"
 
+#include "UI/menu/mainMenuPage.h"
+#include "UI/menu/paletteMenuPage.h"
+#include "UI/menu/rangeMenuPage.h"
+
 #include "thermaller.h"
 
 namespace pizda {
@@ -38,30 +42,28 @@ namespace pizda {
 
 		switch (_route) {
 			case Route::main: {
-				_title.setText(L"Menu");
-				setPage(&_mainPage);
-
+				setPage(L"Menu", new MainMenuPage());
 				break;
 			}
 			case Route::palette: {
-				_title.setText(L"Color palette");
-				setPage(&_palettePage);
-
+				setPage(L"Color palette", new PaletteMenuPage());
 				break;
 			}
 			case Route::range: {
-				_title.setText(L"Temperature range");
-				setPage(&_rangePage);
-
+				setPage(L"Temperature range", new RangeMenuPage());
 				break;
 			}
 			default: break;
 		}
 	}
 
-	void Menu::setPage(MenuPage* page) {
-		if (_menuPage)
+	void Menu::setPage(const std::wstring_view title, MenuPage* page) {
+		_title.setText(title);
+
+		if (_menuPage) {
 			_titleAndItemLayout -= _menuPage;
+			delete _menuPage;
+		}
 
 		_menuPage = page;
 		_titleAndItemLayout += _menuPage;

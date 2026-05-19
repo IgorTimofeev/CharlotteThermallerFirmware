@@ -1,5 +1,7 @@
 #include "UI/menu/menuPage.h"
 
+#include <variant>
+
 #include <YOBA/main.h>
 #include <YOBA/UI.h>
 #include "UI/route.h"

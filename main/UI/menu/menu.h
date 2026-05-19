@@ -6,10 +6,6 @@
 #include "UI/route.h"
 #include "UI/menu/menuPage.h"
 
-#include "UI/menu/mainMenuPage.h"
-#include "UI/menu/paletteMenuPage.h"
-#include "UI/menu/rangeMenuPage.h"
-
 namespace pizda {
 	class Menu : public Layout {
 		public:
@@ -22,14 +18,9 @@ namespace pizda {
 			RelativeStackLayout _titleAndItemLayout {};
 			TextView _title {};
 
-			MainMenuPage _mainPage {};
-			PaletteMenuPage _palettePage {};
-			RangeMenuPage _rangePage {};
-
 			Route _route = Route::none;
-
 			MenuPage* _menuPage = nullptr;
 
-			void setPage(MenuPage* page);
+			void setPage(std::wstring_view title, MenuPage* page);
 	};
 }
