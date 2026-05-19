@@ -15,7 +15,7 @@
 namespace pizda {
 	MenuItem::MenuItem() {
 		setHeight(26);
-		setTextColor(&Theme::fg3);
+		setTextColor(&Theme::fg4);
 	}
 
 	void MenuItem::onJoystickEvent(JoystickEvent* event) {
@@ -110,7 +110,7 @@ namespace pizda {
 				bounds.getYCenter() - Theme::fontNormal.getHeight() / 2
 			),
 			&Theme::fontNormal,
-			isActive() ? &Theme::bg1 : &Theme::bg4,
+			isActive() ? &Theme::bg1 : &Theme::fg7,
 			text
 		);
 	}

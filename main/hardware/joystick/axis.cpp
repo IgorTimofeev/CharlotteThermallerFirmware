@@ -59,7 +59,7 @@ namespace pizda {
 
 	void ButtonAxis::check(bool& positivePressed, bool& negativePressed) {
 		const auto value = std::clamp<uint16_t>(getValue(), _min, _max);
-		const uint32_t threshold = static_cast<uint32_t>(_max - _min) * 15 / 100;
+		const uint32_t threshold = static_cast<uint32_t>(_max - _min) * 20 / 100;
 		const uint16_t middle = _min + (_max - _min) / 2;
 
 		auto handle = [this](const bool triggerCondition, bool& pressedOld, bool& pressedResult) {

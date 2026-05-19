@@ -9,9 +9,12 @@ namespace pizda {
 	using namespace YOBA;
 
 	enum class ThermalPalette : uint8_t {
-		govno,
+		hunting,
 		ironbow,
-		whiteHot
+		rainbow,
+		arctic,
+		whiteHot,
+		blackHot
 	};
 
 	class ThermalView : public Control {

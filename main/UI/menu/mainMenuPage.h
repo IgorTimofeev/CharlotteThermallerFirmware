@@ -15,6 +15,13 @@ namespace pizda {
 			void onJoystickEvent(JoystickEvent* event) override;
 	};
 
+	class InterpolationMenuItem : public BoolMenuItem {
+		public:
+			InterpolationMenuItem();
+
+			void onJoystickEvent(JoystickEvent* event) override;
+	};
+
 	class MainMenuPage : public MenuPage {
 		public:
 			MainMenuPage();
@@ -22,6 +29,7 @@ namespace pizda {
 			RouteMenuItem paletteItem { L"Color palette", Route::palette };
 			EmissivityMenuItem emissivityItem {};
 			RouteMenuItem rangeItem { L"Temperature range", Route::range };
+			InterpolationMenuItem interpolationItem {};
 			RouteMenuItem exitItem { L"Exit", Route::none };
 	};
 }

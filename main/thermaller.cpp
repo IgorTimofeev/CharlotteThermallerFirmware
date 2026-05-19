@@ -146,11 +146,13 @@ namespace pizda {
 		vTaskDelay(pdMS_TO_TICKS(500));
 
 		while (true) {
+			joystick.tick();
+			battery.tick();
+
 			application.tick();
 			application.render();
-			joystick.tick();
 
-			vTaskDelay(pdMS_TO_TICKS(1'000 / 60));
+			vTaskDelay(settings.interpolation ? 1 : pdMS_TO_TICKS(1'000 / 32));
 		}
 	}
 

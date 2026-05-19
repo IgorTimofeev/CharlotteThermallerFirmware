@@ -14,7 +14,7 @@ namespace pizda {
 			}
 			
 		private:
-			constexpr static Note p0 = { 12'000, 20'000 };
+			constexpr static Note p0 = { 8'000, 20'000 };
 			
 			constexpr static std::array<const Playable*, 1> playables {
 				&p0

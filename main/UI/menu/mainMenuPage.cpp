@@ -11,6 +11,22 @@ namespace pizda {
 		setValue(Thermaller::getInstance().settings.emissivityPercent);
 	}
 
+	InterpolationMenuItem::InterpolationMenuItem() {
+		setText(L"Interpolation");
+		setValue(Thermaller::getInstance().settings.interpolation);
+	}
+
+	void InterpolationMenuItem::onJoystickEvent(JoystickEvent* event) {
+		BoolMenuItem::onJoystickEvent(event);
+
+		if (event->type != JoystickEventType::press)
+			return;
+
+		auto& th = Thermaller::getInstance();
+		th.settings.interpolation = getValue();
+		th.settings.scheduleWrite();
+	}
+
 	void EmissivityMenuItem::onJoystickEvent(JoystickEvent* event) {
 		IntMenuItem::onJoystickEvent(event);
 
@@ -27,6 +43,7 @@ namespace pizda {
 			&paletteItem,
 			&emissivityItem,
 			&rangeItem,
+			&interpolationItem,
 			&exitItem
 		});
 

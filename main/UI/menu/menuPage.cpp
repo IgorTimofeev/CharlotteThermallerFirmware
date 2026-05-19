@@ -10,10 +10,10 @@
 
 namespace pizda {
 	MenuPage::MenuPage() {
-		setScrollBarThumbColor(&Theme::bg3);
+		setScrollBarThumbColor(&Theme::bg5);
 		setHorizontalScrollMode(ScrollMode::disabled);
 
-		rows.setGap(1);
+		rows.setGap(2);
 		*this += &rows;
 	}
 

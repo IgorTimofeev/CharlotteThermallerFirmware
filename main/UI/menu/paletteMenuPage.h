@@ -27,8 +27,11 @@ namespace pizda {
 		public:
 			PaletteMenuPage();
 
-			PaletteMenuItem govnoItem { L"Govno", ThermalPalette::govno };
+			PaletteMenuItem huntingItem { L"Hunting", ThermalPalette::hunting };
 			PaletteMenuItem ironbowItem { L"Ironbow", ThermalPalette::ironbow };
-			PaletteMenuItem whiteHotItem { L"White hot", ThermalPalette::whiteHot };
+			PaletteMenuItem rainbowItem { L"Rainbow", ThermalPalette::rainbow };
+			PaletteMenuItem arcticItem { L"Arctic", ThermalPalette::arctic };
+			PaletteMenuItem blackHotItem { L"Black hot", ThermalPalette::whiteHot };
+			PaletteMenuItem whiteHotItem { L"White hot", ThermalPalette::blackHot };
 			RouteMenuItem backItem { L"Back", Route::main };
 	};}

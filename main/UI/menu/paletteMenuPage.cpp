@@ -37,9 +37,12 @@ namespace pizda {
 
 	PaletteMenuPage::PaletteMenuPage() {
 		addItems({
-			&govnoItem,
+			&huntingItem,
 			&ironbowItem,
+			&rainbowItem,
+			&arcticItem,
 			&whiteHotItem,
+			&blackHotItem,
 			&backItem
 		});
 

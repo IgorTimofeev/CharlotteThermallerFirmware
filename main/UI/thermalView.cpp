@@ -55,14 +55,23 @@ namespace pizda {
 		std::span<const RGB565Color> palette;
 
 		switch (th.settings.thermalPalette) {
-			case ThermalPalette::govno:
-				palette = { Theme::thermalPaletteGovno };
+			case ThermalPalette::hunting:
+				palette = { Theme::thermalPaletteHunting };
 				break;
 			case ThermalPalette::ironbow:
 				palette = { Theme::thermalPaletteIronbow };
 				break;
+			case ThermalPalette::rainbow:
+				palette = { Theme::thermalPaletteRainbow };
+				break;
+			case ThermalPalette::arctic:
+				palette = { Theme::thermalPaletteArctic };
+				break;
 			case ThermalPalette::whiteHot:
 				palette = { Theme::thermalPaletteWhiteHot };
+				break;
+			case ThermalPalette::blackHot:
+				palette = { Theme::thermalPaletteBlackHot };
 				break;
 		}
 
@@ -120,9 +129,7 @@ namespace pizda {
 			return &palette[index];
 		};
 
-		bool interpolation = false;
-
-		if (interpolation) {
+		if (th.settings.interpolation) {
 			for (uint8_t tY = 0; tY < MLX90640::frameHeight; ++tY) {
 				const int32_t pX = x2 - tY * pSize;
 
@@ -219,32 +226,46 @@ namespace pizda {
 			);
 		}
 
-		// Palette
+		// Toolbar
 		{
+			constexpr static uint8_t toolbarMargin = 8;
+			constexpr static uint8_t toolbarGap = 10;
+
 			constexpr static uint8_t paletteHeight = 10;
-			constexpr static uint8_t paletteMargin = 8;
 			constexpr static uint8_t paletteTextMargin = 5;
 
-			const int32_t paletteX = bounds.getX() + paletteMargin;
-			const int32_t paletteY = y2 - paletteMargin - paletteHeight + 1;
-			const uint16_t paletteWidth = bounds.getWidth() - paletteMargin * 2;
+			constexpr static uint8_t batteryWidth = 22;
+			constexpr static uint8_t batteryHeight = paletteHeight;
+			constexpr static uint8_t batteryTipWidth = 2;
+			constexpr static uint8_t batteryTipHeight = 4;
 
-			float paletteIndex = 0;
-			const float paletteIndexStep = static_cast<float>(palette.size() - 1) / static_cast<float>(paletteWidth - 2);
+			const int32_t paletteX = bounds.getX() + toolbarMargin;
+			const int32_t paletteY = y2 - toolbarMargin - paletteHeight;
+			const uint16_t paletteWidth = bounds.getWidth() - toolbarMargin - toolbarGap - batteryWidth - toolbarMargin;
 
-			renderer->renderFilledRectangle(
-				Bounds(paletteX, paletteY, paletteWidth, paletteHeight),
-				&Theme::bg1
-			);
+			const int32_t batteryX = x2 - toolbarMargin - batteryWidth;
+			const int32_t batteryY = paletteY;
+			const int32_t batteryYCenter = batteryY + batteryHeight / 2;
+			constexpr int32_t batteryMaxChargeWidth = batteryWidth - batteryTipWidth - 1 * 2;
 
-			for (uint16_t i = 0; i < paletteWidth - 2; ++i) {
-				renderer->renderVerticalLine(
-					Point(paletteX + 1 + i, paletteY + 1),
-					paletteHeight - 2,
-					&palette[static_cast<uint16_t>(paletteIndex)]
+			{
+				float paletteIndex = 0;
+				const float paletteIndexStep = static_cast<float>(palette.size() - 1) / static_cast<float>(paletteWidth - 2);
+
+				renderer->renderFilledRectangle(
+					Bounds(paletteX, paletteY, paletteWidth, paletteHeight),
+					&Theme::bg1
 				);
 
-				paletteIndex += paletteIndexStep;
+				for (uint16_t i = 0; i < paletteWidth - 2; ++i) {
+					renderer->renderVerticalLine(
+						Point(paletteX + 1 + i, paletteY + 1),
+						paletteHeight - 2,
+						&palette[static_cast<uint16_t>(paletteIndex)]
+					);
+
+					paletteIndex += paletteIndexStep;
+				}
 			}
 
 			// Texts
@@ -253,29 +274,67 @@ namespace pizda {
 
 			const auto textY = paletteY - paletteTextMargin - _font->getHeight(_fontScale);
 
-			// Left
-			std::swprintf(text, textLength, L"%.1f", hMin);
+			{
+				// Left
+				std::swprintf(text, textLength, L"%.1f", hMin);
 
-			renderShadowedText(
-				renderer,
-				{
-					paletteX,
-					textY
-				},
-				text
-			);
+				renderShadowedText(
+					renderer,
+					{
+						paletteX,
+						textY
+					},
+					text
+				);
 
-			// Right
-			std::swprintf(text, textLength, L"%.1f", hMax);
+				// Right
+				std::swprintf(text, textLength, L"%.1f", hMax);
 
-			renderShadowedText(
-				renderer,
-				{
-					paletteX + paletteWidth - _font->getWidth(text, _fontScale),
-					textY
-				},
-				text
-			);
+				renderShadowedText(
+					renderer,
+					{
+						paletteX + paletteWidth - _font->getWidth(text, _fontScale),
+						textY
+					},
+					text
+				);
+			}
+
+			// Battery
+			{
+				// Tip
+				renderer->renderFilledRectangle(
+					Bounds(batteryX, batteryYCenter - batteryTipHeight / 2, batteryTipWidth, batteryTipHeight),
+					&Theme::bg1
+				);
+
+				// Body
+				renderer->renderFilledRectangle(
+					Bounds(batteryX + batteryTipWidth, batteryY, batteryWidth - batteryTipWidth, batteryHeight),
+					&Theme::bg1
+				);
+
+				// Charge
+				const int32_t batteryChargePercent = static_cast<int32_t>(th.battery.getCharge()) * 100 / 0xFF;
+				const int32_t batteryChargeWidth = batteryChargePercent * batteryMaxChargeWidth / 100;
+
+				const Color* batteryChargeColor;
+
+				if (batteryChargePercent > 40) {
+					batteryChargeColor = &Theme::green;
+				}
+				else if (batteryChargePercent > 20) {
+					batteryChargeColor = &Theme::orange;
+				}
+				else {
+					batteryChargeColor = &Theme::red;
+				}
+
+				renderer->renderFilledRectangle(
+					Bounds(batteryX + batteryWidth - 1 - batteryChargeWidth, batteryY + 1, batteryChargeWidth, batteryHeight - 1 * 2),
+					batteryChargeColor
+				);
+			}
 		}
 	}
 
