@@ -12,7 +12,7 @@
 #include "hardware/joystick/joystick.h"
 
 namespace pizda {
-	class MenuItem : public Control, public ActiveElement, public TextElement, public TextColorElement {
+	class MenuItem : public SelectorItem, public TextElement, public TextColorElement {
 		public:
 			MenuItem();
 

@@ -12,79 +12,62 @@
 
 namespace pizda {
 	MenuPage::MenuPage() {
-		setScrollBarThumbColor(&Theme::bg5);
-		setHorizontalScrollMode(ScrollMode::disabled);
+		_scrollView.setScrollBarThumbColor(&Theme::bg5);
+		_scrollView.setHorizontalScrollMode(ScrollMode::disabled);
+		*this += &_scrollView;
 
-		rows.setGap(2);
-		*this += &rows;
+		_rows.setGap(2);
+		_scrollView += &_rows;
+
+		setItemsLayout(&_rows);
 	}
 
 	void MenuPage::addItems(const std::initializer_list<MenuItem*>& items) {
-		rows.removeChildren();
+		removeItems();
 
-		for (MenuItem* item : items) {
-			rows += item;
-		}
+		for (MenuItem* item : items)
+			addItem(item);
 
-		updateSelection();
-	}
-
-	uint8_t MenuPage::getSelectedIndex() const {
-		return _selectedIndex;
-	}
-
-	void MenuPage::setSelectedIndex(const uint8_t index) {
-		_selectedIndex = index;
-
-		updateSelection();
+		setSelectedIndex(0);
 	}
 
 	void MenuPage::onEventBeforeChildren(Event* event) {
-		ScrollView::onEventBeforeChildren(event);
+		Selector::onEventBeforeChildren(event);
 
-		if (event->getTypeID() != JoystickEvent::typeID)
+		const auto joystickEvent = event->castTo<JoystickEvent>();
+
+		if (!joystickEvent || getItemCount() == 0)
 			return;
 
-		const auto joystickEvent = static_cast<JoystickEvent*>(event);
-
-		if (rows.getChildrenCount() == 0)
-			return;
+		auto selectedIndex = getSelectedIndex();
 
 		if (joystickEvent->type == JoystickEventType::up) {
-			if (_selectedIndex == 0) {
-				_selectedIndex = rows.getChildrenCount() - 1;
+			if (selectedIndex == 0) {
+				selectedIndex = getItemCount() - 1;
 			}
 			else {
-				_selectedIndex--;
+				selectedIndex--;
 			}
 
-			updateSelection();
+			setSelectedIndex(selectedIndex);
 		}
 		else if (joystickEvent->type == JoystickEventType::down) {
-			if (_selectedIndex >= rows.getChildrenCount() - 1) {
-				_selectedIndex = 0;
+			if (selectedIndex >= getItemCount() - 1) {
+				selectedIndex = 0;
 			}
 			else {
-				_selectedIndex++;
+				selectedIndex++;
 			}
 
-			updateSelection();
+			setSelectedIndex(selectedIndex);
 		}
 
-		const auto selectedItem = dynamic_cast<MenuItem*>(rows.getChildAt(_selectedIndex));
+		const auto selectedItem = dynamic_cast<MenuItem*>(getItemAt(selectedIndex));
 		selectedItem->onJoystickEvent(joystickEvent);
 
 		if (joystickEvent->type == JoystickEventType::up || joystickEvent->type == JoystickEventType::down)
-			scrollTo(selectedItem);
+			_scrollView.scrollTo(selectedItem);
 
 		joystickEvent->setHandled(true);
-	}
-
-	void MenuPage::updateSelection() const {
-		for (uint8_t i = 0; i < rows.getChildrenCount(); i++) {
-			const auto menuItem = dynamic_cast<MenuItem*>(rows.getChildAt(i));
-
-			menuItem->setActive(i == _selectedIndex);
-		}
 	}
 }

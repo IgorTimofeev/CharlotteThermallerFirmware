@@ -25,10 +25,10 @@ namespace pizda {
 	void ThermalView::onEvent(Event* event) {
 		Control::onEvent(event);
 
-		if (event->getTypeID() != JoystickEvent::typeID)
-			return;
+		const auto joystickEvent = event->castTo<JoystickEvent>();
 
-		const auto joystickEvent = static_cast<JoystickEvent*>(event);
+		if (!joystickEvent)
+			return;
 
 		if (joystickEvent->type == JoystickEventType::press) {
 			auto& th = Thermaller::getInstance();
