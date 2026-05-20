@@ -12,6 +12,7 @@
 #include "UI/menu/mainMenuPage.h"
 #include "UI/menu/paletteMenuPage.h"
 #include "UI/menu/rangeMenuPage.h"
+#include "UI/menu/emissivityMenuPage.h"
 
 #include "thermaller.h"
 
@@ -42,7 +43,11 @@ namespace pizda {
 
 		switch (_route) {
 			case Route::main: {
-				setPage(L"Menu", new MainMenuPage());
+				setPage(L"Settings", new MainMenuPage());
+				break;
+			}
+			case Route::emissivity: {
+				setPage(L"Emissivity", new EmissivityMenuPage());
 				break;
 			}
 			case Route::palette: {

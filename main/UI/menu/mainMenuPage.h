@@ -8,13 +8,6 @@
 #include "UI/route.h"
 
 namespace pizda {
-	class EmissivityMenuItem : public IntMenuItem {
-		public:
-			EmissivityMenuItem();
-
-			void onJoystickEvent(JoystickEvent* event) override;
-	};
-
 	class InterpolationMenuItem : public BoolMenuItem {
 		public:
 			InterpolationMenuItem();
@@ -27,7 +20,7 @@ namespace pizda {
 			MainMenuPage();
 
 			RouteMenuItem paletteItem { L"Color palette", Route::palette };
-			EmissivityMenuItem emissivityItem {};
+			RouteMenuItem emissivityItem { L"Emissivity", Route::emissivity};
 			RouteMenuItem rangeItem { L"Temperature range", Route::range };
 			InterpolationMenuItem interpolationItem {};
 			RouteMenuItem exitItem { L"Exit", Route::none };

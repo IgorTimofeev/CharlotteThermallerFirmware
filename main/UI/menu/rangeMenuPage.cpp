@@ -22,7 +22,8 @@ namespace pizda {
 	RangeMenuItem::RangeMenuItem() {
 		setMin(0);
 		setMax(100);
-		setStep(1);
+		setSmallStep(1);
+		setBigStep(10);
 	}
 
 	MinRangeMenuItem::MinRangeMenuItem() {

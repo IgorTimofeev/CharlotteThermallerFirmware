@@ -30,7 +30,7 @@ namespace pizda {
 		public:
 			ButtonAxis(const uint16_t min, const uint16_t max);
 
-			void check(bool& positivePressed, bool& negativePressed);
+			void check(bool& positivePressed, bool& negativePressed, bool& razyob);
 
 		private:
 			uint16_t _min;
@@ -39,9 +39,11 @@ namespace pizda {
 			bool _posPressed = false;
 			bool _negPressed = false;
 
-			constexpr static uint32_t _multiTimeDelayUs = 700'000;
-			constexpr static uint32_t _multiTimeIntervalUs = 100'000;
+			constexpr static uint32_t _multiDelayUs = 600'000;
+			constexpr static uint32_t _multiIntervalUs = 100'000;
+			constexpr static uint32_t _multiRazyobDelayUs = 1'500'000;
 
-			int64_t _multiTimeUs = 0;
+			int64_t _multiNextTimeUs = 0;
+			int64_t _multiRazyobTimeUs = 0;
 	};
 }

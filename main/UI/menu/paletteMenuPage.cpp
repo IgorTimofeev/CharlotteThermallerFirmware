@@ -27,11 +27,7 @@ namespace pizda {
 		MenuItem::onRender(renderer, bounds);
 
 		if (Thermaller::getInstance().settings.thermalPalette == _palette) {
-			renderer->renderFilledCircle(
-				Point(bounds.getX2() - 20 - 3, bounds.getYCenter()),
-				3,
-				&Theme::green
-			);
+			renderRightCircle(renderer, bounds, &Theme::green);
 		}
 	}
 

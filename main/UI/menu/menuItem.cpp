@@ -2,6 +2,7 @@
 
 #include <span>
 #include <functional>
+#include <resources/sounds.h>
 
 #include <YOBA/main.h>
 #include <YOBA/UI.h>
@@ -29,10 +30,33 @@ namespace pizda {
 		const auto textColor = isActive() ? &Theme::bg1 : getTextColor();
 
 		renderer->renderString(
-			Point(bounds.getX() + 20, bounds.getYCenter() - Theme::fontNormal.getHeight() / 2),
+			Point(bounds.getX() + padding, bounds.getYCenter() - Theme::fontNormal.getHeight() / 2),
 			&Theme::fontNormal,
 			textColor,
 			getText()
+		);
+	}
+
+	void MenuItem::renderRightInt(Renderer* renderer, const Bounds& bounds, const int32_t value) const {
+		wchar_t text[16] {};
+		std::swprintf(text, 16, L"%d", value);
+
+		renderer->renderString(
+			Point(
+				bounds.getX2() - padding - Theme::fontNormal.getWidth(text),
+				bounds.getYCenter() - Theme::fontNormal.getHeight() / 2
+			),
+			&Theme::fontNormal,
+			isActive() ? &Theme::bg1 : &Theme::fg7,
+			text
+		);
+	}
+
+	void MenuItem::renderRightCircle(Renderer* renderer, const Bounds& bounds, const Color* color) const {
+		renderer->renderFilledCircle(
+			Point(bounds.getX2() - padding - 3, bounds.getYCenter()),
+			3,
+			isActive() ? &Theme::bg1 : color
 		);
 	}
 
@@ -67,12 +91,20 @@ namespace pizda {
 		_max = max;
 	}
 
-	int32_t IntMenuItem::getStep() const {
-		return _step;
+	int32_t IntMenuItem::getSmallStep() const {
+		return _smallStep;
 	}
 
-	void IntMenuItem::setStep(const int32_t step) {
-		_step = step;
+	void IntMenuItem::setSmallStep(const int32_t step) {
+		_smallStep = step;
+	}
+
+	int32_t IntMenuItem::getBigStep() const {
+		return _bigStep;
+	}
+
+	void IntMenuItem::setBigStep(const int32_t step) {
+		_bigStep = step;
 	}
 
 	int32_t IntMenuItem::getValue() const {
@@ -86,33 +118,67 @@ namespace pizda {
 	void IntMenuItem::onJoystickEvent(JoystickEvent* event) {
 		MenuItem::onJoystickEvent(event);
 
-		if (event->type == JoystickEventType::right) {
-			_value = std::clamp(_value + _step, _min, _max);
+		if (event->type != JoystickEventType::left && event->type != JoystickEventType::right)
+			return;
 
-			invalidate();
-		}
-		else if (event->type == JoystickEventType::left) {
-			_value = std::clamp(_value - _step, _min, _max);
+		const auto step = event->razyob ? _bigStep : _smallStep;
 
-			invalidate();
-		}
+		_value = std::clamp(_value + (event->type == JoystickEventType::left ? -step : step), _min, _max);
+
+		invalidate();
+
+		Thermaller::getInstance().audioPlayer.play(&resources::sounds::feedback);
 	}
 
 	void IntMenuItem::onRender(Renderer* renderer, const Bounds& bounds) {
 		MenuItem::onRender(renderer, bounds);
 
-		wchar_t text[16] {};
-		std::swprintf(text, 16, L"%d", _value);
+		constexpr static uint8_t triangleWidth = 4;
+		constexpr static uint8_t triangleHeight = 7;
+		constexpr static uint8_t triangleMargin = 8;
 
-		renderer->renderString(
-			Point(
-				bounds.getX2() - 20 - Theme::fontNormal.getWidth(text),
-				bounds.getYCenter() - Theme::fontNormal.getHeight() / 2
-			),
-			&Theme::fontNormal,
-			isActive() ? &Theme::bg1 : &Theme::fg7,
-			text
-		);
+		if (isActive()) {
+			int32_t x = bounds.getX2() - padding;
+			const auto yCenter = bounds.getYCenter();
+
+			// Right triangle
+			renderer->renderFilledTriangle(
+				Point(x, yCenter),
+				Point(x - triangleWidth, yCenter - triangleHeight / 2),
+				Point(x - triangleWidth, yCenter + triangleHeight / 2),
+				_value < _max ? &Theme::bg1 : &Theme::fg4
+			);
+
+			x -= triangleWidth + triangleMargin;
+
+			// Text
+			wchar_t text[16] {};
+			std::swprintf(text, 16, L"%d", _value);
+			const auto textWidth = Theme::fontNormal.getWidth(text);
+
+			renderer->renderString(
+				Point(
+					x - textWidth,
+					yCenter - Theme::fontNormal.getHeight() / 2
+				),
+				&Theme::fontNormal,
+				isActive() ? &Theme::bg1 : &Theme::fg7,
+				text
+			);
+
+			x -= textWidth + triangleMargin;
+
+			// Left triangle
+			renderer->renderFilledTriangle(
+				Point(x - triangleWidth, yCenter),
+				Point(x, yCenter - triangleHeight / 2),
+				Point(x, yCenter + triangleHeight / 2),
+				_value > _min ? &Theme::bg1 : &Theme::fg4
+			);
+		}
+		else {
+			renderRightInt(renderer, bounds, _value);
+		}
 	}
 
 	void BoolMenuItem::onJoystickEvent(JoystickEvent* event) {
@@ -122,6 +188,8 @@ namespace pizda {
 		_value = !_value;
 
 		invalidate();
+
+		Thermaller::getInstance().audioPlayer.play(&resources::sounds::feedback);
 	}
 
 	bool BoolMenuItem::getValue() const {
@@ -138,10 +206,6 @@ namespace pizda {
 		if (!_value)
 			return;
 
-		renderer->renderFilledCircle(
-			Point(bounds.getX2() - 20 - 3, bounds.getYCenter()),
-			3,
-			&Theme::green
-		);
+		renderRightCircle(renderer, bounds, &Theme::green);
 	}
 }

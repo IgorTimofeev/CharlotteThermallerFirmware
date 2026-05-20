@@ -7,7 +7,7 @@
 #include "config.h"
 
 namespace pizda {
-	JoystickEvent::JoystickEvent(const JoystickEventType type, const bool multi) : Event(typeID), type(type), multi(multi) {
+	JoystickEvent::JoystickEvent(const JoystickEventType type, const bool razyob) : Event(typeID), type(type), razyob(razyob) {
 
 	}
 
@@ -44,18 +44,21 @@ namespace pizda {
 		auto& th = Thermaller::getInstance();
 
 		// Axes
-		auto handleAxis = [&th](ButtonAxis& axis, JoystickEventType positiveType, JoystickEventType negativeType) {
+		auto handleAxis = [&th](ButtonAxis& axis, const JoystickEventType positiveType, const JoystickEventType negativeType) {
 			bool positivePressed = false;
 			bool negativePressed = false;
+			bool razyob = false;
 
 			axis.tick();
-			axis.check(positivePressed, negativePressed);
+			axis.check(positivePressed, negativePressed, razyob);
 
 			if (positivePressed || negativePressed) {
-				JoystickEvent event { positivePressed ? positiveType : negativeType };
-				th.application.pushEvent(&event);
+				JoystickEvent event {
+					positivePressed ? positiveType : negativeType,
+					razyob
+				};
 
-				th.audioPlayer.play(&resources::sounds::feedback);
+				th.application.pushEvent(&event);
 			}
 		};
 
@@ -68,8 +71,6 @@ namespace pizda {
 		if (buttonPressed && !_buttonPressed) {
 			JoystickEvent event { JoystickEventType::press };
 			th.application.pushEvent(&event);
-
-			th.audioPlayer.play(&resources::sounds::feedback);
 		}
 
 		_buttonPressed = buttonPressed;

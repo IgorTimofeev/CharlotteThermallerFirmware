@@ -16,10 +16,15 @@ namespace pizda {
 		public:
 			MenuItem();
 
+			constexpr static uint8_t padding = 20;
+
 			virtual void onJoystickEvent(JoystickEvent* event);
 
 		protected:
 			void onRender(Renderer* renderer, const Bounds& bounds) override;
+
+			void renderRightInt(Renderer* renderer, const Bounds& bounds, int32_t value) const;
+			void renderRightCircle(Renderer* renderer, const Bounds& bounds, const Color* color) const;
 	};
 
 	class RouteMenuItem : public MenuItem {
@@ -44,8 +49,11 @@ namespace pizda {
 			int32_t getMax() const;
 			void setMax(const int32_t max);
 
-			int32_t getStep() const;
-			void setStep(const int32_t step);
+			int32_t getSmallStep() const;
+			void setSmallStep(const int32_t step);
+
+			int32_t getBigStep() const;
+			void setBigStep(int32_t step);
 
 			int32_t getValue() const;
 			void setValue(const int32_t value);
@@ -56,7 +64,8 @@ namespace pizda {
 		private:
 			int32_t _min = std::numeric_limits<int32_t>::min();
 			int32_t _max = std::numeric_limits<int32_t>::max();
-			int32_t _step = 1;
+			int32_t _smallStep = 1;
+			int32_t _bigStep = 5;
 			int32_t _value = 0;
 	};
 

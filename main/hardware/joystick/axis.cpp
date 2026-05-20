@@ -57,25 +57,31 @@ namespace pizda {
 
 	}
 
-	void ButtonAxis::check(bool& positivePressed, bool& negativePressed) {
+	void ButtonAxis::check(bool& positivePressed, bool& negativePressed, bool& razyob) {
+		positivePressed = false;
+		negativePressed = false;
+		razyob = false;
+
 		const auto value = std::clamp<uint16_t>(getValue(), _min, _max);
 		const uint32_t threshold = static_cast<uint32_t>(_max - _min) * 20 / 100;
 		const uint16_t middle = _min + (_max - _min) / 2;
 
-		auto handle = [this](const bool triggerCondition, bool& pressedOld, bool& pressedResult) {
+		auto handle = [this, &razyob](const bool triggerCondition, bool& pressedOld, bool& pressedResult) {
 			if (triggerCondition) {
 				if (pressedOld) {
-					if (_multiTimeUs > 0 && esp_timer_get_time() >= _multiTimeUs) {
+					if (_multiNextTimeUs > 0 && esp_timer_get_time() >= _multiNextTimeUs) {
 						pressedResult = true;
 
-						_multiTimeUs = esp_timer_get_time() + _multiTimeIntervalUs;
+						_multiNextTimeUs = esp_timer_get_time() + _multiIntervalUs;
+						razyob = esp_timer_get_time() >= _multiRazyobTimeUs;
 					}
 				}
 				else {
 					pressedOld = true;
 
 					pressedResult = true;
-					_multiTimeUs = esp_timer_get_time() + _multiTimeDelayUs;
+					_multiNextTimeUs = esp_timer_get_time() + _multiDelayUs;
+					_multiRazyobTimeUs = esp_timer_get_time() + _multiRazyobDelayUs;
 				}
 			}
 			else {
