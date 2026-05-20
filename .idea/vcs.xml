@@ -2,7 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/components/ESP-IDF-Battery" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/components/ESP-IDF-ADCVoltmeter" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/components/ESP-IDF-BuzzerAudio" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/components/ESP-IDF-LowPassFilter" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/components/ESP-IDF-NVSExtensions" vcs="Git" />

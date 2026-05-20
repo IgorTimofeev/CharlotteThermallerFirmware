@@ -12,7 +12,7 @@ idf_component_register(
         YOBA
         ESP-IDF-NVSExtensions
         ESP-IDF-LowPassFilter
-        ESP-IDF-Battery
+        ESP-IDF-ADCVoltmeter
         ESP-IDF-BuzzerAudio
 )
 

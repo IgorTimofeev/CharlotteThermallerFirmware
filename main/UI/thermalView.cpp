@@ -47,8 +47,7 @@ namespace pizda {
 		const auto y2 = bounds.getY2();
 		const auto center = bounds.getCenter();
 
-		// Fetching latest MLX frame. Since rendering might take a while,
-		// it would be nice to copy it
+		// Fetching latest MLX frame. Since rendering might take a while, it would be nice to copy it
 		std::array<float, th.MLX.frame.size()> frame {};
 
 		xSemaphoreTake(th.MLX.frameMutex, portMAX_DELAY);

@@ -37,14 +37,16 @@ namespace pizda {
 
 			class battery {
 				public:
-					constexpr static adc_unit_t unit = ADC_UNIT_1;
-					constexpr static adc_channel_t channel = ADC_CHANNEL_0;
+					constexpr static gpio_num_t transistorPin = GPIO_NUM_6;
 
-					constexpr static uint32_t voltageMin = 2 * 3'000;
-					constexpr static uint32_t voltageMax = 2 * 4'200;
+					constexpr static adc_unit_t ADCUnit = ADC_UNIT_1;
+					constexpr static adc_channel_t ADCChannel = ADC_CHANNEL_0;
 
-					constexpr static uint32_t voltageDividerR1 = 1000'000;
-					constexpr static uint32_t voltageDividerR2 = 330'000;
+					constexpr static uint32_t voltageMin = 3'000;
+					constexpr static uint32_t voltageMax = 4'200;
+
+					constexpr static uint32_t dividerResistanceR1 = 100'000;
+					constexpr static uint32_t dividerResistanceR2 = 330'000;
 			};
 
 			class buzzer {

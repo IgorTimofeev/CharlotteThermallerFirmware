@@ -9,7 +9,7 @@
 
 #include <audioPlayer.h>
 #include <buzzer.h>
-#include <battery.h>
+#include <ADCVoltmeter.h>
 
 #include "config.h"
 #include "UI/route.h"
@@ -50,15 +50,20 @@ namespace pizda {
 			MLX90640 MLX {};
 
 			// Battery
-			Battery battery {
-				config::battery::unit,
+			TransistorControlledADCVoltmeter battery {
+				config::battery::transistorPin,
+
+				config::battery::ADCUnit,
 				&ADCOneshotUnit1,
-				config::battery::channel,
+				config::battery::ADCChannel,
 
 				config::battery::voltageMin,
 				config::battery::voltageMax,
-				config::battery::voltageDividerR1,
-				config::battery::voltageDividerR2
+				
+				config::battery::dividerResistanceR1,
+				config::battery::dividerResistanceR2,
+
+				8
 			};
 
 			// Audio
@@ -93,5 +98,8 @@ namespace pizda {
 
 			Menu* _menu = nullptr;
 			Route _route = Route::none;
+
+			int64_t _batteryTickTime = 0;
+			void batteryTick();
 	};
 }

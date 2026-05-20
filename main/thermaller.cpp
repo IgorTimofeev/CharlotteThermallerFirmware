@@ -147,7 +147,7 @@ namespace pizda {
 
 		while (true) {
 			joystick.tick();
-			battery.tick();
+			batteryTick();
 
 			application.tick();
 			application.render();
@@ -174,5 +174,14 @@ namespace pizda {
 
 			_menu->setRoute(_route);
 		}
+	}
+
+	void Thermaller::batteryTick() {
+		if (esp_timer_get_time() < _batteryTickTime)
+			return;
+
+		battery.tick();
+
+		_batteryTickTime = esp_timer_get_time() + 1'000'000 / battery.getMultisamplingThreshold();
 	}
 }
