@@ -181,8 +181,6 @@ namespace pizda {
 
 		const auto step = event->razyob ? _bigStep : _smallStep;
 
-		_value = std::clamp(_value + (event->type == JoystickEventType::right ? step : -step), _min, _max);
-
 		setValue(std::clamp(_value + (event->type == JoystickEventType::right ? step : -step), _min, _max));
 
 		Thermaller::getInstance().audioPlayer.play(&resources::sounds::feedback);

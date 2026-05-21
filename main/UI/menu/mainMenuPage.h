@@ -14,7 +14,7 @@ namespace pizda {
 
 			RouteMenuItem paletteItem { L"Palette", MenuRoute::palette };
 			RouteMenuItem emissivityItem { L"Emissivity", MenuRoute::emissivity};
-			RouteMenuItem rangeItem { L"Temperature range", MenuRoute::range };
+			RouteMenuItem rangeItem { L"Histogram", MenuRoute::histogram };
 			RouteMenuItem sensorItem { L"Sensor", MenuRoute::sensor };
 			RouteMenuItem exitItem { L"Close", MenuRoute::none };
 	};

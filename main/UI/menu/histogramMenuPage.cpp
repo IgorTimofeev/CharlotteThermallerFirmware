@@ -1,14 +1,14 @@
-#include "UI/menu/rangeMenuPage.h"
+#include "UI/menu/histogramMenuPage.h"
 
 #include <thermaller.h>
 
 namespace pizda {
-	AutoRangeMenuItem::AutoRangeMenuItem() {
+	AutoHistogramMenuItem::AutoHistogramMenuItem() {
 		setText(L"Automatic");
 		setValue(Thermaller::getInstance().settings.rangeAuto);
 	}
 
-	void AutoRangeMenuItem::onJoystickEvent(JoystickEvent* event) {
+	void AutoHistogramMenuItem::onJoystickEvent(JoystickEvent* event) {
 		BoolMenuItem::onJoystickEvent(event);
 
 		if (event->type != JoystickEventType::press)
@@ -19,19 +19,19 @@ namespace pizda {
 		th.settings.scheduleWrite();
 	}
 
-	RangeMenuItem::RangeMenuItem() {
+	HistogramMenuItem::HistogramMenuItem() {
 		setMin(-40);
 		setMax(300);
 		setSmallStep(1);
 		setBigStep(10);
 	}
 
-	MinRangeMenuItem::MinRangeMenuItem() {
+	MinHistogramMenuItem::MinHistogramMenuItem() {
 		setText(L"Minimum");
 		setValue(Thermaller::getInstance().settings.rangeMin);
 	}
 
-	void MinRangeMenuItem::onJoystickEvent(JoystickEvent* event) {
+	void MinHistogramMenuItem::onJoystickEvent(JoystickEvent* event) {
 		IntMenuItem::onJoystickEvent(event);
 
 		if (event->type != JoystickEventType::left && event->type != JoystickEventType::right)
@@ -42,12 +42,12 @@ namespace pizda {
 		th.settings.scheduleWrite();
 	}
 
-	MaxRangeMenuItem::MaxRangeMenuItem() {
+	MaxHistogramMenuItem::MaxHistogramMenuItem() {
 		setText(L"Maximum");
 		setValue(Thermaller::getInstance().settings.rangeMax);
 	}
 
-	void MaxRangeMenuItem::onJoystickEvent(JoystickEvent* event) {
+	void MaxHistogramMenuItem::onJoystickEvent(JoystickEvent* event) {
 		IntMenuItem::onJoystickEvent(event);
 
 		if (event->type != JoystickEventType::left && event->type != JoystickEventType::right)
@@ -58,7 +58,7 @@ namespace pizda {
 		th.settings.scheduleWrite();
 	}
 
-	RangeMenuPage::RangeMenuPage() : MenuPage(L"Temperature range") {
+	HistogramMenuPage::HistogramMenuPage() : MenuPage(L"Histogram") {
 		addItems({
 			&autoItem,
 			&minItem,

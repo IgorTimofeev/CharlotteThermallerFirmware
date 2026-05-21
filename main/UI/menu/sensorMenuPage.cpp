@@ -52,21 +52,23 @@ namespace pizda {
 		}
 	}
 
-	AmbientTemperatureShiftMenuItem::AmbientTemperatureShiftMenuItem() {
-		setText(L"Ambient T shift");
-		setMin(0);
-		setMax(255);
-		setValue(Thermaller::getInstance().settings.ambientTemperatureShift);
+	TemperatureShiftMenuItem::TemperatureShiftMenuItem() {
+		setText(L"Temperature shift");
+		setMin(-100);
+		setMax(100);
+		setSmallStep(1);
+		setBigStep(5);
+		setValue(Thermaller::getInstance().settings.temperatureShift);
 	}
 
-	void AmbientTemperatureShiftMenuItem::onJoystickEvent(JoystickEvent* event) {
+	void TemperatureShiftMenuItem::onJoystickEvent(JoystickEvent* event) {
 		IntMenuItem::onJoystickEvent(event);
 
 		if (event->type != JoystickEventType::left && event->type != JoystickEventType::right)
 			return;
 
 		auto& th = Thermaller::getInstance();
-		th.settings.ambientTemperatureShift = static_cast<uint8_t>(getValue());
+		th.settings.temperatureShift = getValue();
 		th.settings.scheduleWrite();
 	}
 
@@ -92,7 +94,8 @@ namespace pizda {
 	SensorMenuPage::SensorMenuPage() : MenuPage(L"Sensor") {
 		addItems({
 			&refreshRateItem,
-			&ambientTemperatureShiftItem,
+			&reflectedTemperatureItem,
+			&temperatureShiftItem,
 			&chessModeItem,
 			&interpolationItem,
 			&backItem

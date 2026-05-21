@@ -21,6 +21,9 @@ namespace pizda {
 
 			void onJoystickEvent(JoystickEvent* event) override;
 
+		protected:
+			void onRender(Renderer* renderer, const Bounds& bounds) override;
+
 		private:
 			const uint8_t _emissivity;
 	};

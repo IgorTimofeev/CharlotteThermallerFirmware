@@ -92,9 +92,17 @@ namespace pizda {
 		// Fetching raw frame data
 		MLX90640_GetFrameData(_slaveAddress, _frameData);
 
-		// Fetching ambient temperature (TA) & applying TA shift
-		// Normally TA shift is ~8 deg C, but if sensor casing is hot enough, it could become 12 or even 20
-		const auto tr = MLX90640_GetTa(_frameData, &_params) - static_cast<float>(th.settings.ambientTemperatureShift);
+		// Computing reflected temperature. Ideally, it should be determined manually by known surroundings
+		// temperature like walls, floor, etc. But for approximate estimation we could use
+		// internal sensor temperature (which will be higher, ofc) and subtract ~5-12 degrees from it
+		float tr;
+
+		if (th.settings.reflectedTemperatureAuto) {
+			tr = MLX90640_GetTa(_frameData, &_params) - _TA_SHIFT;
+		}
+		else {
+			tr = th.settings.reflectedTemperatureValue;
+		}
 
 		// Computing temperatures from raw frame data
 		xSemaphoreTake(frameMutex, portMAX_DELAY);

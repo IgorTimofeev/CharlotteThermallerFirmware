@@ -45,6 +45,13 @@ namespace pizda {
 		invalidate();
 	}
 
+	void EmissivityPresetMenuItem::onRender(Renderer* renderer, const Bounds& bounds) {
+		MenuItem::onRender(renderer, bounds);
+
+		if (Thermaller::getInstance().settings.emissivityPercent == _emissivity)
+			renderRightCircle(renderer, bounds, &Theme::green);
+	}
+
 	EmissivityMenuPage::EmissivityMenuPage() : MenuPage(L"Emissivity") {
 		addItems({
 			&manualItem,

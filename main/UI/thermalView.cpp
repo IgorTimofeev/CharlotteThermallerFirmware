@@ -70,6 +70,8 @@ namespace pizda {
 				if (std::isnan(frame[i]))
 					continue;
 
+				frame[i] += th.settings.temperatureShift;
+
 				tMin = std::min(tMin, frame[i]);
 				tMax = std::max(tMax, frame[i]);
 				hAvg += frame[i];
