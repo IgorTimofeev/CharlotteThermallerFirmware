@@ -10,14 +10,16 @@ namespace pizda {
 	using namespace YOBA;
 
 	enum class SettingsRefreshRate : uint8_t {
+		hz0_5,
 		hz1,
 		hz2,
 		hz4,
 		hz8,
 		hz16,
 		hz32,
+		hz64,
 
-		maxValue = hz32
+		maxValue = hz64
 	};
 
 	class Settings : public NVSSettings {

@@ -63,7 +63,7 @@ namespace pizda {
 				Point(x, yCenter),
 				Point(x - triangleWidth, yCenter - triangleHeight / 2),
 				Point(x - triangleWidth, yCenter + triangleHeight / 2),
-				rightEnabled ? &Theme::bg1 : &Theme::fg3
+				rightEnabled ? &Theme::bg1 : &Theme::fg2
 			);
 
 			x -= triangleWidth + triangleMargin;
@@ -77,7 +77,7 @@ namespace pizda {
 					yCenter - Theme::fontNormal.getHeight() / 2
 				),
 				&Theme::fontNormal,
-				isActive() ? &Theme::bg1 : &Theme::fg7,
+				&Theme::bg1,
 				text
 			);
 
@@ -88,7 +88,7 @@ namespace pizda {
 				Point(x - triangleWidth, yCenter),
 				Point(x, yCenter - triangleHeight / 2),
 				Point(x, yCenter + triangleHeight / 2),
-				leftEnabled ? &Theme::bg1 : &Theme::fg3
+				leftEnabled ? &Theme::bg1 : &Theme::fg2
 			);
 		}
 		else {

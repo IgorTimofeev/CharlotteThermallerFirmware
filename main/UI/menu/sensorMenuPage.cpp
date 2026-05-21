@@ -41,12 +41,14 @@ namespace pizda {
 
 	const wchar_t* RefreshRateMenuItem::variantToString() {
 		switch (static_cast<SettingsRefreshRate>(getVariantIndex())) {
+			case SettingsRefreshRate::hz0_5: return L"0.5 Hz";
 			case SettingsRefreshRate::hz1: return L"1 Hz";
 			case SettingsRefreshRate::hz2: return L"2 Hz";
 			case SettingsRefreshRate::hz4: return L"4 Hz";
 			case SettingsRefreshRate::hz8: return L"8 Hz";
 			case SettingsRefreshRate::hz16: return L"16 Hz";
-			default: return L"32 Hz";
+			case SettingsRefreshRate::hz32: return L"32 Hz";
+			default: return L"64 Hz";
 		}
 	}
 
@@ -64,7 +66,7 @@ namespace pizda {
 			return;
 
 		auto& th = Thermaller::getInstance();
-		th.settings.ambientTemperatureShift = getValue();
+		th.settings.ambientTemperatureShift = static_cast<uint8_t>(getValue());
 		th.settings.scheduleWrite();
 	}
 

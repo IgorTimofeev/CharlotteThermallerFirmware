@@ -46,6 +46,9 @@ namespace pizda {
 		uint8_t refreshRateValue;
 
 		switch (th.settings.refreshRate) {
+			case SettingsRefreshRate::hz0_5:
+				refreshRateValue = MLX90640_REFRESH_RATE_0_5_HZ;
+				break;
 			case SettingsRefreshRate::hz1:
 				refreshRateValue = MLX90640_REFRESH_RATE_1_HZ;
 				break;
@@ -61,8 +64,11 @@ namespace pizda {
 			case SettingsRefreshRate::hz16:
 				refreshRateValue = MLX90640_REFRESH_RATE_16_HZ;
 				break;
-			default:
+			case SettingsRefreshRate::hz32:
 				refreshRateValue = MLX90640_REFRESH_RATE_32_HZ;
+				break;
+			default:
+				refreshRateValue = MLX90640_REFRESH_RATE_64_HZ;
 				break;
 		}
 
@@ -83,14 +89,24 @@ namespace pizda {
 	void MLX90640::tick() {
 		const auto& th = Thermaller::getInstance();
 
-		// Fetching frame
+		// Fetching raw frame data
 		MLX90640_GetFrameData(_slaveAddress, _frameData);
 
-		// Processing temperatures
-		const auto tr = MLX90640_GetTa(_frameData, &_params) - th.settings.ambientTemperatureShift;
+		// Fetching ambient temperature (TA) & applying TA shift
+		// Normally TA shift is ~8 deg C, but if sensor casing is hot enough, it could become 12 or even 20
+		const auto tr = MLX90640_GetTa(_frameData, &_params) - static_cast<float>(th.settings.ambientTemperatureShift);
 
+		// Computing temperatures from raw frame data
 		xSemaphoreTake(frameMutex, portMAX_DELAY);
-		MLX90640_CalculateTo(_frameData, &_params, static_cast<float>(th.settings.emissivityPercent) / 100.f, tr, frame.data());
+
+		MLX90640_CalculateTo(
+			_frameData,
+			&_params,
+			static_cast<float>(th.settings.emissivityPercent) / 100.f,
+			tr,
+			frame.data()
+		);
+
 		xSemaphoreGive(frameMutex);
 
 		// ESP_LOGI(_logTag, "766 = %f, 767 = %f", frame[766], frame[767]);
