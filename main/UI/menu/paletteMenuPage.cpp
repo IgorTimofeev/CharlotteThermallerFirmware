@@ -31,7 +31,7 @@ namespace pizda {
 		}
 	}
 
-	PaletteMenuPage::PaletteMenuPage() {
+	PaletteMenuPage::PaletteMenuPage() : MenuPage(L"Color palette") {
 		addItems({
 			&huntingItem,
 			&ironbowItem,

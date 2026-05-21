@@ -7,7 +7,7 @@
 #include <YOBA/main.h>
 #include <YOBA/UI.h>
 
-#include "UI/route.h"
+#include "menuRoute.h"
 #include "UI/theme.h"
 #include "hardware/joystick/joystick.h"
 
@@ -60,11 +60,11 @@ namespace pizda {
 		);
 	}
 
-	RouteMenuItem::RouteMenuItem(const std::wstring_view text, const Route route) : _route(route) {
+	RouteMenuItem::RouteMenuItem(const std::wstring_view text, const MenuRoute route) : _route(route) {
 		setText(text);
 	}
 
-	Route RouteMenuItem::getRoute() const {
+	MenuRoute RouteMenuItem::getRoute() const {
 		return _route;
 	}
 
@@ -72,7 +72,11 @@ namespace pizda {
 		if (event->type != JoystickEventType::press)
 			return;
 
-		Thermaller::getInstance().setRoute(_route);
+		auto& th = Thermaller::getInstance();
+
+		th.setRoute(_route);
+
+		th.audioPlayer.play(&resources::sounds::feedback);
 	}
 
 	int32_t IntMenuItem::getMin() const {

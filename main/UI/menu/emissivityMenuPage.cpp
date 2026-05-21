@@ -45,7 +45,7 @@ namespace pizda {
 		invalidate();
 	}
 
-	EmissivityMenuPage::EmissivityMenuPage() {
+	EmissivityMenuPage::EmissivityMenuPage() : MenuPage(L"Emissivity") {
 		addItems({
 			&manualItem,
 			&matteItem,

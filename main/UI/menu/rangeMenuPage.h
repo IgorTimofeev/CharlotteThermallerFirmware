@@ -5,7 +5,7 @@
 
 #include "UI/menu/menuPage.h"
 #include "UI/menu/menuItem.h"
-#include "UI/route.h"
+#include "menuRoute.h"
 
 namespace pizda {
 	class AutoRangeMenuItem : public BoolMenuItem {
@@ -41,6 +41,6 @@ namespace pizda {
 			AutoRangeMenuItem autoItem {};
 			MinRangeMenuItem minItem {};
 			MaxRangeMenuItem maxItem {};
-			RouteMenuItem backItem { L"Back", Route::main };
+			RouteMenuItem backItem { L"Back", MenuRoute::main };
 	};
 }

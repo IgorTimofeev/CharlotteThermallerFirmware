@@ -5,7 +5,7 @@
 
 #include "UI/menu/menuPage.h"
 #include "UI/menu/menuItem.h"
-#include "UI/route.h"
+#include "menuRoute.h"
 
 namespace pizda {
 	class InterpolationMenuItem : public BoolMenuItem {
@@ -19,10 +19,10 @@ namespace pizda {
 		public:
 			MainMenuPage();
 
-			RouteMenuItem paletteItem { L"Color palette", Route::palette };
-			RouteMenuItem emissivityItem { L"Emissivity", Route::emissivity};
-			RouteMenuItem rangeItem { L"Temperature range", Route::range };
+			RouteMenuItem paletteItem { L"Color palette", MenuRoute::palette };
+			RouteMenuItem emissivityItem { L"Emissivity", MenuRoute::emissivity};
+			RouteMenuItem rangeItem { L"Temperature range", MenuRoute::range };
 			InterpolationMenuItem interpolationItem {};
-			RouteMenuItem exitItem { L"Exit", Route::none };
+			RouteMenuItem exitItem { L"Close", MenuRoute::none };
 	};
 }

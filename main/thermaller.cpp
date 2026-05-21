@@ -156,10 +156,10 @@ namespace pizda {
 		}
 	}
 
-	void Thermaller::setRoute(const Route route) {
+	void Thermaller::setRoute(const MenuRoute route) {
 		_route = route;
 
-		if (_route == Route::none) {
+		if (_route == MenuRoute::none) {
 			if (_menu) {
 				application -= _menu;
 				delete _menu;

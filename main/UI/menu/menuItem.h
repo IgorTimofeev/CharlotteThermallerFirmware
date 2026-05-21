@@ -7,7 +7,7 @@
 #include <YOBA/main.h>
 #include <YOBA/UI.h>
 
-#include "UI/route.h"
+#include "menuRoute.h"
 #include "UI/theme.h"
 #include "hardware/joystick/joystick.h"
 
@@ -16,7 +16,7 @@ namespace pizda {
 		public:
 			MenuItem();
 
-			constexpr static uint8_t padding = 20;
+			constexpr static uint8_t padding = 18;
 
 			virtual void onJoystickEvent(JoystickEvent* event);
 
@@ -29,14 +29,14 @@ namespace pizda {
 
 	class RouteMenuItem : public MenuItem {
 		public:
-			RouteMenuItem(const std::wstring_view text, const Route route);
+			RouteMenuItem(const std::wstring_view text, const MenuRoute route);
 
-			Route getRoute() const;
+			MenuRoute getRoute() const;
 
 			void onJoystickEvent(JoystickEvent* event) override;
 
 		private:
-			const Route _route;
+			const MenuRoute _route;
 	};
 
 	class IntMenuItem : public MenuItem {

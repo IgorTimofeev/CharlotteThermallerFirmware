@@ -4,7 +4,7 @@
 
 namespace pizda {
 	AutoRangeMenuItem::AutoRangeMenuItem() {
-		setText(L"Auto");
+		setText(L"Automatic");
 		setValue(Thermaller::getInstance().settings.rangeAuto);
 	}
 
@@ -20,8 +20,8 @@ namespace pizda {
 	}
 
 	RangeMenuItem::RangeMenuItem() {
-		setMin(0);
-		setMax(100);
+		setMin(-40);
+		setMax(300);
 		setSmallStep(1);
 		setBigStep(10);
 	}
@@ -58,7 +58,7 @@ namespace pizda {
 		th.settings.scheduleWrite();
 	}
 
-	RangeMenuPage::RangeMenuPage() {
+	RangeMenuPage::RangeMenuPage() : MenuPage(L"Temperature range") {
 		addItems({
 			&autoItem,
 			&minItem,

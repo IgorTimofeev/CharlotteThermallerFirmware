@@ -7,8 +7,7 @@
 namespace pizda {
 	class MenuPage : public Selector {
 		public:
-			MenuPage();
-
+			MenuPage(const std::wstring_view title);
 			void addItems(const std::initializer_list<MenuItem*>& items);
 
 		protected:
@@ -16,6 +15,8 @@ namespace pizda {
 
 		private:
 			ScrollView _scrollView {};
-			StackLayout _rows {};
+			RelativeStackLayout _titleAndScrollViewerLayout {};
+			TextView _title {};
+			StackLayout _itemRows {};
 	};
 }

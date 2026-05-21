@@ -5,7 +5,7 @@
 
 #include "UI/menu/menuPage.h"
 #include "UI/menu/menuItem.h"
-#include "UI/route.h"
+#include "menuRoute.h"
 
 namespace pizda {
 	class PaletteMenuItem : public MenuItem {
@@ -33,5 +33,5 @@ namespace pizda {
 			PaletteMenuItem arcticItem { L"Arctic", ThermalPalette::arctic };
 			PaletteMenuItem blackHotItem { L"Black hot", ThermalPalette::whiteHot };
 			PaletteMenuItem whiteHotItem { L"White hot", ThermalPalette::blackHot };
-			RouteMenuItem backItem { L"Back", Route::main };
+			RouteMenuItem backItem { L"Back", MenuRoute::main };
 	};}

@@ -9,6 +9,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <lowPassFilter.h>
+#include <resources/sounds.h>
 
 #include "hardware/MLX90640/MLX90640.h"
 #include "hardware/joystick/joystick.h"
@@ -33,7 +34,9 @@ namespace pizda {
 		if (joystickEvent->type == JoystickEventType::press) {
 			auto& th = Thermaller::getInstance();
 
-			th.setRoute(Route::main);
+			th.setRoute(MenuRoute::main);
+
+			th.audioPlayer.play(&resources::sounds::feedback);
 		}
 
 		event->setHandled(true);
@@ -310,8 +313,9 @@ namespace pizda {
 				);
 
 				// Charge
-				const int32_t batteryChargePercent = static_cast<int32_t>(th.battery.getCharge()) * 100 / 0xFF;
-				const int32_t batteryChargeWidth = batteryChargePercent * batteryMaxChargeWidth / 100;
+				const auto batteryCharge = th.battery.getCharge();
+				const uint16_t batteryChargePercent = static_cast<uint16_t>(batteryCharge) * 100 / 0xFF;
+				const int32_t batteryChargeWidth = divideRounding<int32_t>(batteryCharge * batteryMaxChargeWidth, 0xFF);
 
 				const Color* batteryChargeColor;
 

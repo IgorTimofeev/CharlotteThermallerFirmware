@@ -3,7 +3,7 @@
 #include <YOBA/main.h>
 #include <YOBA/UI.h>
 
-#include "UI/route.h"
+#include "menuRoute.h"
 #include "UI/menu/menuPage.h"
 
 namespace pizda {
@@ -11,16 +11,14 @@ namespace pizda {
 		public:
 			Menu();
 
-			void setRoute(const Route route);
+			void setRoute(const MenuRoute route);
 
 		private:
 			Rectangle _backgroundRectangle {};
-			RelativeStackLayout _titleAndItemLayout {};
-			TextView _title {};
 
-			Route _route = Route::none;
+			MenuRoute _route = MenuRoute::none;
 			MenuPage* _menuPage = nullptr;
 
-			void setPage(std::wstring_view title, MenuPage* page);
+			void setPage(MenuPage* page);
 	};
 }

@@ -19,7 +19,7 @@ namespace pizda {
 		th.settings.scheduleWrite();
 	}
 
-	MainMenuPage::MainMenuPage() {
+	MainMenuPage::MainMenuPage() : MenuPage(L"Settings") {
 		addItems({
 			&paletteItem,
 			&emissivityItem,

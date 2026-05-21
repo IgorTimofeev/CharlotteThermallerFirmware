@@ -12,7 +12,7 @@
 #include <ADCVoltmeter.h>
 
 #include "config.h"
-#include "UI/route.h"
+#include "UI/menu/menuRoute.h"
 #include "UI/thermalView.h"
 #include "UI/menu/menu.h"
 #include "hardware/MLX90640/MLX90640.h"
@@ -82,7 +82,7 @@ namespace pizda {
 			Application application {};
 			ThermalView thermalView {};
 
-			void setRoute(const Route route);
+			void setRoute(const MenuRoute route);
 
 			// -------------------------------- Other shit --------------------------------
 
@@ -97,7 +97,7 @@ namespace pizda {
 			Thermaller() = default;
 
 			Menu* _menu = nullptr;
-			Route _route = Route::none;
+			MenuRoute _route = MenuRoute::none;
 
 			int64_t _batteryTickTime = 0;
 			void batteryTick();
