@@ -23,7 +23,9 @@ namespace pizda {
 		protected:
 			void onRender(Renderer* renderer, const Bounds& bounds) override;
 
-			void renderRightInt(Renderer* renderer, const Bounds& bounds, int32_t value) const;
+			void renderRightText(Renderer* renderer, const Bounds& bounds, const wchar_t* text) const;
+			void renderRightTextWithArrows(Renderer* renderer, const Bounds& bounds,
+			                              const wchar_t* text, bool leftEnabled, bool rightEnabled);
 			void renderRightCircle(Renderer* renderer, const Bounds& bounds, const Color* color) const;
 	};
 
@@ -67,6 +69,26 @@ namespace pizda {
 			int32_t _smallStep = 1;
 			int32_t _bigStep = 5;
 			int32_t _value = 0;
+	};
+
+	class VariantMenuItem : public MenuItem {
+		public:
+			void onJoystickEvent(JoystickEvent* event) override;
+
+			int32_t getVariantIndex() const;
+			void setVariantIndex(const uint8_t value);
+
+			int32_t getVariantCount() const;
+			void setVariantCount(const uint8_t value);
+
+		protected:
+			virtual const wchar_t* variantToString() = 0;
+
+			void onRender(Renderer* renderer, const Bounds& bounds) override;
+
+		private:
+			uint8_t _variantIndex = 0;
+			uint8_t _variantCount = 0;
 	};
 
 	class BoolMenuItem : public MenuItem {

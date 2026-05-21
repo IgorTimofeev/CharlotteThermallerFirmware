@@ -24,6 +24,8 @@ namespace pizda {
     		SemaphoreHandle_t frameMutex = nullptr;
 
 	        void setup(i2c_master_bus_handle_t* I2CMasterBusHandle);
+	        void setRefreshRateFromSettings();
+	        void setModeFromSettings();
 
 	        void tick();
 

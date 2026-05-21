@@ -14,6 +14,7 @@
 
 namespace pizda {
 	void MLX90640::setup(i2c_master_bus_handle_t* I2CMasterBusHandle) {
+
 		frameMutex = xSemaphoreCreateMutex();
 
 		MLX90640_I2CInit(I2CMasterBusHandle, _slaveAddress, 800'000);
@@ -34,8 +35,49 @@ namespace pizda {
 		MLX90640_ExtractParameters(_ee, &_params);
 
 		MLX90640_SetResolution(_slaveAddress, MLX90640_RESOLUTION_16_BIT);
-		MLX90640_SetRefreshRate(_slaveAddress, MLX90640_REFRESH_RATE_32_HZ);
-		MLX90640_SetChessMode(_slaveAddress);
+
+		setModeFromSettings();
+		setRefreshRateFromSettings();
+	}
+
+	void MLX90640::setRefreshRateFromSettings() {
+		const auto& th = Thermaller::getInstance();
+
+		uint8_t refreshRateValue;
+
+		switch (th.settings.refreshRate) {
+			case SettingsRefreshRate::hz1:
+				refreshRateValue = MLX90640_REFRESH_RATE_1_HZ;
+				break;
+			case SettingsRefreshRate::hz2:
+				refreshRateValue = MLX90640_REFRESH_RATE_2_HZ;
+				break;
+			case SettingsRefreshRate::hz4:
+				refreshRateValue = MLX90640_REFRESH_RATE_4_HZ;
+				break;
+			case SettingsRefreshRate::hz8:
+				refreshRateValue = MLX90640_REFRESH_RATE_8_HZ;
+				break;
+			case SettingsRefreshRate::hz16:
+				refreshRateValue = MLX90640_REFRESH_RATE_16_HZ;
+				break;
+			default:
+				refreshRateValue = MLX90640_REFRESH_RATE_32_HZ;
+				break;
+		}
+
+		MLX90640_SetRefreshRate(_slaveAddress, refreshRateValue);
+	}
+
+	void MLX90640::setModeFromSettings() {
+		const auto& th = Thermaller::getInstance();
+
+		if (th.settings.chessMode) {
+			MLX90640_SetChessMode(_slaveAddress);
+		}
+		else {
+			MLX90640_SetInterleavedMode(_slaveAddress);
+		}
 	}
 
 	void MLX90640::tick() {
@@ -45,21 +87,12 @@ namespace pizda {
 		MLX90640_GetFrameData(_slaveAddress, _frameData);
 
 		// Processing temperatures
-		const auto tr = MLX90640_GetTa(_frameData, &_params) - _TA_SHIFT;
+		const auto tr = MLX90640_GetTa(_frameData, &_params) - th.settings.ambientTemperatureShift;
 
 		xSemaphoreTake(frameMutex, portMAX_DELAY);
 		MLX90640_CalculateTo(_frameData, &_params, static_cast<float>(th.settings.emissivityPercent) / 100.f, tr, frame.data());
 		xSemaphoreGive(frameMutex);
 
 		// ESP_LOGI(_logTag, "766 = %f, 767 = %f", frame[766], frame[767]);
-		//
-		//    	for (uint16_t y = 0; y < frameHeight; ++y) {
-		//    		for (uint16_t x = 0; x < frameWidth; ++x) {
-		// printf("%.2f ", temperatures[y * frameWidth + x]);
-		//    		}
-		//
-		//    		printf("\n");
-		//    	}
-
 	}
 }

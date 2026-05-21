@@ -37,10 +37,7 @@ namespace pizda {
 		);
 	}
 
-	void MenuItem::renderRightInt(Renderer* renderer, const Bounds& bounds, const int32_t value) const {
-		wchar_t text[16] {};
-		std::swprintf(text, 16, L"%d", value);
-
+	void MenuItem::renderRightText(Renderer* renderer, const Bounds& bounds, const wchar_t* text) const {
 		renderer->renderString(
 			Point(
 				bounds.getX2() - padding - Theme::fontNormal.getWidth(text),
@@ -50,6 +47,53 @@ namespace pizda {
 			isActive() ? &Theme::bg1 : &Theme::fg7,
 			text
 		);
+	}
+
+	void MenuItem::renderRightTextWithArrows(Renderer* renderer, const Bounds& bounds, const wchar_t* text, const bool leftEnabled, const bool rightEnabled) {
+		constexpr static uint8_t triangleWidth = 4;
+		constexpr static uint8_t triangleHeight = 7;
+		constexpr static uint8_t triangleMargin = 8;
+
+		if (isActive()) {
+			int32_t x = bounds.getX2() - padding;
+			const auto yCenter = bounds.getYCenter();
+
+			// Right triangle
+			renderer->renderFilledTriangle(
+				Point(x, yCenter),
+				Point(x - triangleWidth, yCenter - triangleHeight / 2),
+				Point(x - triangleWidth, yCenter + triangleHeight / 2),
+				rightEnabled ? &Theme::bg1 : &Theme::fg3
+			);
+
+			x -= triangleWidth + triangleMargin;
+
+			// Text
+			const auto textWidth = Theme::fontNormal.getWidth(text);
+
+			renderer->renderString(
+				Point(
+					x - textWidth,
+					yCenter - Theme::fontNormal.getHeight() / 2
+				),
+				&Theme::fontNormal,
+				isActive() ? &Theme::bg1 : &Theme::fg7,
+				text
+			);
+
+			x -= textWidth + triangleMargin;
+
+			// Left triangle
+			renderer->renderFilledTriangle(
+				Point(x - triangleWidth, yCenter),
+				Point(x, yCenter - triangleHeight / 2),
+				Point(x, yCenter + triangleHeight / 2),
+				leftEnabled ? &Theme::bg1 : &Theme::fg3
+			);
+		}
+		else {
+			renderRightText(renderer, bounds, text);
+		}
 	}
 
 	void MenuItem::renderRightCircle(Renderer* renderer, const Bounds& bounds, const Color* color) const {
@@ -85,6 +129,8 @@ namespace pizda {
 
 	void IntMenuItem::setMin(const int32_t min) {
 		_min = min;
+
+		invalidate();
 	}
 
 	int32_t IntMenuItem::getMax() const {
@@ -93,6 +139,8 @@ namespace pizda {
 
 	void IntMenuItem::setMax(const int32_t max) {
 		_max = max;
+
+		invalidate();
 	}
 
 	int32_t IntMenuItem::getSmallStep() const {
@@ -101,6 +149,8 @@ namespace pizda {
 
 	void IntMenuItem::setSmallStep(const int32_t step) {
 		_smallStep = step;
+
+		invalidate();
 	}
 
 	int32_t IntMenuItem::getBigStep() const {
@@ -109,6 +159,8 @@ namespace pizda {
 
 	void IntMenuItem::setBigStep(const int32_t step) {
 		_bigStep = step;
+
+		invalidate();
 	}
 
 	int32_t IntMenuItem::getValue() const {
@@ -117,6 +169,8 @@ namespace pizda {
 
 	void IntMenuItem::setValue(const int32_t value) {
 		_value = value;
+
+		invalidate();
 	}
 
 	void IntMenuItem::onJoystickEvent(JoystickEvent* event) {
@@ -127,9 +181,9 @@ namespace pizda {
 
 		const auto step = event->razyob ? _bigStep : _smallStep;
 
-		_value = std::clamp(_value + (event->type == JoystickEventType::left ? -step : step), _min, _max);
+		_value = std::clamp(_value + (event->type == JoystickEventType::right ? step : -step), _min, _max);
 
-		invalidate();
+		setValue(std::clamp(_value + (event->type == JoystickEventType::right ? step : -step), _min, _max));
 
 		Thermaller::getInstance().audioPlayer.play(&resources::sounds::feedback);
 	}
@@ -137,52 +191,59 @@ namespace pizda {
 	void IntMenuItem::onRender(Renderer* renderer, const Bounds& bounds) {
 		MenuItem::onRender(renderer, bounds);
 
-		constexpr static uint8_t triangleWidth = 4;
-		constexpr static uint8_t triangleHeight = 7;
-		constexpr static uint8_t triangleMargin = 8;
+		wchar_t text[16] {};
+		std::swprintf(text, 16, L"%d", _value);
 
-		if (isActive()) {
-			int32_t x = bounds.getX2() - padding;
-			const auto yCenter = bounds.getYCenter();
+		renderRightTextWithArrows(
+			renderer,
+			bounds,
+			text,
+			_value > _min,
+			_value < _max
+		);
+	}
 
-			// Right triangle
-			renderer->renderFilledTriangle(
-				Point(x, yCenter),
-				Point(x - triangleWidth, yCenter - triangleHeight / 2),
-				Point(x - triangleWidth, yCenter + triangleHeight / 2),
-				_value < _max ? &Theme::bg1 : &Theme::fg4
-			);
+	int32_t VariantMenuItem::getVariantIndex() const {
+		return _variantIndex;
+	}
 
-			x -= triangleWidth + triangleMargin;
+	void VariantMenuItem::setVariantIndex(const uint8_t value) {
+		_variantIndex = value;
 
-			// Text
-			wchar_t text[16] {};
-			std::swprintf(text, 16, L"%d", _value);
-			const auto textWidth = Theme::fontNormal.getWidth(text);
+		invalidate();
+	}
 
-			renderer->renderString(
-				Point(
-					x - textWidth,
-					yCenter - Theme::fontNormal.getHeight() / 2
-				),
-				&Theme::fontNormal,
-				isActive() ? &Theme::bg1 : &Theme::fg7,
-				text
-			);
+	int32_t VariantMenuItem::getVariantCount() const {
+		return _variantIndex;
+	}
 
-			x -= textWidth + triangleMargin;
+	void VariantMenuItem::setVariantCount(const uint8_t value) {
+		_variantCount = value;
 
-			// Left triangle
-			renderer->renderFilledTriangle(
-				Point(x - triangleWidth, yCenter),
-				Point(x, yCenter - triangleHeight / 2),
-				Point(x, yCenter + triangleHeight / 2),
-				_value > _min ? &Theme::bg1 : &Theme::fg4
-			);
-		}
-		else {
-			renderRightInt(renderer, bounds, _value);
-		}
+		invalidate();
+	}
+
+	void VariantMenuItem::onJoystickEvent(JoystickEvent* event) {
+		MenuItem::onJoystickEvent(event);
+
+		if (event->type != JoystickEventType::left && event->type != JoystickEventType::right)
+			return;
+
+		setVariantIndex(std::clamp(_variantIndex + (event->type == JoystickEventType::right ? 1 : -1), 0, _variantCount - 1));
+
+		Thermaller::getInstance().audioPlayer.play(&resources::sounds::feedback);
+	}
+
+	void VariantMenuItem::onRender(Renderer* renderer, const Bounds& bounds) {
+		MenuItem::onRender(renderer, bounds);
+
+		renderRightTextWithArrows(
+			renderer,
+			bounds,
+			variantToString(),
+			_variantIndex > 0,
+			_variantIndex < _variantCount - 1
+		);
 	}
 
 	void BoolMenuItem::onJoystickEvent(JoystickEvent* event) {

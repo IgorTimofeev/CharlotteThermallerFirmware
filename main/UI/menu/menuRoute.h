@@ -6,6 +6,7 @@ namespace pizda {
 		main,
 		emissivity,
 		palette,
-		range
+		range,
+		sensor,
 	};
 }

@@ -14,6 +14,7 @@
 #include "UI/menu/paletteMenuPage.h"
 #include "UI/menu/rangeMenuPage.h"
 #include "UI/menu/emissivityMenuPage.h"
+#include "UI/menu/sensorMenuPage.h"
 
 #include "thermaller.h"
 
@@ -47,6 +48,10 @@ namespace pizda {
 			}
 			case MenuRoute::range: {
 				setPage(new RangeMenuPage());
+				break;
+			}
+			case MenuRoute::sensor: {
+				setPage(new SensorMenuPage());
 				break;
 			}
 			default: break;

@@ -8,21 +8,14 @@
 #include "menuRoute.h"
 
 namespace pizda {
-	class InterpolationMenuItem : public BoolMenuItem {
-		public:
-			InterpolationMenuItem();
-
-			void onJoystickEvent(JoystickEvent* event) override;
-	};
-
 	class MainMenuPage : public MenuPage {
 		public:
 			MainMenuPage();
 
-			RouteMenuItem paletteItem { L"Color palette", MenuRoute::palette };
+			RouteMenuItem paletteItem { L"Palette", MenuRoute::palette };
 			RouteMenuItem emissivityItem { L"Emissivity", MenuRoute::emissivity};
 			RouteMenuItem rangeItem { L"Temperature range", MenuRoute::range };
-			InterpolationMenuItem interpolationItem {};
+			RouteMenuItem sensorItem { L"Sensor", MenuRoute::sensor };
 			RouteMenuItem exitItem { L"Close", MenuRoute::none };
 	};
 }
