@@ -15,7 +15,7 @@ namespace pizda {
 			void setRoute(const MenuRoute route);
 
 		private:
-			Rectangle _backgroundRectangle {};
+			RectangleShape _backgroundRectangle {};
 
 			MenuRoute _route = MenuRoute::none;
 			MenuPage* _menuPage = nullptr;
