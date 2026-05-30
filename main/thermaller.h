@@ -32,7 +32,7 @@ namespace pizda {
 			}
 
 		protected:
-			void onRender(Renderer* renderer, const Bounds& bounds) override {
+			void onRender(Renderer* renderer, const Rectangle& bounds) override {
 				renderer->renderFilledRectangle(bounds, getFillColor());
 
 				// ESP_LOGI("pozuida", "bounds: %d, %d, %d, %d", bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());

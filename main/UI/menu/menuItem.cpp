@@ -23,7 +23,7 @@ namespace pizda {
 
 	}
 
-	void MenuItem::onRender(Renderer* renderer, const Bounds& bounds) {
+	void MenuItem::onRender(Renderer* renderer, const Rectangle& bounds) {
 		if (isActive())
 			renderer->renderFilledRectangle(bounds, &Theme::fg1);
 
@@ -37,7 +37,7 @@ namespace pizda {
 		);
 	}
 
-	void MenuItem::renderRightText(Renderer* renderer, const Bounds& bounds, const wchar_t* text) const {
+	void MenuItem::renderRightText(Renderer* renderer, const Rectangle& bounds, const wchar_t* text) const {
 		renderer->renderText(
 			Point(
 				bounds.getX2() - padding - Theme::fontNormal.getWidth(text),
@@ -49,7 +49,7 @@ namespace pizda {
 		);
 	}
 
-	void MenuItem::renderRightTextWithArrows(Renderer* renderer, const Bounds& bounds, const wchar_t* text, const bool leftEnabled, const bool rightEnabled) {
+	void MenuItem::renderRightTextWithArrows(Renderer* renderer, const Rectangle& bounds, const wchar_t* text, const bool leftEnabled, const bool rightEnabled) {
 		constexpr static uint8_t triangleWidth = 4;
 		constexpr static uint8_t triangleHeight = 7;
 		constexpr static uint8_t triangleMargin = 8;
@@ -96,7 +96,7 @@ namespace pizda {
 		}
 	}
 
-	void MenuItem::renderRightCircle(Renderer* renderer, const Bounds& bounds, const Color* color) const {
+	void MenuItem::renderRightCircle(Renderer* renderer, const Rectangle& bounds, const Color* color) const {
 		renderer->renderFilledCircle(
 			Point(bounds.getX2() - padding - 3, bounds.getYCenter()),
 			3,
@@ -186,7 +186,7 @@ namespace pizda {
 		Thermaller::getInstance().audioPlayer.play(&resources::sounds::feedback);
 	}
 
-	void IntMenuItem::onRender(Renderer* renderer, const Bounds& bounds) {
+	void IntMenuItem::onRender(Renderer* renderer, const Rectangle& bounds) {
 		MenuItem::onRender(renderer, bounds);
 
 		wchar_t text[16] {};
@@ -232,7 +232,7 @@ namespace pizda {
 		Thermaller::getInstance().audioPlayer.play(&resources::sounds::feedback);
 	}
 
-	void VariantMenuItem::onRender(Renderer* renderer, const Bounds& bounds) {
+	void VariantMenuItem::onRender(Renderer* renderer, const Rectangle& bounds) {
 		MenuItem::onRender(renderer, bounds);
 
 		renderRightTextWithArrows(
@@ -263,7 +263,7 @@ namespace pizda {
 		_value = value;
 	}
 
-	void BoolMenuItem::onRender(Renderer* renderer, const Bounds& bounds) {
+	void BoolMenuItem::onRender(Renderer* renderer, const Rectangle& bounds) {
 		MenuItem::onRender(renderer, bounds);
 
 		if (!_value)

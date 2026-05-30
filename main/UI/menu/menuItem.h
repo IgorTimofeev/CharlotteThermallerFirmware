@@ -21,12 +21,12 @@ namespace pizda {
 			virtual void onJoystickEvent(JoystickEvent* event);
 
 		protected:
-			void onRender(Renderer* renderer, const Bounds& bounds) override;
+			void onRender(Renderer* renderer, const Rectangle& bounds) override;
 
-			void renderRightText(Renderer* renderer, const Bounds& bounds, const wchar_t* text) const;
-			void renderRightTextWithArrows(Renderer* renderer, const Bounds& bounds,
+			void renderRightText(Renderer* renderer, const Rectangle& bounds, const wchar_t* text) const;
+			void renderRightTextWithArrows(Renderer* renderer, const Rectangle& bounds,
 			                              const wchar_t* text, bool leftEnabled, bool rightEnabled);
-			void renderRightCircle(Renderer* renderer, const Bounds& bounds, const Color* color) const;
+			void renderRightCircle(Renderer* renderer, const Rectangle& bounds, const Color* color) const;
 	};
 
 	class RouteMenuItem : public MenuItem {
@@ -61,7 +61,7 @@ namespace pizda {
 			void setValue(const int32_t value);
 
 		protected:
-			void onRender(Renderer* renderer, const Bounds& bounds) override;
+			void onRender(Renderer* renderer, const Rectangle& bounds) override;
 
 		private:
 			int32_t _min = std::numeric_limits<int32_t>::min();
@@ -84,7 +84,7 @@ namespace pizda {
 		protected:
 			virtual const wchar_t* variantToString() = 0;
 
-			void onRender(Renderer* renderer, const Bounds& bounds) override;
+			void onRender(Renderer* renderer, const Rectangle& bounds) override;
 
 		private:
 			uint8_t _variantIndex = 0;
@@ -99,7 +99,7 @@ namespace pizda {
 			void setValue(const bool value);
 
 		protected:
-			void onRender(Renderer* renderer, const Bounds& bounds) override;
+			void onRender(Renderer* renderer, const Rectangle& bounds) override;
 
 		private:
 			bool _value = false;

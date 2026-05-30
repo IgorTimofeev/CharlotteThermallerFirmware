@@ -42,7 +42,7 @@ namespace pizda {
 		event->setHandled(true);
 	}
 
-	void ThermalView::onRender(Renderer* renderer, const Bounds& bounds) {
+	void ThermalView::onRender(Renderer* renderer, const Rectangle& bounds) {
 		auto& th = Thermaller::getInstance();
 
 		// Keeping this shit for later use
@@ -163,7 +163,7 @@ namespace pizda {
 			}
 			// Blazingly 🔥 fast 🚀 as diarrhea, HOLD THIS
 			else {
-				Bounds pBounds { 0, 0, pSize, pSize};
+				Rectangle pBounds { 0, 0, pSize, pSize};
 
 				for (uint8_t tY = 0; tY < MLX90640::frameHeight; ++tY) {
 					pBounds.setX(x2 - pSize - tY * pSize);
@@ -255,7 +255,7 @@ namespace pizda {
 				const float paletteIndexStep = static_cast<float>(palette.size() - 1) / static_cast<float>(histogramWidth - 2);
 
 				renderer->renderFilledRectangle(
-					Bounds(histogramX, histogramY, histogramWidth, histogramHeight),
+					Rectangle(histogramX, histogramY, histogramWidth, histogramHeight),
 					&Theme::bg1
 				);
 
@@ -304,13 +304,13 @@ namespace pizda {
 			{
 				// Tip
 				renderer->renderFilledRectangle(
-					Bounds(batteryX, batteryYCenter - batteryTipHeight / 2, batteryTipWidth, batteryTipHeight),
+					Rectangle(batteryX, batteryYCenter - batteryTipHeight / 2, batteryTipWidth, batteryTipHeight),
 					&Theme::bg1
 				);
 
 				// Body
 				renderer->renderFilledRectangle(
-					Bounds(batteryX + batteryTipWidth, batteryY, batteryWidth - batteryTipWidth, batteryHeight),
+					Rectangle(batteryX + batteryTipWidth, batteryY, batteryWidth - batteryTipWidth, batteryHeight),
 					&Theme::bg1
 				);
 
@@ -332,7 +332,7 @@ namespace pizda {
 				}
 
 				renderer->renderFilledRectangle(
-					Bounds(batteryX + batteryWidth - 1 - batteryChargeWidth, batteryY + 1, batteryChargeWidth, batteryHeight - 1 * 2),
+					Rectangle(batteryX + batteryWidth - 1 - batteryChargeWidth, batteryY + 1, batteryChargeWidth, batteryHeight - 1 * 2),
 					batteryChargeColor
 				);
 			}

@@ -24,7 +24,7 @@ namespace pizda {
 		protected:
 			void onTick() override;
 			void onEvent(Event* event) override;
-			void onRender(Renderer* renderer, const Bounds& bounds) override;
+			void onRender(Renderer* renderer, const Rectangle& bounds) override;
 
 		private:
 			constexpr static auto _font = &Theme::fontSmall;

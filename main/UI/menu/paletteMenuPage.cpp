@@ -23,7 +23,7 @@ namespace pizda {
 		invalidate();
 	}
 
-	void PaletteMenuItem::onRender(Renderer* renderer, const Bounds& bounds) {
+	void PaletteMenuItem::onRender(Renderer* renderer, const Rectangle& bounds) {
 		MenuItem::onRender(renderer, bounds);
 
 		if (Thermaller::getInstance().settings.thermalPalette == _palette) {
