@@ -132,16 +132,19 @@ namespace pizda {
 
 		application += &thermalView;
 
-		rows.setGap(20);
+		rows.setGap(30);
 		application += &rows;
 
 		rows += &eblo1;
 
-		eblo2.setTransform(&transform2);
+		eblo2.setRenderTransform(&transform2);
 		rows += &eblo2;
 
-		eblo3.setTransform(&transform3);
+		eblo3.setRenderTransform(&transform3);
 		rows += &eblo3;
+
+		eblo4.setRenderTransform(&transform4);
+		rows += &eblo4;
 
 		// -------------------------------- Main loop --------------------------------
 

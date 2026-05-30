@@ -22,17 +22,18 @@
 namespace pizda {
 	using namespace YOBA;
 
-	class TestEblo : public Control, public TextElement {
+	class TestEblo : public Control, public FillColorElement, public TextElement {
 		public:
-			TestEblo(const std::wstring_view text) {
+			TestEblo(const Color* color, const std::wstring_view text) {
+				setFillColor(color);
 				setText(text);
-				setSize(Size(80, 40));
+				setSize(Size(80, 32));
 				setHorizontalAlignment(Alignment::center);
 			}
 
 		protected:
 			void onRender(Renderer* renderer, const Bounds& bounds) override {
-				renderer->renderFilledRectangle(bounds, &Theme::red);
+				renderer->renderFilledRectangle(bounds, getFillColor());
 
 				// ESP_LOGI("pozuida", "bounds: %d, %d, %d, %d", bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
 
@@ -108,15 +109,18 @@ namespace pizda {
 			Application application {};
 			ThermalView thermalView {};
 
-			StackLayout rows { 10 };
+			StackLayout rows {};
 
-			TestEblo eblo1 { L"Test 1"};
+			TestEblo eblo1 { &Theme::red, L"Test 1"};
 
-			ScaleTransform transform2 { Vector2F(2, 2), Vector2F( 0, 0 ) };
-			TestEblo eblo2 { L"Test 2"};
+			ScaleTransform transform2 { 2, Vector2F( 0, 0 ) };
+			TestEblo eblo2 { &Theme::green, L"Test 2"};
 
-			ScaleTransform transform3 { Vector2F(2, 2), Vector2F( 0.5f, 0.5f) };
-			TestEblo eblo3 { L"Test 3"};
+			ScaleTransform transform3 { 2, Vector2F( 0.5f, 0.5f) };
+			TestEblo eblo3 { &Theme::orange, L"Test 3"};
+
+			ScaleTransform transform4 { 2, Vector2F( 1, 1) };
+			TestEblo eblo4 { &Theme::orange, L"Test 3"};
 
 			void setRoute(const MenuRoute route);
 
