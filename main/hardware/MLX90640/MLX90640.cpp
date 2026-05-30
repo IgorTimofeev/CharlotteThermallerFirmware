@@ -35,8 +35,8 @@ namespace pizda {
 		MLX90640_ExtractParameters(_ee, &_params);
 
 		MLX90640_SetResolution(_slaveAddress, MLX90640_RESOLUTION_16_BIT);
+		MLX90640_SetChessMode(_slaveAddress);
 
-		setModeFromSettings();
 		setRefreshRateFromSettings();
 	}
 
@@ -73,17 +73,6 @@ namespace pizda {
 		}
 
 		MLX90640_SetRefreshRate(_slaveAddress, refreshRateValue);
-	}
-
-	void MLX90640::setModeFromSettings() {
-		const auto& th = Thermaller::getInstance();
-
-		if (th.settings.chessMode) {
-			MLX90640_SetChessMode(_slaveAddress);
-		}
-		else {
-			MLX90640_SetInterleavedMode(_slaveAddress);
-		}
 	}
 
 	void MLX90640::tick() {

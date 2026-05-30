@@ -25,13 +25,6 @@ namespace pizda {
 			void onJoystickEvent(JoystickEvent* event) override;
 	};
 
-	class ChessModeMenuItem : public BoolMenuItem {
-		public:
-			ChessModeMenuItem();
-
-			void onJoystickEvent(JoystickEvent* event) override;
-	};
-
 	class InterpolationMenuItem : public BoolMenuItem {
 		public:
 			InterpolationMenuItem();
@@ -46,7 +39,6 @@ namespace pizda {
 			RefreshRateMenuItem refreshRateItem {};
 			RouteMenuItem reflectedTemperatureItem { L"Ambient temperature", MenuRoute::sensorReflectedTemperature };
 			TemperatureShiftMenuItem temperatureShiftItem {};
-			ChessModeMenuItem chessModeItem {};
 			InterpolationMenuItem interpolationItem {};
 			RouteMenuItem backItem { L"Back", MenuRoute::main };
 	};

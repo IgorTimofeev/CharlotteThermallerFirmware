@@ -25,7 +25,6 @@ namespace pizda {
 	class Settings : public NVSSettings {
 		public:
 			SettingsRefreshRate refreshRate = SettingsRefreshRate::hz32;
-			bool chessMode = true;
 
 			bool reflectedTemperatureAuto = false;
 			int16_t reflectedTemperatureValue = 0;
@@ -48,7 +47,6 @@ namespace pizda {
 
 			void onRead(const NVSStream& stream) override {
 				refreshRate = stream.readEnum<SettingsRefreshRate>(_refreshRate, SettingsRefreshRate::hz32);
-				chessMode = stream.readBool(_chessMode, true);
 
 				reflectedTemperatureAuto = stream.readBool(_reflectedTemperatureAuto, true);
 				reflectedTemperatureValue = stream.readInt16(_reflectedTemperatureValue, 26);
@@ -67,7 +65,6 @@ namespace pizda {
 
 			void onWrite(const NVSStream& stream) override {
 				stream.writeEnum<SettingsRefreshRate>(_refreshRate, refreshRate);
-				stream.writeBool(_chessMode, chessMode);
 
 				stream.writeBool(_reflectedTemperatureAuto, reflectedTemperatureAuto);
 				stream.writeInt16(_reflectedTemperatureValue, reflectedTemperatureValue);
@@ -86,7 +83,6 @@ namespace pizda {
 
 		private:
 			constexpr static auto _refreshRate = "rr";
-			constexpr static auto _chessMode = "ch";
 
 			constexpr static auto _reflectedTemperatureAuto = "fa";
 			constexpr static auto _reflectedTemperatureValue = "fv";

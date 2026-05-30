@@ -50,7 +50,7 @@ namespace pizda {
 	void MenuPage::onEventBeforeChildren(Event* event) {
 		Selector::onEventBeforeChildren(event);
 
-		const auto joystickEvent = event->castTo<JoystickEvent>();
+		const auto joystickEvent = event->as<JoystickEvent>();
 
 		if (!joystickEvent || getItemCount() == 0)
 			return;

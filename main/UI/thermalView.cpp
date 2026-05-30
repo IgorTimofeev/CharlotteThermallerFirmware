@@ -26,7 +26,7 @@ namespace pizda {
 	void ThermalView::onEvent(Event* event) {
 		Control::onEvent(event);
 
-		const auto joystickEvent = event->castTo<JoystickEvent>();
+		const auto joystickEvent = event->as<JoystickEvent>();
 
 		if (!joystickEvent)
 			return;

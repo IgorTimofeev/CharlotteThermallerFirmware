@@ -72,31 +72,11 @@ namespace pizda {
 		th.settings.scheduleWrite();
 	}
 
-	ChessModeMenuItem::ChessModeMenuItem() {
-		setText(L"Chess mode");
-
-		setValue(Thermaller::getInstance().settings.chessMode);
-	}
-
-	void ChessModeMenuItem::onJoystickEvent(JoystickEvent* event) {
-		BoolMenuItem::onJoystickEvent(event);
-
-		if (event->type != JoystickEventType::press)
-			return;
-
-		auto& th = Thermaller::getInstance();
-		th.settings.chessMode = getValue();
-		th.settings.scheduleWrite();
-
-		th.MLX.setModeFromSettings();
-	}
-
 	SensorMenuPage::SensorMenuPage() : MenuPage(L"Sensor") {
 		addItems({
 			&refreshRateItem,
-			&reflectedTemperatureItem,
 			&temperatureShiftItem,
-			&chessModeItem,
+			&reflectedTemperatureItem,
 			&interpolationItem,
 			&backItem
 		});
