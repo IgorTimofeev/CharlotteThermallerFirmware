@@ -135,16 +135,11 @@ namespace pizda {
 		rows.setGap(30);
 		application += &rows;
 
+		eblo1.setRenderTransform(&transform1);
 		rows += &eblo1;
 
 		eblo2.setRenderTransform(&transform2);
 		rows += &eblo2;
-
-		eblo3.setRenderTransform(&transform3);
-		rows += &eblo3;
-
-		eblo4.setRenderTransform(&transform4);
-		rows += &eblo4;
 
 		// -------------------------------- Main loop --------------------------------
 
@@ -172,7 +167,7 @@ namespace pizda {
 				_menuAnimation.setTarget(_menu);
 				_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
 				_menuAnimation.setTo({ application.getSize().getWidth(), 0 });
-				_menuAnimation.setDuration(150'0000);
+				_menuAnimation.setDuration(150'000);
 
 				_menuAnimation.setOnStateChanged([this](const AnimationState state) {
 					if (state != AnimationState::completed)
@@ -186,6 +181,23 @@ namespace pizda {
 				});
 
 				_menuAnimation.start();
+
+				// Eblo
+				ebloAnimation1.stop();
+				ebloAnimation1.setTarget(&eblo1);
+				ebloAnimation1.setTransform(&transform1);
+				ebloAnimation1.setFrom({1});
+				ebloAnimation1.setTo({2});
+				ebloAnimation1.setDuration(1'000'000);
+				ebloAnimation1.start();
+
+				ebloAnimation2.stop();
+				ebloAnimation2.setTarget(&eblo2);
+				ebloAnimation2.setTransform(&transform2);
+				ebloAnimation2.setFrom(2);
+				ebloAnimation2.setTo(1);
+				ebloAnimation2.setDuration(1'000'000);
+				ebloAnimation2.start();
 			}
 		}
 		else {
@@ -201,9 +213,26 @@ namespace pizda {
 			_menuAnimation.setTarget(_menu);
 			_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
 			_menuAnimation.setTo({ application.getSize().getWidth(), Size::computed });
-			_menuAnimation.setDuration(150'0000);
+			_menuAnimation.setDuration(150'000);
 			_menuAnimation.setOnStateChanged(nullptr);
 			_menuAnimation.start();
+
+			// Eblo
+			ebloAnimation1.stop();
+			ebloAnimation1.setTarget(&eblo1);
+			ebloAnimation1.setTransform(&transform1);
+			ebloAnimation1.setFrom({2});
+			ebloAnimation1.setTo({1});
+			ebloAnimation1.setDuration(1'000'000);
+			ebloAnimation1.start();
+
+			ebloAnimation2.stop();
+			ebloAnimation2.setTarget(&eblo2);
+			ebloAnimation2.setTransform(&transform2);
+			ebloAnimation2.setFrom({1});
+			ebloAnimation2.setTo({2});
+			ebloAnimation2.setDuration(1'000'000);
+			ebloAnimation2.start();
 		}
 	}
 

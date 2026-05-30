@@ -111,16 +111,14 @@ namespace pizda {
 
 			StackLayout rows {};
 
-			TestEblo eblo1 { &Theme::red, L"Test 1"};
+			ScaleTransform transform1 { Vector2F(1), Vector2F(0.0f) };
+			TestEblo eblo1 { &Theme::red, L"Dolbej"};
 
-			ScaleTransform transform2 { 2, Vector2F( 0, 0 ) };
-			TestEblo eblo2 { &Theme::green, L"Test 2"};
+			ScaleTransform transform2 { Vector2F(1), Vector2F(0.5f) };
+			TestEblo eblo2 { &Theme::green, L"Razyob"};
 
-			ScaleTransform transform3 { 2, Vector2F( 0.5f, 0.5f) };
-			TestEblo eblo3 { &Theme::orange, L"Test 3"};
-
-			ScaleTransform transform4 { 2, Vector2F( 1, 1) };
-			TestEblo eblo4 { &Theme::orange, L"Test 3"};
+			ScaleTransformAnimation ebloAnimation1 {};
+			ScaleTransformAnimation ebloAnimation2 {};
 
 			void setRoute(const MenuRoute route);
 
