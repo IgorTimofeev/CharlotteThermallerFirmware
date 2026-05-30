@@ -168,6 +168,7 @@ namespace pizda {
 		if (route == MenuRoute::none) {
 			if (_menu) {
 				// Animation
+				_menuAnimation.stop();
 				_menuAnimation.setTarget(_menu);
 				_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
 				_menuAnimation.setTo({ application.getSize().getWidth(), 0 });
@@ -196,6 +197,7 @@ namespace pizda {
 			_menu->setRoute(route);
 
 			// Animation
+			_menuAnimation.stop();
 			_menuAnimation.setTarget(_menu);
 			_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
 			_menuAnimation.setTo({ application.getSize().getWidth(), Size::computed });
