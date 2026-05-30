@@ -169,9 +169,22 @@ namespace pizda {
 
 		if (_route == MenuRoute::none) {
 			if (_menu) {
-				application -= _menu;
-				delete _menu;
-				_menu = nullptr;
+				auto animateFrom = _menu->getLayoutBounds().getHeight();
+				auto animateTo = 0;
+
+				_menuAnimation.setDuration(150'000);
+
+				_menuAnimation.setFrameHandler([animateTo, this, animateFrom](const float position) {
+					_menu->setHeight(animateFrom + static_cast<uint16_t>(static_cast<float>(animateTo - animateFrom) * position));
+
+					if (position >= 1) {
+						application -= _menu;
+						delete _menu;
+						_menu = nullptr;
+					}
+				});
+
+				application.startAnimation(&_menuAnimation);
 			}
 		}
 		else {
@@ -181,6 +194,27 @@ namespace pizda {
 			}
 
 			_menu->setRoute(_route);
+
+			// Animation
+			auto animateFrom = _menu->getLayoutBounds().getHeight();
+
+			_menu->measure(application.getSize());
+			auto animateTo = _menu->getMeasuredSize().getHeight();
+
+			ESP_LOGI("anim", "measured size: %d", animateTo);
+
+			_menuAnimation.setDuration(150'000);
+
+			_menuAnimation.setFrameHandler([animateTo, this, animateFrom](const float position) {
+				if (position < 1) {
+					_menu->setHeight(animateFrom + static_cast<uint16_t>(static_cast<float>(animateTo - animateFrom) * position));
+				}
+				else {
+					_menu->setHeight(Size::computed);
+				}
+			});
+
+			application.startAnimation(&_menuAnimation);
 		}
 	}
 

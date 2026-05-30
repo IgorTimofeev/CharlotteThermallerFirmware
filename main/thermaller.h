@@ -137,6 +137,8 @@ namespace pizda {
 			Thermaller() = default;
 
 			Menu* _menu = nullptr;
+			Animation _menuAnimation {};
+
 			MenuRoute _route = MenuRoute::none;
 
 			int64_t _batteryTickTime = 0;
