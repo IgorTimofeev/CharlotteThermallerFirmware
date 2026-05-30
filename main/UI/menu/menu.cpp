@@ -31,6 +31,11 @@ namespace pizda {
 		// Item layout
 	}
 
+	Menu::~Menu() {
+		if (_menuPage)
+			delete _menuPage;
+	}
+
 	void Menu::setRoute(const MenuRoute route) {
 		_route = route;
 

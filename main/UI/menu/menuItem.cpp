@@ -29,7 +29,7 @@ namespace pizda {
 
 		const auto textColor = isActive() ? &Theme::bg1 : getTextColor();
 
-		renderer->renderString(
+		renderer->renderText(
 			Point(bounds.getX() + padding, bounds.getYCenter() - Theme::fontNormal.getHeight() / 2),
 			&Theme::fontNormal,
 			textColor,
@@ -38,7 +38,7 @@ namespace pizda {
 	}
 
 	void MenuItem::renderRightText(Renderer* renderer, const Bounds& bounds, const wchar_t* text) const {
-		renderer->renderString(
+		renderer->renderText(
 			Point(
 				bounds.getX2() - padding - Theme::fontNormal.getWidth(text),
 				bounds.getYCenter() - Theme::fontNormal.getHeight() / 2
@@ -71,7 +71,7 @@ namespace pizda {
 			// Text
 			const auto textWidth = Theme::fontNormal.getWidth(text);
 
-			renderer->renderString(
+			renderer->renderText(
 				Point(
 					x - textWidth,
 					yCenter - Theme::fontNormal.getHeight() / 2

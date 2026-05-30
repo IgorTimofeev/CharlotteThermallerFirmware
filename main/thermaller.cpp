@@ -31,12 +31,6 @@ namespace pizda {
 
 		// First, let's render a splash screen while we wait for the peripherals to finish warming up
 
-		// // Multicore
-		// {
-		// 	_SPIMutex = xSemaphoreCreateMutex();
-		// 	system::SPI::setMutex(_SPIMutex);
-		// }
-
 		// I2C
 		{
 			i2c_master_bus_config_t bus {};
@@ -137,6 +131,17 @@ namespace pizda {
 		application.setBackgroundColor(&Theme::bg1);
 
 		application += &thermalView;
+
+		rows.setGap(20);
+		application += &rows;
+
+		rows += &eblo1;
+
+		eblo2.setTransform(&transform2);
+		rows += &eblo2;
+
+		eblo3.setTransform(&transform3);
+		rows += &eblo3;
 
 		// -------------------------------- Main loop --------------------------------
 

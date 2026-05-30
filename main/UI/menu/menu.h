@@ -10,6 +10,7 @@ namespace pizda {
 	class Menu : public Layout {
 		public:
 			Menu();
+			~Menu() override;
 
 			void setRoute(const MenuRoute route);
 

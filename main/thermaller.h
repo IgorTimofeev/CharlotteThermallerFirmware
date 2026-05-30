@@ -22,6 +22,32 @@
 namespace pizda {
 	using namespace YOBA;
 
+	class TestEblo : public Control, public TextElement {
+		public:
+			TestEblo(const std::wstring_view text) {
+				setText(text);
+				setSize(Size(80, 40));
+				setHorizontalAlignment(Alignment::center);
+			}
+
+		protected:
+			void onRender(Renderer* renderer, const Bounds& bounds) override {
+				renderer->renderFilledRectangle(bounds, &Theme::red);
+
+				// ESP_LOGI("pozuida", "bounds: %d, %d, %d, %d", bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+
+				renderer->renderText(
+					bounds.getCenter() - Vector2I(Theme::fontNormal.getWidth(getText()), Theme::fontNormal.getHeight()) / 2,
+					&Theme::fontNormal,
+					&Theme::bg1,
+					getText()
+				);
+			}
+
+		private:
+
+	};
+
 	class Thermaller {
 		public:
 			static Thermaller& getInstance();
@@ -44,7 +70,7 @@ namespace pizda {
 				ViewportRotation::clockwise0
 			};
 
-			RGB565PixelBufferRenderer renderer { };
+			RGB565PixelBufferRenderer renderer {};
 
 			// Thermal sensor
 			MLX90640 MLX {};
@@ -81,6 +107,16 @@ namespace pizda {
 
 			Application application {};
 			ThermalView thermalView {};
+
+			StackLayout rows { 10 };
+
+			TestEblo eblo1 { L"Test 1"};
+
+			ScaleTransform transform2 { Vector2F(2, 2), Vector2F( 0, 0 ) };
+			TestEblo eblo2 { L"Test 2"};
+
+			ScaleTransform transform3 { Vector2F(2, 2), Vector2F( 0.5f, 0.5f) };
+			TestEblo eblo3 { L"Test 3"};
 
 			void setRoute(const MenuRoute route);
 

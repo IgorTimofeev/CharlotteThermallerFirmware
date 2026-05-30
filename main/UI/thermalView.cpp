@@ -340,7 +340,7 @@ namespace pizda {
 	}
 
 	void ThermalView::renderShadowedText(Renderer* renderer, const Point& position, const std::wstring_view text) {
-		renderer->renderString(
+		renderer->renderText(
 			position + Point(_shadowOffset, _shadowOffset),
 			_font,
 			&Theme::bg1,
@@ -348,7 +348,7 @@ namespace pizda {
 			_fontScale
 		);
 
-		renderer->renderString(
+		renderer->renderText(
 			position,
 			_font,
 			&Theme::fg1,
