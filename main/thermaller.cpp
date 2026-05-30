@@ -132,15 +132,6 @@ namespace pizda {
 
 		application += &thermalView;
 
-		rows.setGap(30);
-		application += &rows;
-
-		eblo1.setRenderTransform(&transform1);
-		rows += &eblo1;
-
-		eblo2.setRenderTransform(&transform2);
-		rows += &eblo2;
-
 		// -------------------------------- Main loop --------------------------------
 
 		audioPlayer.play(&resources::sounds::boot);
@@ -163,7 +154,6 @@ namespace pizda {
 		if (route == MenuRoute::none) {
 			if (_menu) {
 				// Animation
-				_menuAnimation.stop();
 				_menuAnimation.setTarget(_menu);
 				_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
 				_menuAnimation.setTo({ application.getSize().getWidth(), 0 });
@@ -180,24 +170,8 @@ namespace pizda {
 					});
 				});
 
+				_menuAnimation.stop();
 				_menuAnimation.start();
-
-				// Eblo
-				ebloAnimation1.stop();
-				ebloAnimation1.setTarget(&eblo1);
-				ebloAnimation1.setTransform(&transform1);
-				ebloAnimation1.setFrom({1});
-				ebloAnimation1.setTo({2});
-				ebloAnimation1.setDuration(1'000'000);
-				ebloAnimation1.start();
-
-				ebloAnimation2.stop();
-				ebloAnimation2.setTarget(&eblo2);
-				ebloAnimation2.setTransform(&transform2);
-				ebloAnimation2.setFrom(2);
-				ebloAnimation2.setTo(1);
-				ebloAnimation2.setDuration(1'000'000);
-				ebloAnimation2.start();
 			}
 		}
 		else {
@@ -209,30 +183,13 @@ namespace pizda {
 			_menu->setRoute(route);
 
 			// Animation
-			_menuAnimation.stop();
 			_menuAnimation.setTarget(_menu);
 			_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
 			_menuAnimation.setTo({ application.getSize().getWidth(), Size::computed });
 			_menuAnimation.setDuration(150'000);
 			_menuAnimation.setOnStateChanged(nullptr);
+			_menuAnimation.stop();
 			_menuAnimation.start();
-
-			// Eblo
-			ebloAnimation1.stop();
-			ebloAnimation1.setTarget(&eblo1);
-			ebloAnimation1.setTransform(&transform1);
-			ebloAnimation1.setFrom({2});
-			ebloAnimation1.setTo({1});
-			ebloAnimation1.setDuration(1'000'000);
-			ebloAnimation1.start();
-
-			ebloAnimation2.stop();
-			ebloAnimation2.setTarget(&eblo2);
-			ebloAnimation2.setTransform(&transform2);
-			ebloAnimation2.setFrom({1});
-			ebloAnimation2.setTo({2});
-			ebloAnimation2.setDuration(1'000'000);
-			ebloAnimation2.start();
 		}
 	}
 

@@ -22,33 +22,6 @@
 namespace pizda {
 	using namespace YOBA;
 
-	class TestEblo : public Control, public FillColorElement, public TextElement {
-		public:
-			TestEblo(const Color* color, const std::wstring_view text) {
-				setFillColor(color);
-				setText(text);
-				setSize(Size(80, 32));
-				setHorizontalAlignment(Alignment::center);
-			}
-
-		protected:
-			void onRender(Renderer* renderer, const Rectangle& bounds) override {
-				renderer->renderFilledRectangle(bounds, getFillColor());
-
-				// ESP_LOGI("pozuida", "bounds: %d, %d, %d, %d", bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-
-				renderer->renderText(
-					bounds.getCenter() - Vector2I(Theme::fontNormal.getWidth(getText()), Theme::fontNormal.getHeight()) / 2,
-					&Theme::fontNormal,
-					&Theme::bg1,
-					getText()
-				);
-			}
-
-		private:
-
-	};
-
 	class Thermaller {
 		public:
 			static Thermaller& getInstance();
@@ -108,17 +81,6 @@ namespace pizda {
 
 			Application application {};
 			ThermalView thermalView {};
-
-			StackLayout rows {};
-
-			ScaleTransform transform1 { Vector2F(1), Vector2F(0.0f) };
-			TestEblo eblo1 { &Theme::red, L"Dolbej"};
-
-			ScaleTransform transform2 { Vector2F(1), Vector2F(0.5f) };
-			TestEblo eblo2 { &Theme::green, L"Razyob"};
-
-			ScaleTransformAnimation ebloAnimation1 {};
-			ScaleTransformAnimation ebloAnimation2 {};
 
 			void setRoute(const MenuRoute route);
 
