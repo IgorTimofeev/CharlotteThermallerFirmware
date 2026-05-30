@@ -165,26 +165,26 @@ namespace pizda {
 	}
 
 	void Thermaller::setRoute(const MenuRoute route) {
-		_route = route;
-
-		if (_route == MenuRoute::none) {
+		if (route == MenuRoute::none) {
 			if (_menu) {
-				auto animateFrom = _menu->getLayoutBounds().getHeight();
-				auto animateTo = 0;
+				// Animation
+				_menuAnimation.setTarget(_menu);
+				_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
+				_menuAnimation.setTo({ application.getSize().getWidth(), 0 });
+				_menuAnimation.setDuration(150'0000);
 
-				_menuAnimation.setDuration(150'000);
+				_menuAnimation.setOnStateChanged([this](const AnimationState state) {
+					if (state != AnimationState::completed)
+						return;
 
-				_menuAnimation.setFrameHandler([animateTo, this, animateFrom](const float position) {
-					_menu->setHeight(animateFrom + static_cast<uint16_t>(static_cast<float>(animateTo - animateFrom) * position));
-
-					if (position >= 1) {
+					application.invokeLater([this] {
 						application -= _menu;
 						delete _menu;
 						_menu = nullptr;
-					}
+					});
 				});
 
-				application.startAnimation(&_menuAnimation);
+				_menuAnimation.start();
 			}
 		}
 		else {
@@ -193,28 +193,15 @@ namespace pizda {
 				application += _menu;
 			}
 
-			_menu->setRoute(_route);
+			_menu->setRoute(route);
 
 			// Animation
-			auto animateFrom = _menu->getLayoutBounds().getHeight();
-
-			_menu->measure(application.getSize());
-			auto animateTo = _menu->getMeasuredSize().getHeight();
-
-			ESP_LOGI("anim", "measured size: %d", animateTo);
-
-			_menuAnimation.setDuration(150'000);
-
-			_menuAnimation.setFrameHandler([animateTo, this, animateFrom](const float position) {
-				if (position < 1) {
-					_menu->setHeight(animateFrom + static_cast<uint16_t>(static_cast<float>(animateTo - animateFrom) * position));
-				}
-				else {
-					_menu->setHeight(Size::computed);
-				}
-			});
-
-			application.startAnimation(&_menuAnimation);
+			_menuAnimation.setTarget(_menu);
+			_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
+			_menuAnimation.setTo({ application.getSize().getWidth(), Size::computed });
+			_menuAnimation.setDuration(150'0000);
+			_menuAnimation.setOnStateChanged(nullptr);
+			_menuAnimation.start();
 		}
 	}
 
