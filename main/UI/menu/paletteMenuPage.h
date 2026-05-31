@@ -29,7 +29,6 @@ namespace pizda {
 
 			PaletteMenuItem huntingItem { L"Hunting", ThermalPalette::hunting };
 			PaletteMenuItem ironbowItem { L"Ironbow", ThermalPalette::ironbow };
-			PaletteMenuItem rainbowItem { L"Rainbow", ThermalPalette::rainbow };
 			PaletteMenuItem arcticItem { L"Arctic", ThermalPalette::arctic };
 			PaletteMenuItem blackHotItem { L"Black hot", ThermalPalette::whiteHot };
 			PaletteMenuItem whiteHotItem { L"White hot", ThermalPalette::blackHot };

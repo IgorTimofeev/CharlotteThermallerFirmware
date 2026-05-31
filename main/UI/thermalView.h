@@ -11,7 +11,6 @@ namespace pizda {
 	enum class ThermalPalette : uint8_t {
 		hunting,
 		ironbow,
-		rainbow,
 		arctic,
 		whiteHot,
 		blackHot

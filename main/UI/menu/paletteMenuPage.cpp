@@ -35,7 +35,6 @@ namespace pizda {
 		addItems({
 			&huntingItem,
 			&ironbowItem,
-			&rainbowItem,
 			&arcticItem,
 			&whiteHotItem,
 			&blackHotItem,

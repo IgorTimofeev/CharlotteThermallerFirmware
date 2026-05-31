@@ -21,7 +21,7 @@
 
 namespace pizda {
 	Menu::Menu() {
-		setMaxHeight(215);
+		// setMaxHeight(215);
 		setVerticalAlignment(Alignment::end);
 
 		// Background

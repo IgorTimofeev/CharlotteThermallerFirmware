@@ -14,25 +14,26 @@
 namespace pizda {
 	MenuPage::MenuPage(const std::wstring_view title) {
 		// Rows
-		*this += &_titleAndScrollViewerLayout;
+		*this += &_titleAndItemLayout;
 
 		// Title
 		_title.setMargin(Margin(MenuItem::padding, MenuItem::padding, 0, 10));
 		_title.setFont(&Theme::fontNormal);
 		_title.setTextColor(&Theme::fg1);
 		_title.setText(title);
-		_titleAndScrollViewerLayout.setAutoSize(&_title);
-		_titleAndScrollViewerLayout += &_title;
+		_titleAndItemLayout.setAutoSize(&_title);
+		_titleAndItemLayout += &_title;
 
 		// ScrollView
-		_scrollView.setMargin(Margin(0, 0, 0, 8));
-		_scrollView.setScrollBarThumbColor(&Theme::bg4);
-		_scrollView.setHorizontalScrollMode(ScrollMode::disabled);
-		_titleAndScrollViewerLayout += &_scrollView;
+		// _scrollView.setMargin(Margin(0, 0, 0, 8));
+		// _scrollView.setScrollBarThumbColor(&Theme::bg4);
+		// _scrollView.setHorizontalScrollMode(ScrollMode::disabled);
+		// _titleAndItemLayout += &_scrollView;
 
 		// Item rows
 		_itemRows.setGap(4);
-		_scrollView += &_itemRows;
+		// _scrollView += &_itemRows;
+		_titleAndItemLayout += &_itemRows;
 
 		// Selector
 		setItemsLayout(&_itemRows);
@@ -76,9 +77,9 @@ namespace pizda {
 		const auto selectedItem = dynamic_cast<MenuItem*>(getItemAt(getSelectedIndex()));
 		selectedItem->onJoystickEvent(joystickEvent);
 
-		if (joystickEvent->type == JoystickEventType::up || joystickEvent->type == JoystickEventType::down) {
-			_scrollView.scrollTo(selectedItem);
-		}
+		// if (joystickEvent->type == JoystickEventType::up || joystickEvent->type == JoystickEventType::down) {
+		// 	_scrollView.scrollTo(selectedItem);
+		// }
 
 		joystickEvent->setHandled(true);
 	}

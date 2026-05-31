@@ -14,8 +14,8 @@ namespace pizda {
 			void onEventBeforeChildren(Event* event) override;
 
 		private:
-			ScrollView _scrollView {};
-			RelativeStackLayout _titleAndScrollViewerLayout {};
+			// ScrollView _scrollView {};
+			RelativeStackLayout _titleAndItemLayout {};
 			TextView _title {};
 			StackLayout _itemRows {};
 	};

@@ -101,7 +101,6 @@ namespace pizda {
 		switch (th.settings.thermalPalette) {
 			case ThermalPalette::hunting: palette = Theme::thermalPaletteHunting; break;
 			case ThermalPalette::ironbow: palette =Theme::thermalPaletteIronbow; break;
-			case ThermalPalette::rainbow: palette = Theme::thermalPaletteRainbow; break;
 			case ThermalPalette::arctic: palette = Theme::thermalPaletteArctic ; break;
 			case ThermalPalette::whiteHot: palette = Theme::thermalPaletteWhiteHot; break;
 			case ThermalPalette::blackHot: palette = Theme::thermalPaletteBlackHot; break;
@@ -315,9 +314,9 @@ namespace pizda {
 				);
 
 				// Charge
-				const auto batteryCharge = th.battery.getCharge();
-				const uint16_t batteryChargePercent = static_cast<uint16_t>(batteryCharge) * 100 / 0xFF;
-				const int32_t batteryChargeWidth = divideRounding<int32_t>(batteryCharge * batteryMaxChargeWidth, 0xFF);
+				const auto batteryCharge = th.battery.getCharge16();
+				const uint16_t batteryChargePercent = static_cast<uint16_t>(batteryCharge) * 100 / 0xFFFF;
+				const int32_t batteryChargeWidth = divideRounding<int32_t>(batteryCharge * batteryMaxChargeWidth, 0xFFFF);
 
 				const Color* batteryChargeColor;
 
