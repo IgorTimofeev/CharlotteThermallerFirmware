@@ -155,6 +155,8 @@ namespace pizda {
 			if (_menu) {
 				// Animation
 				_menuAnimation.setTarget(_menu);
+				_menuAnimation.stop();
+
 				_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
 				_menuAnimation.setTo({ application.getSize().getWidth(), 0 });
 				_menuAnimation.setDuration(150'000);
@@ -163,14 +165,11 @@ namespace pizda {
 					if (state != AnimationState::completed)
 						return;
 
-					application.invokeLater([this] {
-						application -= _menu;
-						delete _menu;
-						_menu = nullptr;
-					});
+					application -= _menu;
+					delete _menu;
+					_menu = nullptr;
 				});
 
-				_menuAnimation.stop();
 				_menuAnimation.start();
 			}
 		}
@@ -184,11 +183,13 @@ namespace pizda {
 
 			// Animation
 			_menuAnimation.setTarget(_menu);
+			_menuAnimation.stop();
+
 			_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
 			_menuAnimation.setTo({ application.getSize().getWidth(), Size::computed });
 			_menuAnimation.setDuration(150'000);
 			_menuAnimation.setOnStateChanged(nullptr);
-			_menuAnimation.stop();
+
 			_menuAnimation.start();
 		}
 	}
