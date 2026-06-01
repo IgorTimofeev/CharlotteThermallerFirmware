@@ -28,6 +28,6 @@ namespace pizda {
 
 			AutoReflectedTemperatureSensorMenuItem autoItem {};
 			ValueReflectedTemperatureSensorMenuItem valueItem {};
-			RouteMenuItem backItem { L"Back", MenuRoute::sensor };
+			RouteMenuItem backItem { "Back", MenuRoute::sensor };
 	};
 }

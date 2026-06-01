@@ -3,7 +3,7 @@
 #include "thermaller.h"
 
 namespace pizda {
-	MainMenuPage::MainMenuPage() : MenuPage(L"Settings") {
+	MainMenuPage::MainMenuPage() : MenuPage("Settings") {
 		addItems({
 			&paletteItem,
 			&emissivityItem,

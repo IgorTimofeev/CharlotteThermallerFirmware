@@ -3,7 +3,7 @@
 #include "thermaller.h"
 
 namespace pizda {
-	PaletteMenuItem::PaletteMenuItem(const std::wstring_view text, const ThermalPalette palette) : _palette(palette) {
+	PaletteMenuItem::PaletteMenuItem(const std::string_view text, const ThermalPalette palette) : _palette(palette) {
 		setText(text);
 	}
 
@@ -31,7 +31,7 @@ namespace pizda {
 		}
 	}
 
-	PaletteMenuPage::PaletteMenuPage() : MenuPage(L"Palette") {
+	PaletteMenuPage::PaletteMenuPage() : MenuPage("Palette") {
 		addItems({
 			&huntingItem,
 			&ironbowItem,

@@ -12,10 +12,10 @@ namespace pizda {
 		public:
 			MainMenuPage();
 
-			RouteMenuItem paletteItem { L"Palette", MenuRoute::palette };
-			RouteMenuItem emissivityItem { L"Emissivity", MenuRoute::emissivity};
-			RouteMenuItem rangeItem { L"Histogram", MenuRoute::histogram };
-			RouteMenuItem sensorItem { L"Sensor", MenuRoute::sensor };
-			RouteMenuItem exitItem { L"Close", MenuRoute::none };
+			RouteMenuItem paletteItem { "Palette", MenuRoute::palette };
+			RouteMenuItem emissivityItem { "Emissivity", MenuRoute::emissivity};
+			RouteMenuItem rangeItem { "Histogram", MenuRoute::histogram };
+			RouteMenuItem sensorItem { "Sensor", MenuRoute::sensor };
+			RouteMenuItem exitItem { "Close", MenuRoute::none };
 	};
 }

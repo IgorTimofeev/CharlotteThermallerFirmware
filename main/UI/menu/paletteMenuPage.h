@@ -10,7 +10,7 @@
 namespace pizda {
 	class PaletteMenuItem : public MenuItem {
 		public:
-			PaletteMenuItem(const std::wstring_view text, const ThermalPalette palette);
+			PaletteMenuItem(const std::string_view text, const ThermalPalette palette);
 
 			ThermalPalette getRoute() const;
 
@@ -27,10 +27,10 @@ namespace pizda {
 		public:
 			PaletteMenuPage();
 
-			PaletteMenuItem huntingItem { L"Hunting", ThermalPalette::hunting };
-			PaletteMenuItem ironbowItem { L"Ironbow", ThermalPalette::ironbow };
-			PaletteMenuItem arcticItem { L"Arctic", ThermalPalette::arctic };
-			PaletteMenuItem blackHotItem { L"Black hot", ThermalPalette::whiteHot };
-			PaletteMenuItem whiteHotItem { L"White hot", ThermalPalette::blackHot };
-			RouteMenuItem backItem { L"Back", MenuRoute::main };
+			PaletteMenuItem huntingItem { "Hunting", ThermalPalette::hunting };
+			PaletteMenuItem ironbowItem { "Ironbow", ThermalPalette::ironbow };
+			PaletteMenuItem arcticItem { "Arctic", ThermalPalette::arctic };
+			PaletteMenuItem blackHotItem { "Black hot", ThermalPalette::whiteHot };
+			PaletteMenuItem whiteHotItem { "White hot", ThermalPalette::blackHot };
+			RouteMenuItem backItem { "Back", MenuRoute::main };
 	};}

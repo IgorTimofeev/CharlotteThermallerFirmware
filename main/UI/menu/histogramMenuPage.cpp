@@ -4,7 +4,7 @@
 
 namespace pizda {
 	AutoHistogramMenuItem::AutoHistogramMenuItem() {
-		setText(L"Automatic");
+		setText("Automatic");
 		setValue(Thermaller::getInstance().settings.rangeAuto);
 	}
 
@@ -27,7 +27,7 @@ namespace pizda {
 	}
 
 	MinHistogramMenuItem::MinHistogramMenuItem() {
-		setText(L"Minimum");
+		setText("Minimum");
 		setValue(Thermaller::getInstance().settings.rangeMin);
 	}
 
@@ -43,7 +43,7 @@ namespace pizda {
 	}
 
 	MaxHistogramMenuItem::MaxHistogramMenuItem() {
-		setText(L"Maximum");
+		setText("Maximum");
 		setValue(Thermaller::getInstance().settings.rangeMax);
 	}
 
@@ -58,7 +58,7 @@ namespace pizda {
 		th.settings.scheduleWrite();
 	}
 
-	HistogramMenuPage::HistogramMenuPage() : MenuPage(L"Histogram") {
+	HistogramMenuPage::HistogramMenuPage() : MenuPage("Histogram") {
 		addItems({
 			&autoItem,
 			&minItem,

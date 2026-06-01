@@ -41,6 +41,6 @@ namespace pizda {
 			AutoHistogramMenuItem autoItem {};
 			MinHistogramMenuItem minItem {};
 			MaxHistogramMenuItem maxItem {};
-			RouteMenuItem backItem { L"Back", MenuRoute::main };
+			RouteMenuItem backItem { "Back", MenuRoute::main };
 	};
 }

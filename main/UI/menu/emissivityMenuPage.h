@@ -17,7 +17,7 @@ namespace pizda {
 
 	class EmissivityPresetMenuItem : public MenuItem {
 		public:
-			EmissivityPresetMenuItem(const std::wstring_view title, const uint8_t emissivity);
+			EmissivityPresetMenuItem(const std::string_view title, const uint8_t emissivity);
 
 			void onJoystickEvent(JoystickEvent* event) override;
 
@@ -33,10 +33,10 @@ namespace pizda {
 			EmissivityMenuPage();
 
 			EmissivityMenuItem manualItem {};
-			EmissivityPresetMenuItem matteItem { L"Matte", 95 };
-			EmissivityPresetMenuItem semiGlossItem { L"Semi-gloss", 80 };
-			EmissivityPresetMenuItem glossyItem { L"Semi-reflective", 45 };
-			EmissivityPresetMenuItem reflectiveItem { L"Reflective", 10 };
-			RouteMenuItem backItem { L"Back", MenuRoute::main };
+			EmissivityPresetMenuItem matteItem { "Matte", 95 };
+			EmissivityPresetMenuItem semiGlossItem { "Semi-gloss", 80 };
+			EmissivityPresetMenuItem glossyItem { "Semi-reflective", 45 };
+			EmissivityPresetMenuItem reflectiveItem { "Reflective", 10 };
+			RouteMenuItem backItem { "Back", MenuRoute::main };
 	};
 }

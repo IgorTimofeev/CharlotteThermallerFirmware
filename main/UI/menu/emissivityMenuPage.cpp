@@ -6,7 +6,7 @@
 
 namespace pizda {
 	EmissivityMenuItem::EmissivityMenuItem() {
-		setText(L"Value");
+		setText("Value");
 		setMin(0);
 		setMax(100);
 		setSmallStep(1);
@@ -25,7 +25,7 @@ namespace pizda {
 		th.settings.scheduleWrite();
 	}
 
-	EmissivityPresetMenuItem::EmissivityPresetMenuItem(const std::wstring_view title, const uint8_t emissivity): _emissivity(emissivity) {
+	EmissivityPresetMenuItem::EmissivityPresetMenuItem(const std::string_view title, const uint8_t emissivity): _emissivity(emissivity) {
 		setText(title);
 	}
 
@@ -52,7 +52,7 @@ namespace pizda {
 			renderRightCircle(renderer, bounds, &Theme::green);
 	}
 
-	EmissivityMenuPage::EmissivityMenuPage() : MenuPage(L"Emissivity") {
+	EmissivityMenuPage::EmissivityMenuPage() : MenuPage("Emissivity") {
 		addItems({
 			&manualItem,
 			&matteItem,

@@ -7,7 +7,7 @@
 namespace pizda {
 	class MenuPage : public Selector {
 		public:
-			MenuPage(const std::wstring_view title);
+			MenuPage(const std::string_view title);
 			void addItems(const std::initializer_list<MenuItem*>& items);
 
 		protected:

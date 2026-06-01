@@ -5,7 +5,7 @@
 
 namespace pizda {
 	InterpolationMenuItem::InterpolationMenuItem() {
-		setText(L"Interpolation");
+		setText("Interpolation");
 		setValue(Thermaller::getInstance().settings.interpolation);
 	}
 
@@ -21,7 +21,7 @@ namespace pizda {
 	}
 
 	RefreshRateMenuItem::RefreshRateMenuItem() {
-		setText(L"Refresh rate");
+		setText("Refresh rate");
 		setVariantCount(static_cast<uint8_t>(SettingsRefreshRate::maxValue) + 1);
 		setVariantIndex(static_cast<uint8_t>(Thermaller::getInstance().settings.refreshRate));
 	}
@@ -39,21 +39,21 @@ namespace pizda {
 		th.MLX.setRefreshRateFromSettings();
 	}
 
-	const wchar_t* RefreshRateMenuItem::variantToString() {
+	const char* RefreshRateMenuItem::variantToString() {
 		switch (static_cast<SettingsRefreshRate>(getVariantIndex())) {
-			case SettingsRefreshRate::hz0_5: return L"0.5 Hz";
-			case SettingsRefreshRate::hz1: return L"1 Hz";
-			case SettingsRefreshRate::hz2: return L"2 Hz";
-			case SettingsRefreshRate::hz4: return L"4 Hz";
-			case SettingsRefreshRate::hz8: return L"8 Hz";
-			case SettingsRefreshRate::hz16: return L"16 Hz";
-			case SettingsRefreshRate::hz32: return L"32 Hz";
-			default: return L"64 Hz";
+			case SettingsRefreshRate::hz0_5: return "0.5 Hz";
+			case SettingsRefreshRate::hz1: return "1 Hz";
+			case SettingsRefreshRate::hz2: return "2 Hz";
+			case SettingsRefreshRate::hz4: return "4 Hz";
+			case SettingsRefreshRate::hz8: return "8 Hz";
+			case SettingsRefreshRate::hz16: return "16 Hz";
+			case SettingsRefreshRate::hz32: return "32 Hz";
+			default: return "64 Hz";
 		}
 	}
 
 	TemperatureShiftMenuItem::TemperatureShiftMenuItem() {
-		setText(L"Temperature shift");
+		setText("Temperature shift");
 		setMin(-100);
 		setMax(100);
 		setSmallStep(1);
@@ -72,7 +72,7 @@ namespace pizda {
 		th.settings.scheduleWrite();
 	}
 
-	SensorMenuPage::SensorMenuPage() : MenuPage(L"Sensor") {
+	SensorMenuPage::SensorMenuPage() : MenuPage("Sensor") {
 		addItems({
 			&refreshRateItem,
 			&temperatureShiftItem,

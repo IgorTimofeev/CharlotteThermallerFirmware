@@ -32,6 +32,6 @@ namespace pizda {
 
 			float _tCross = 0;
 
-			static void renderShadowedText(Renderer* renderer, const Point& position, std::wstring_view text);
+			static void renderShadowedText(Renderer* renderer, const Point& position, std::string_view text);
 	};
 }

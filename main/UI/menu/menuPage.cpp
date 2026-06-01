@@ -12,7 +12,7 @@
 #include "thermaller.h"
 
 namespace pizda {
-	MenuPage::MenuPage(const std::wstring_view title) {
+	MenuPage::MenuPage(const std::string_view title) {
 		// Rows
 		*this += &_titleAndItemLayout;
 

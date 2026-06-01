@@ -2,6 +2,8 @@
 
 #include <span>
 #include <functional>
+#include <inttypes.h>
+
 #include <resources/sounds.h>
 
 #include <YOBA/main.h>
@@ -37,7 +39,7 @@ namespace pizda {
 		);
 	}
 
-	void MenuItem::renderRightText(Renderer* renderer, const Rectangle& bounds, const wchar_t* text) const {
+	void MenuItem::renderRightText(Renderer* renderer, const Rectangle& bounds, const char* text) const {
 		renderer->renderText(
 			Point(
 				bounds.getX2() - padding - Theme::fontNormal.getWidth(text),
@@ -49,7 +51,7 @@ namespace pizda {
 		);
 	}
 
-	void MenuItem::renderRightTextWithArrows(Renderer* renderer, const Rectangle& bounds, const wchar_t* text, const bool leftEnabled, const bool rightEnabled) {
+	void MenuItem::renderRightTextWithArrows(Renderer* renderer, const Rectangle& bounds, const char* text, const bool leftEnabled, const bool rightEnabled) {
 		constexpr static uint8_t triangleWidth = 4;
 		constexpr static uint8_t triangleHeight = 7;
 		constexpr static uint8_t triangleMargin = 8;
@@ -104,7 +106,7 @@ namespace pizda {
 		);
 	}
 
-	RouteMenuItem::RouteMenuItem(const std::wstring_view text, const MenuRoute route) : _route(route) {
+	RouteMenuItem::RouteMenuItem(const std::string_view text, const MenuRoute route) : _route(route) {
 		setText(text);
 	}
 
@@ -189,8 +191,8 @@ namespace pizda {
 	void IntMenuItem::onRender(Renderer* renderer, const Rectangle& bounds) {
 		MenuItem::onRender(renderer, bounds);
 
-		wchar_t text[16] {};
-		std::swprintf(text, 16, L"%d", _value);
+		char text[16] {};
+		std::snprintf(text, 16, "%" PRId32, _value);
 
 		renderRightTextWithArrows(
 			renderer,

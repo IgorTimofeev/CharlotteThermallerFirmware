@@ -4,7 +4,7 @@
 
 namespace pizda {
 	AutoReflectedTemperatureSensorMenuItem::AutoReflectedTemperatureSensorMenuItem() {
-		setText(L"Automatic");
+		setText("Automatic");
 		setValue(Thermaller::getInstance().settings.reflectedTemperatureAuto);
 	}
 
@@ -25,7 +25,7 @@ namespace pizda {
 		setSmallStep(1);
 		setBigStep(10);
 
-		setText(L"Exact value");
+		setText("Exact value");
 		setValue(Thermaller::getInstance().settings.reflectedTemperatureValue);
 	}
 
@@ -40,7 +40,7 @@ namespace pizda {
 		th.settings.scheduleWrite();
 	}
 
-	ReflectedTemperatureSensorMenuPage::ReflectedTemperatureSensorMenuPage() : MenuPage(L"Ambient temperature") {
+	ReflectedTemperatureSensorMenuPage::ReflectedTemperatureSensorMenuPage() : MenuPage("Ambient temperature") {
 		addItems({
 			&autoItem,
 			&valueItem,

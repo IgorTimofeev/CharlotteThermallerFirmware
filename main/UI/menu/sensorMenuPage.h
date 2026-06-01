@@ -15,7 +15,7 @@ namespace pizda {
 			void onJoystickEvent(JoystickEvent* event) override;
 
 		protected:
-			const wchar_t* variantToString() override;
+			const char* variantToString() override;
 	};
 
 	class TemperatureShiftMenuItem : public IntMenuItem {
@@ -37,9 +37,9 @@ namespace pizda {
 			SensorMenuPage();
 
 			RefreshRateMenuItem refreshRateItem {};
-			RouteMenuItem reflectedTemperatureItem { L"Ambient temperature", MenuRoute::sensorReflectedTemperature };
+			RouteMenuItem reflectedTemperatureItem { "Ambient temperature", MenuRoute::sensorReflectedTemperature };
 			TemperatureShiftMenuItem temperatureShiftItem {};
 			InterpolationMenuItem interpolationItem {};
-			RouteMenuItem backItem { L"Back", MenuRoute::main };
+			RouteMenuItem backItem { "Back", MenuRoute::main };
 	};
 }

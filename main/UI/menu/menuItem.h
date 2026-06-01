@@ -23,15 +23,14 @@ namespace pizda {
 		protected:
 			void onRender(Renderer* renderer, const Rectangle& bounds) override;
 
-			void renderRightText(Renderer* renderer, const Rectangle& bounds, const wchar_t* text) const;
-			void renderRightTextWithArrows(Renderer* renderer, const Rectangle& bounds,
-			                              const wchar_t* text, bool leftEnabled, bool rightEnabled);
+			void renderRightText(Renderer* renderer, const Rectangle& bounds, const char* text) const;
+			void renderRightTextWithArrows(Renderer* renderer, const Rectangle& bounds, const char* text, bool leftEnabled, bool rightEnabled);
 			void renderRightCircle(Renderer* renderer, const Rectangle& bounds, const Color* color) const;
 	};
 
 	class RouteMenuItem : public MenuItem {
 		public:
-			RouteMenuItem(const std::wstring_view text, const MenuRoute route);
+			RouteMenuItem(const std::string_view text, const MenuRoute route);
 
 			MenuRoute getRoute() const;
 
@@ -82,7 +81,7 @@ namespace pizda {
 			void setVariantCount(const uint8_t value);
 
 		protected:
-			virtual const wchar_t* variantToString() = 0;
+			virtual const char* variantToString() = 0;
 
 			void onRender(Renderer* renderer, const Rectangle& bounds) override;
 

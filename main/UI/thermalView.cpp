@@ -213,8 +213,8 @@ namespace pizda {
 				_tCross = tCross;
 
 			constexpr static uint8_t textLength = 8;
-			wchar_t text[textLength];
-			std::swprintf(text, textLength, L"%.1f", _tCross);
+			char text[textLength];
+			std::snprintf(text, textLength, "%.1f", _tCross);
 
 			renderShadowedText(
 				renderer,
@@ -270,12 +270,12 @@ namespace pizda {
 
 				// Texts
 				constexpr static uint8_t textLength = 8;
-				wchar_t text[textLength];
+				char text[textLength];
 
 				const auto textY = histogramY - histogramTextMargin - _font->getHeight(_fontScale);
 
 				// Left
-				std::swprintf(text, textLength, L"%.1f", hMin);
+				std::snprintf(text, textLength, "%.1f", hMin);
 
 				renderShadowedText(
 					renderer,
@@ -287,7 +287,7 @@ namespace pizda {
 				);
 
 				// Right
-				std::swprintf(text, textLength, L"%.1f", hMax);
+				std::snprintf(text, textLength, "%.1f", hMax);
 
 				renderShadowedText(
 					renderer,
@@ -338,7 +338,7 @@ namespace pizda {
 		}
 	}
 
-	void ThermalView::renderShadowedText(Renderer* renderer, const Point& position, const std::wstring_view text) {
+	void ThermalView::renderShadowedText(Renderer* renderer, const Point& position, const std::string_view text) {
 		renderer->renderText(
 			position + Point(_shadowOffset, _shadowOffset),
 			_font,
