@@ -8,7 +8,7 @@
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-#include <lowPassFilter.h>
+#include <EMAFilter.h>
 #include <resources/sounds.h>
 
 #include "hardware/MLX90640/MLX90640.h"

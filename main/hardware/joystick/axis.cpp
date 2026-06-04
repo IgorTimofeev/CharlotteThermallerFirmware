@@ -5,7 +5,7 @@
 #include <esp_log.h>
 #include <esp_timer.h>
 
-#include <lowPassFilter.h>
+#include <EMAFilter.h>
 
 namespace pizda {
 	using namespace YOBA;
@@ -46,7 +46,7 @@ namespace pizda {
 		// Applying LPF
 		constexpr static uint16_t LPFFactor = std::numeric_limits<uint16_t>::max() * 20 / 100;
 
-		_value = LowPassFilter::apply(_value, value, LPFFactor);
+		_value = EMAFilter::apply(_value, value, LPFFactor);
 	}
 
 	uint16_t Axis::getValue() const {
