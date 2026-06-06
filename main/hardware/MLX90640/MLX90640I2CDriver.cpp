@@ -36,7 +36,7 @@ int MLX90640_I2CRead(uint8_t slaveAddr, uint16_t startAddress, uint16_t nMemAddr
         2,
         buffer,
         nMemAddressRead * 2,
-        500
+        1500
     );
 
     ESP_ERROR_CHECK(state);

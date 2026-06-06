@@ -34,5 +34,7 @@ namespace pizda {
     		constexpr static uint8_t _TA_SHIFT = 8;
 	        uint16_t _frameData[834] {};
 	        paramsMLX90640 _params {};
-	    };
+
+    		void printEEPROMData();
+    };
 }

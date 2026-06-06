@@ -16,7 +16,7 @@ namespace pizda {
 
 		auto& th = Thermaller::getInstance();
 		th.settings.rangeAuto = getValue();
-		th.settings.scheduleWrite();
+		th.settings.writeLater();
 	}
 
 	HistogramMenuItem::HistogramMenuItem() {
@@ -39,7 +39,7 @@ namespace pizda {
 
 		auto& th = Thermaller::getInstance();
 		th.settings.rangeMin = std::min<int32_t>(getValue(), th.settings.rangeMax);
-		th.settings.scheduleWrite();
+		th.settings.writeLater();
 	}
 
 	MaxHistogramMenuItem::MaxHistogramMenuItem() {
@@ -55,7 +55,7 @@ namespace pizda {
 
 		auto& th = Thermaller::getInstance();
 		th.settings.rangeMax = std::max<int32_t>(getValue(), th.settings.rangeMin);
-		th.settings.scheduleWrite();
+		th.settings.writeLater();
 	}
 
 	HistogramMenuPage::HistogramMenuPage() : MenuPage("Histogram") {

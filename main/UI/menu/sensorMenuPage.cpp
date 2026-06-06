@@ -17,7 +17,7 @@ namespace pizda {
 
 		auto& th = Thermaller::getInstance();
 		th.settings.interpolation = getValue();
-		th.settings.scheduleWrite();
+		th.settings.writeLater();
 	}
 
 	RefreshRateMenuItem::RefreshRateMenuItem() {
@@ -34,7 +34,7 @@ namespace pizda {
 
 		auto& th = Thermaller::getInstance();
 		th.settings.refreshRate = static_cast<SettingsRefreshRate>(getVariantIndex());
-		th.settings.scheduleWrite();
+		th.settings.writeLater();
 
 		th.MLX.setRefreshRateFromSettings();
 	}
@@ -69,7 +69,7 @@ namespace pizda {
 
 		auto& th = Thermaller::getInstance();
 		th.settings.temperatureShift = getValue();
-		th.settings.scheduleWrite();
+		th.settings.writeLater();
 	}
 
 	SensorMenuPage::SensorMenuPage() : MenuPage("Sensor") {

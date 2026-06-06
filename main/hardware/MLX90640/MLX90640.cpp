@@ -18,6 +18,11 @@ namespace pizda {
 		frameMutex = xSemaphoreCreateMutex();
 
 		MLX90640_I2CInit(I2CMasterBusHandle, _slaveAddress, 800'000);
+		// vTaskDelay(pdMS_TO_TICKS(1000));
+
+		// MLX90640_I2CGeneralReset();
+		// vTaskDelay(pdMS_TO_TICKS(1000));
+
 
 		// // Should be 0x1901 at 0x240c
 		// // See https://www.sekorm.com/news/93963947.html
@@ -30,9 +35,16 @@ namespace pizda {
 		// MLX90640_I2CWrite(_slaveAddress, 0x240c, 0x1901);
 		// vTaskDelay(pdMS_TO_TICKS(1000));
 
-		uint16_t _ee[832] {};
-		MLX90640_DumpEE(_slaveAddress, _ee);
-		MLX90640_ExtractParameters(_ee, &_params);
+		// printEEPROMData();
+
+		if constexpr (config::MLX::useDumpedEEPROMData) {
+			MLX90640_ExtractParameters(const_cast<uint16_t*>(config::MLX::dumpedEEPROMData), &_params);
+		}
+		else {
+			uint16_t _ee[832] {};
+			MLX90640_DumpEE(_slaveAddress, _ee);
+			MLX90640_ExtractParameters(_ee, &_params);
+		}
 
 		MLX90640_SetResolution(_slaveAddress, MLX90640_RESOLUTION_16_BIT);
 		MLX90640_SetChessMode(_slaveAddress);
@@ -107,5 +119,33 @@ namespace pizda {
 		xSemaphoreGive(frameMutex);
 
 		// ESP_LOGI(_logTag, "766 = %f, 767 = %f", frame[766], frame[767]);
+	}
+
+	void MLX90640::printEEPROMData() {
+		uint16_t _ee[832] {};
+		MLX90640_DumpEE(_slaveAddress, _ee);
+
+		ESP_LOGI(_logTag, "EEPROM dump started");
+
+		printf("\n");
+
+		// --
+		// --
+		// --
+
+		for (size_t i = 0; i < 832; ++i) {
+			printf("0x%04X, ", _ee[i]);
+
+			if ((i + 1) % 16 == 0)
+				printf("\n");
+		}
+
+		printf("\n\n");
+
+		ESP_LOGI(_logTag, "EEPROM dump finished");
+
+		while (true) {
+			vTaskDelay(pdMS_TO_TICKS(1'000));
+		}
 	}
 }

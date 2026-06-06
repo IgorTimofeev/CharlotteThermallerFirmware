@@ -18,7 +18,7 @@ namespace pizda {
 		auto& th = Thermaller::getInstance();
 
 		th.settings.thermalPalette = _palette;
-		th.settings.scheduleWrite();
+		th.settings.writeLater();
 
 		invalidate();
 	}

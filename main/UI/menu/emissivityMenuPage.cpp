@@ -22,7 +22,7 @@ namespace pizda {
 
 		auto& th = Thermaller::getInstance();
 		th.settings.emissivityPercent = getValue();
-		th.settings.scheduleWrite();
+		th.settings.writeLater();
 	}
 
 	EmissivityPresetMenuItem::EmissivityPresetMenuItem(const std::string_view title, const uint8_t emissivity): _emissivity(emissivity) {
@@ -35,7 +35,7 @@ namespace pizda {
 
 		auto& th = Thermaller::getInstance();
 		th.settings.emissivityPercent = _emissivity;
-		th.settings.scheduleWrite();
+		th.settings.writeLater();
 
 		const auto menuPage = dynamic_cast<EmissivityMenuPage*>(getSelector());
 		menuPage->manualItem.setValue(th.settings.emissivityPercent);

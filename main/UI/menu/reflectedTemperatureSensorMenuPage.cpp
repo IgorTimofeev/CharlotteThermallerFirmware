@@ -16,7 +16,7 @@ namespace pizda {
 
 		auto& th = Thermaller::getInstance();
 		th.settings.reflectedTemperatureAuto = getValue();
-		th.settings.scheduleWrite();
+		th.settings.writeLater();
 	}
 
 	ValueReflectedTemperatureSensorMenuItem::ValueReflectedTemperatureSensorMenuItem() {
@@ -37,7 +37,7 @@ namespace pizda {
 
 		auto& th = Thermaller::getInstance();
 		th.settings.reflectedTemperatureValue = getValue();
-		th.settings.scheduleWrite();
+		th.settings.writeLater();
 	}
 
 	ReflectedTemperatureSensorMenuPage::ReflectedTemperatureSensorMenuPage() : MenuPage("Ambient temperature") {
