@@ -9,7 +9,7 @@
 namespace pizda {
 	using namespace YOBA;
 
-	enum class SettingsRefreshRate : uint8_t {
+	enum class SettingsSampleRate : uint8_t {
 		hz0_5,
 		hz1,
 		hz2,
@@ -24,13 +24,12 @@ namespace pizda {
 
 	class Settings : public NVSSettings {
 		public:
-			SettingsRefreshRate refreshRate = SettingsRefreshRate::hz32;
+			SettingsSampleRate sampleRate = SettingsSampleRate::hz32;
 
 			bool reflectedTemperatureAuto = false;
 			int16_t reflectedTemperatureValue = 0;
 
 			uint8_t emissivityPercent = 0;
-			int8_t temperatureShift = 0;
 
 			ThermalPalette thermalPalette = ThermalPalette::hunting;
 
@@ -46,13 +45,12 @@ namespace pizda {
 			}
 
 			void onRead(const NVSStream& stream) override {
-				refreshRate = stream.readEnum<SettingsRefreshRate>(_refreshRate, SettingsRefreshRate::hz32);
+				sampleRate = stream.readEnum<SettingsSampleRate>(_sampleRate, SettingsSampleRate::hz32);
 
 				reflectedTemperatureAuto = stream.readBool(_reflectedTemperatureAuto, true);
 				reflectedTemperatureValue = stream.readInt16(_reflectedTemperatureValue, 26);
 
 				emissivityPercent = stream.readUint8(_emissivityPercent, 95);
-				temperatureShift = stream.readInt8(_temperatureShift, 0);
 
 				thermalPalette = stream.readEnum<ThermalPalette>(_thermalPalette, ThermalPalette::hunting);
 
@@ -64,14 +62,13 @@ namespace pizda {
 			}
 
 			void onWrite(const NVSStream& stream) override {
-				stream.writeEnum<SettingsRefreshRate>(_refreshRate, refreshRate);
+				stream.writeEnum<SettingsSampleRate>(_sampleRate, sampleRate);
 
 				stream.writeBool(_reflectedTemperatureAuto, reflectedTemperatureAuto);
 				stream.writeInt16(_reflectedTemperatureValue, reflectedTemperatureValue);
 
 				stream.writeUint8(_emissivityPercent, emissivityPercent);
 
-				stream.writeInt8(_temperatureShift, temperatureShift);
 				stream.writeEnum<ThermalPalette>(_thermalPalette, thermalPalette);
 
 				stream.writeBool(_rangeAuto, rangeAuto);
@@ -82,7 +79,7 @@ namespace pizda {
 			}
 
 		private:
-			constexpr static auto _refreshRate = "rr";
+			constexpr static auto _sampleRate = "sr";
 
 			constexpr static auto _reflectedTemperatureAuto = "fa";
 			constexpr static auto _reflectedTemperatureValue = "fv";

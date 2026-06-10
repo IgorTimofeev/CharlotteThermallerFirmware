@@ -8,9 +8,9 @@
 #include "menuRoute.h"
 
 namespace pizda {
-	class RefreshRateMenuItem : public VariantMenuItem {
+	class SampleRateMenuItem : public VariantMenuItem {
 		public:
-			RefreshRateMenuItem();
+			SampleRateMenuItem();
 
 			void onJoystickEvent(JoystickEvent* event) override;
 
@@ -18,12 +18,6 @@ namespace pizda {
 			const char* variantToString() override;
 	};
 
-	class TemperatureShiftMenuItem : public IntMenuItem {
-		public:
-			TemperatureShiftMenuItem();
-
-			void onJoystickEvent(JoystickEvent* event) override;
-	};
 
 	class InterpolationMenuItem : public BoolMenuItem {
 		public:
@@ -36,9 +30,8 @@ namespace pizda {
 		public:
 			SensorMenuPage();
 
-			RefreshRateMenuItem refreshRateItem {};
+			SampleRateMenuItem sampleRateItem {};
 			RouteMenuItem reflectedTemperatureItem { "Ambient temperature", MenuRoute::sensorReflectedTemperature };
-			TemperatureShiftMenuItem temperatureShiftItem {};
 			InterpolationMenuItem interpolationItem {};
 			RouteMenuItem backItem { "Back", MenuRoute::main };
 	};

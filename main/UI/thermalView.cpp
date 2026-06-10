@@ -51,49 +51,70 @@ namespace pizda {
 		const auto center = bounds.getCenter();
 
 		// Fetching latest MLX frame. Since rendering might take a while, it would be nice to copy it
-		std::array<float, th.MLX.frame.size()> frame {};
-
-		xSemaphoreTake(th.MLX.frameMutex, portMAX_DELAY);
-		std::ranges::copy(th.MLX.frame, frame.begin());
-		xSemaphoreGive(th.MLX.frameMutex);
+		std::array<int16_t, th.MLX.frame.size()> frame {};
 
 		// Fetching histogram data
-		float hMin = 0;
-		float hMax = 0;
-		float hAvg = 0;
+		int16_t histogramMin = 0;
+		int16_t histogramMax = 0;
+		int32_t histogramAvg = 0;
 
 		{
-			float tMin = 99999;
-			float tMax = -99999;
+			int16_t minTemp = std::numeric_limits<int16_t>::max();
+			int16_t maxTemp = std::numeric_limits<int16_t>::min();
+
+			// Copying measured temperatures
+			xSemaphoreTake(th.MLX.frameMutex, portMAX_DELAY);
 
 			for (uint16_t i = 0; i < frame.size(); ++i) {
-				if (std::isnan(frame[i]))
-					continue;
+				const auto sourceTemp = th.MLX.frame[i];
 
-				frame[i] += th.settings.temperatureShift;
+				// NaN values is a common problem with MLX modules - it usually means that current pixel is broken
+				// We will mark such pixels as shitty ones and replace with average values later
+				if (std::isnan(sourceTemp)) {
+					frame[i] = std::numeric_limits<int16_t>::min();
+				}
+				else {
+					// Copying source float temperature and converting it to integer value with factor of 10
+					// So 36.6 deg Celsius will become 366 deca... Celsius? Whatever
+					auto frameTemp = static_cast<int16_t>(sourceTemp * 10.f);
 
-				tMin = std::min(tMin, frame[i]);
-				tMax = std::max(tMax, frame[i]);
-				hAvg += frame[i];
+					frame[i] = frameTemp;
+
+					// Computing min / max / avg temperatures
+					if (frameTemp < minTemp)
+						minTemp = frameTemp;
+
+					if (frameTemp > maxTemp)
+						maxTemp = frameTemp;
+
+					histogramAvg += frameTemp;
+				}
 			}
 
-			hAvg /= frame.size();
+			xSemaphoreGive(th.MLX.frameMutex);
 
+			// Computing average temperature
+			histogramAvg /= frame.size();
+
+			// Replacing all shitty pixels with computed average value
+			for (uint16_t i = 0; i < frame.size(); ++i) {
+				if (frame[i] == std::numeric_limits<int16_t>::min()) {
+					frame[i] = histogramAvg;
+				}
+			}
+
+			// Applying histogram range based on settings
 			if (th.settings.rangeAuto) {
-				hMin = tMin;
-				hMax = tMax;
+				histogramMin = minTemp;
+				histogramMax = maxTemp;
 			}
 			else {
-				hMin = th.settings.rangeMin;
-				hMax = th.settings.rangeMax;
+				histogramMin = th.settings.rangeMin;
+				histogramMax = th.settings.rangeMax;
 			}
 		}
 
-		const float hMinMaxDelta = std::max<float>(hMax - hMin, 1);
-
-		const auto getFrameTemperature = [&frame](const uint8_t x, const uint8_t y) -> float {
-			return frame[y * MLX90640::frameWidth + x];
-		};
+		const int16_t hMaxMinDelta = histogramMax - histogramMin;
 
 		// Determining which palette to use
 		std::span<const RGB565Color> palette;
@@ -108,69 +129,105 @@ namespace pizda {
 
 		// Rendering frame
 		{
-			const uint16_t pSize = bounds.getWidth() / MLX90640::frameHeight;
+			constexpr static uint16_t framePixelSize = 10;
 
-			const auto getTemperatureColor = [hMinMaxDelta, hAvg, hMin, hMax, palette](float t) -> const RGB565Color* {
-				if (std::isnan(t))
-					return &Theme::bg1;
+			const auto getTemperatureColor = [hMaxMinDelta, histogramMin, histogramMax, palette](int16_t t) -> const RGB565Color* {
+				t = std::clamp(t, histogramMin, histogramMax);
 
-				t = std::clamp(std::isnan(t) ? hAvg : t, hMin, hMax);
+				auto paletteIndex = static_cast<uint16_t>((t - histogramMin) * palette.size() / hMaxMinDelta);
 
-				const auto ratio = (t - hMin) / hMinMaxDelta;
-				auto index = static_cast<uint16_t>(std::round(static_cast<float>(palette.size()) * ratio));
+				if (paletteIndex >= palette.size())
+					paletteIndex = palette.size() - 1;
 
-				if (index >= palette.size())
-					index = palette.size() - 1;
-
-				return &palette[index];
+				return &palette[paletteIndex];
 			};
 
 			// Interpolation is SOOO FREAKING SLOW, even with direct pixel buffer access
 			// Totally not recommended, -nan/10 experience
 			if (th.settings.interpolation) {
-				for (uint8_t tY = 0; tY < MLX90640::frameHeight; ++tY) {
-					const int32_t pX = x2 - tY * pSize;
+				// Pre-calculated LUT with rounded weights for interpolation using factor of 256
+				// Later values will be shifted using >> 8 for FAST AS FUCK rendering
+				//
+				// Since we have 10 screen pixels in frame pixel, we should use something like
+				// float ratio = subPixelX / 10.f;
+				//
+				// But we can replace this shit with LUT of weights and use integers for faster rendering
+				// The final interpolated temperature values will be shifted using >> 8 to get rid of 256
+				static const uint16_t weightsP[framePixelSize] = { 0, 26, 51, 77, 102, 128, 154, 179, 205, 230 }; // ratio * 256
+				static const uint16_t weightsN[framePixelSize] = { 256, 230, 205, 179, 154, 128, 102, 77, 51, 26 }; // (1 - ratio) * 256
 
-					for (uint8_t tX = 0; tX < MLX90640::frameWidth; ++tX) {
-						const int32_t pY = y2 - tX * pSize;
+				// Copying entire frame to get rid of range checks in loop
+				int16_t interpolationFrame[MLX90640::frameHeight + 1][MLX90640::frameWidth + 1];
 
-						const uint8_t tX1 = std::min<uint8_t>(tX + 1, MLX90640::frameWidth - 1);
-						const uint8_t tY1 = std::min<uint8_t>(tY + 1, MLX90640::frameHeight - 1);
+				for (uint8_t y = 0; y < MLX90640::frameHeight; ++y) {
+				    for (uint8_t x = 0; x < MLX90640::frameWidth; ++x) {
+				        interpolationFrame[y][x] = frame[y * MLX90640::frameWidth + x];
+				    }
 
-						const float t11 = getFrameTemperature(tX, tY);
-						const float t12 = getFrameTemperature(tX, tY1);
-						const float t21 = getFrameTemperature(tX1, tY);
-						const float t22 = getFrameTemperature(tX1, tY1);
+				    // Duplicating last column
+				    interpolationFrame[y][MLX90640::frameWidth] = interpolationFrame[y][MLX90640::frameWidth - 1];
+				}
 
-						for (uint8_t tIY = 0; tIY < pSize; ++tIY) {
-							const float tIRatioX = static_cast<float>(tIY) / static_cast<float>(pSize);
+				// Duplicating last row
+				for (uint8_t x = 0; x <= MLX90640::frameWidth; ++x) {
+				    interpolationFrame[MLX90640::frameHeight][x] = interpolationFrame[MLX90640::frameHeight - 1][x];
+				}
 
-							for (uint8_t tIX = 0; tIX < pSize; ++tIX) {
-								const float tIRatioY = static_cast<float>(tIX) / static_cast<float>(pSize);
+				// Interpolation itself
+				for (uint8_t frameY = 0; frameY < MLX90640::frameHeight; ++frameY) {
+					const int32_t screenX11 = x2 - frameY * framePixelSize;
 
-								const float tIValue =
-									(1 - tIRatioX) * (1 - tIRatioY) * t11
-									+ tIRatioX * (1 - tIRatioY) * t21
-									+ (1 - tIRatioX) * tIRatioY * t12
-									+ tIRatioX * tIRatioY * t22;
+				    for (uint8_t subPixelY = 0; subPixelY < framePixelSize; ++subPixelY) {
+				    	// Taking weights for current row
+				        const auto weightYN = weightsN[subPixelY];
+				        const auto weightYP = weightsP[subPixelY];
 
-								renderer->renderPixel(Point(pX - tIX, pY - tIY), getTemperatureColor(tIValue));
-							}
-						}
-					}
+				        for (uint8_t frameX = 0; frameX < MLX90640::frameWidth; ++frameX) {
+				        	const int32_t screenY11 = y2 - frameX * framePixelSize;
+
+				        	// Taking 4 adjacent points
+				            const int32_t t11 = interpolationFrame[frameY][frameX];
+				            const int32_t t21 = interpolationFrame[frameY][frameX + 1];
+				            const int32_t t12 = interpolationFrame[frameY + 1][frameX];
+				            const int32_t t22 = interpolationFrame[frameY + 1][frameX + 1];
+
+							// const float tIValue =
+							//       (1 - tIRatioX) * (1 - tIRatioY) * t11
+							//       + tIRatioX * (1 - tIRatioY) * t21
+							//       + (1 - tIRatioX) * tIRatioY * t12
+							//       + tIRatioX * tIRatioY * t22;
+
+				        	// Pre-calculating vertical values for this pair of columns
+				        	// Shifting >> 8 removes factor of 256 from weights LUT
+				        	const int32_t col1 = (t11 * weightYN + t12 * weightYP) >> 8;
+				        	const int32_t col2 = (t21 * weightYN + t22 * weightYP) >> 8;
+
+				            for (uint8_t subPixelX = 0; subPixelX < framePixelSize; ++subPixelX) {
+				            	const int32_t interpolatedTemperature = (col1 * weightsN[subPixelX] + col2 * weightsP[subPixelX]) >> 8;
+
+				            	renderer->renderPixel(
+				            		Point(screenX11 - subPixelY, screenY11 - subPixelX),
+				            		getTemperatureColor(interpolatedTemperature)
+				            	);
+				            }
+				        }
+				    }
 				}
 			}
 			// Blazingly 🔥 fast 🚀 as diarrhea, HOLD THIS
 			else {
-				Rectangle pBounds { 0, 0, pSize, pSize};
+				Rectangle pBounds { 0, 0, framePixelSize, framePixelSize};
 
-				for (uint8_t tY = 0; tY < MLX90640::frameHeight; ++tY) {
-					pBounds.setX(x2 - pSize - tY * pSize);
+				for (uint8_t frameY = 0; frameY < MLX90640::frameHeight; ++frameY) {
+					pBounds.setX(x2 - framePixelSize - frameY * framePixelSize);
 
-					for (uint8_t tX = 0; tX < MLX90640::frameWidth; ++tX) {
-						pBounds.setY(y2 - pSize - tX * pSize);
+					for (uint8_t frameX = 0; frameX < MLX90640::frameWidth; ++frameX) {
+						pBounds.setY(y2 - framePixelSize - frameX * framePixelSize);
 
-						renderer->renderFilledRectangle(pBounds, getTemperatureColor(getFrameTemperature(tX, tY)));
+						renderer->renderFilledRectangle(
+							pBounds,
+							getTemperatureColor(frame[frameY * MLX90640::frameWidth + frameX])
+						);
 					}
 				}
 			}
@@ -207,14 +264,16 @@ namespace pizda {
 			renderCross(center, &Theme::fg1);
 
 			// Text
-			const float tCross = getFrameTemperature(MLX90640::frameWidth / 2, MLX90640::frameHeight / 2);
-
-			if (!std::isnan(tCross))
-				_tCross = tCross;
-
 			constexpr static uint8_t textLength = 8;
 			char text[textLength];
-			std::snprintf(text, textLength, "%.1f", _tCross);
+
+			std::snprintf(
+				text,
+				textLength,
+				"%.1f",
+				static_cast<float>(frame[MLX90640::frameHeight / 2 * MLX90640::frameWidth + MLX90640::frameWidth / 2])
+					/ 10.f
+			);
 
 			renderShadowedText(
 				renderer,
@@ -275,7 +334,7 @@ namespace pizda {
 				const auto textY = histogramY - histogramTextMargin - _font->getHeight(_fontScale);
 
 				// Left
-				std::snprintf(text, textLength, "%.1f", hMin);
+				std::snprintf(text, textLength, "%.1f", static_cast<float>(histogramMin / 10.f));
 
 				renderShadowedText(
 					renderer,
@@ -287,7 +346,7 @@ namespace pizda {
 				);
 
 				// Right
-				std::snprintf(text, textLength, "%.1f", hMax);
+				std::snprintf(text, textLength, "%.1f", static_cast<float>(histogramMax / 10.f));
 
 				renderShadowedText(
 					renderer,

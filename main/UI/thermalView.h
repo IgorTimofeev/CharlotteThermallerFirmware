@@ -30,8 +30,6 @@ namespace pizda {
 			constexpr static uint8_t _fontScale = 2;
 			constexpr static uint8_t _shadowOffset = 1;
 
-			float _tCross = 0;
-
 			static void renderShadowedText(Renderer* renderer, const Point& position, std::string_view text);
 	};
 }

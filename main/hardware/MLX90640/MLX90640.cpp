@@ -57,26 +57,26 @@ namespace pizda {
 
 		uint8_t refreshRateValue;
 
-		switch (th.settings.refreshRate) {
-			case SettingsRefreshRate::hz0_5:
+		switch (th.settings.sampleRate) {
+			case SettingsSampleRate::hz0_5:
 				refreshRateValue = MLX90640_REFRESH_RATE_0_5_HZ;
 				break;
-			case SettingsRefreshRate::hz1:
+			case SettingsSampleRate::hz1:
 				refreshRateValue = MLX90640_REFRESH_RATE_1_HZ;
 				break;
-			case SettingsRefreshRate::hz2:
+			case SettingsSampleRate::hz2:
 				refreshRateValue = MLX90640_REFRESH_RATE_2_HZ;
 				break;
-			case SettingsRefreshRate::hz4:
+			case SettingsSampleRate::hz4:
 				refreshRateValue = MLX90640_REFRESH_RATE_4_HZ;
 				break;
-			case SettingsRefreshRate::hz8:
+			case SettingsSampleRate::hz8:
 				refreshRateValue = MLX90640_REFRESH_RATE_8_HZ;
 				break;
-			case SettingsRefreshRate::hz16:
+			case SettingsSampleRate::hz16:
 				refreshRateValue = MLX90640_REFRESH_RATE_16_HZ;
 				break;
-			case SettingsRefreshRate::hz32:
+			case SettingsSampleRate::hz32:
 				refreshRateValue = MLX90640_REFRESH_RATE_32_HZ;
 				break;
 			default:
