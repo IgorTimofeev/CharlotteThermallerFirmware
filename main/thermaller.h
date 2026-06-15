@@ -44,7 +44,7 @@ namespace pizda {
 				Rotation::none
 			};
 
-			RGB565PixelBufferRenderer renderer {};
+			RGB565Renderer renderer {};
 
 			// Thermal sensor
 			MLX90640 MLX {};
