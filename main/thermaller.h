@@ -3,7 +3,8 @@
 #include <esp_log.h>
 #include <esp_adc/adc_oneshot.h>
 
-#include <YOBA/main.h>
+#include <YOBA/core.h>
+#include <YOBA/rendering.h>
 #include <YOBA/UI.h>
 #include <YOBA/hardware/displays/ST7789Display.h>
 
@@ -32,7 +33,6 @@ namespace pizda {
 
 			ST7789Display display {
 				config::SPI::MOSI,
-				config::SPI::MISO,
 				config::SPI::SCK,
 
 				config::screen::SS,
@@ -41,7 +41,7 @@ namespace pizda {
 				config::screen::SPIFrequency,
 
 				Size(240, 320),
-				ViewportRotation::clockwise0
+				Rotation::none
 			};
 
 			RGB565PixelBufferRenderer renderer {};

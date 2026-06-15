@@ -3,7 +3,7 @@
 #include <variant>
 #include <resources/sounds.h>
 
-#include <YOBA/main.h>
+#include <YOBA/core.h>
 #include <YOBA/UI.h>
 #include "menuRoute.h"
 #include "UI/theme.h"

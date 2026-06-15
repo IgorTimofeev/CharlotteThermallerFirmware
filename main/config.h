@@ -23,7 +23,6 @@ namespace pizda {
 					constexpr static spi_host_device_t hostDevice = SPI2_HOST;
 					constexpr static gpio_num_t SCK = GPIO_NUM_15;
 					constexpr static gpio_num_t MOSI = GPIO_NUM_16;
-					constexpr static gpio_num_t MISO = GPIO_NUM_21;
 			};
 
 			class screen {

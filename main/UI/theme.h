@@ -1,6 +1,6 @@
 #pragma once
 
-#include <YOBA/main.h>
+#include <YOBA/core.h>
 #include <YOBA/UI.h>
 #include <YOBA/resources/fonts/PIXY10Font.h>
 #include <YOBA/resources/fonts/Vaticanus8Font.h>

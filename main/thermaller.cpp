@@ -49,7 +49,7 @@ namespace pizda {
 		{
 			spi_bus_config_t config {};
 			config.mosi_io_num = config::SPI::MOSI;
-			config.miso_io_num = config::SPI::MISO;
+			config.miso_io_num = GPIO_NUM_NC;
 			config.sclk_io_num = config::SPI::SCK;
 			config.quadwp_io_num = -1;
 			config.quadhd_io_num = -1;

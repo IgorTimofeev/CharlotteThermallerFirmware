@@ -1,6 +1,6 @@
 #pragma once
 
-#include <YOBA/main.h>
+#include <YOBA/core.h>
 
 #include "hardware/joystick/axis.h"
 
