@@ -51,7 +51,7 @@ namespace pizda {
 		);
 	}
 
-	void MenuItem::renderRightTextWithArrows(Renderer* renderer, const Rectangle& bounds, const char* text, const bool leftEnabled, const bool rightEnabled) {
+	void MenuItem::renderRightTextWithArrows(Renderer* renderer, const Rectangle& bounds, const char* text, const bool leftEnabled, const bool rightEnabled) const {
 		constexpr static uint8_t triangleWidth = 4;
 		constexpr static uint8_t triangleHeight = 7;
 		constexpr static uint8_t triangleMargin = 8;
@@ -118,11 +118,12 @@ namespace pizda {
 		if (event->type != JoystickEventType::press)
 			return;
 
-		auto& th = Thermaller::getInstance();
+		Application::getCurrent()->invokeLater([this] {
+			auto& th = Thermaller::getInstance();
+			th.setRoute(_route);
 
-		th.setRoute(_route);
-
-		th.audioPlayer.play(&resources::sounds::feedback);
+			th.audioPlayer.play(&resources::sounds::feedback);
+		});
 	}
 
 	int32_t IntMenuItem::getMin() const {

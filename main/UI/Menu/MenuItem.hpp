@@ -24,7 +24,7 @@ namespace pizda {
 			void onRender(Renderer* renderer, const Rectangle& bounds) override;
 
 			void renderRightText(Renderer* renderer, const Rectangle& bounds, const char* text) const;
-			void renderRightTextWithArrows(Renderer* renderer, const Rectangle& bounds, const char* text, bool leftEnabled, bool rightEnabled);
+			void renderRightTextWithArrows(Renderer* renderer, const Rectangle& bounds, const char* text, bool leftEnabled, bool rightEnabled) const;
 			void renderRightCircle(Renderer* renderer, const Rectangle& bounds, const Color* color) const;
 	};
 
