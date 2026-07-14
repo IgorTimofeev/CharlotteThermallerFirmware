@@ -14,13 +14,14 @@
  * limitations under the License.
  *
  */
-#include "MLX90640API.h"
 
 #include <esp_log.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-#include "MLX90640I2CDriver.h"
+#include "Hardware/MLX90640/MLX90640API.hpp"
+#include "Hardware/MLX90640/MLX90640I2CDriver.hpp"
+
 #include <math.h>
 #include <freertos/task.h>
 

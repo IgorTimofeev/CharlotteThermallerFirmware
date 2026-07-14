@@ -1,10 +1,9 @@
-#include "joystick.h"
-
 #include <esp_adc/adc_oneshot.h>
-#include <resources/sounds.h>
 
-#include "thermaller.h"
-#include "config.h"
+#include "Hardware/Joystick/Joystick.hpp"
+#include "Resources/Sounds.hpp"
+#include "Thermaller.hpp"
+#include "Config.hpp"
 
 namespace pizda {
 	JoystickEvent::JoystickEvent(const JoystickEventType type, const bool razyob) : Event(typeID), type(type), razyob(razyob) {

@@ -5,8 +5,8 @@
 #include <esp_log.h>
 #include <driver/i2c_master.h>
 
-#include "MLX90640API.h"
-#include "MLX90640I2CDriver.h"
+#include "Hardware/MLX90640/MLX90640API.hpp"
+#include "Hardware/MLX90640/MLX90640I2CDriver.hpp"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>

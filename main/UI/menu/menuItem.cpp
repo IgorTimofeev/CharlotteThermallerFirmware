@@ -1,19 +1,19 @@
-#include "UI/menu/menuItem.h"
+#include "UI/Menu/MenuItem.hpp"
 
 #include <span>
 #include <functional>
 #include <inttypes.h>
 
-#include <resources/sounds.h>
+#include "Resources/Sounds.hpp"
 
-#include <YOBA/core.h>
-#include <YOBA/UI.h>
+#include <YOBA/Core.hpp>
+#include <YOBA/UI.hpp>
 
-#include "menuRoute.h"
-#include "UI/theme.h"
-#include "hardware/joystick/joystick.h"
+#include "UI/Menu/MenuRoute.hpp"
+#include "UI/Theme.hpp"
+#include "Hardware/Joystick/Joystick.hpp"
 
-#include "thermaller.h"
+#include "Thermaller.hpp"
 
 namespace pizda {
 	MenuItem::MenuItem() {
@@ -27,12 +27,12 @@ namespace pizda {
 
 	void MenuItem::onRender(Renderer* renderer, const Rectangle& bounds) {
 		if (isActive())
-			renderer->renderFilledRectangle(bounds, &Theme::fg1);
+			renderer->fillRectangle(bounds, &Theme::fg1);
 
 		const auto textColor = isActive() ? &Theme::bg1 : getTextColor();
 
-		renderer->renderText(
-			Point(bounds.getX() + padding, bounds.getYCenter() - Theme::fontNormal.getHeight() / 2),
+		renderer->putText(
+			Point(bounds.getX() + padding, bounds.getYCenter() - Theme::fontNormal.getLineHeight() / 2),
 			&Theme::fontNormal,
 			textColor,
 			getText()
@@ -40,10 +40,10 @@ namespace pizda {
 	}
 
 	void MenuItem::renderRightText(Renderer* renderer, const Rectangle& bounds, const char* text) const {
-		renderer->renderText(
+		renderer->putText(
 			Point(
 				bounds.getX2() - padding - Theme::fontNormal.getWidth(text),
-				bounds.getYCenter() - Theme::fontNormal.getHeight() / 2
+				bounds.getYCenter() - Theme::fontNormal.getLineHeight() / 2
 			),
 			&Theme::fontNormal,
 			isActive() ? &Theme::bg1 : &Theme::fg7,
@@ -61,7 +61,7 @@ namespace pizda {
 			const auto yCenter = bounds.getYCenter();
 
 			// Right triangle
-			renderer->renderFilledTriangle(
+			renderer->fillTriangle(
 				Point(x, yCenter),
 				Point(x - triangleWidth, yCenter - triangleHeight / 2),
 				Point(x - triangleWidth, yCenter + triangleHeight / 2),
@@ -73,10 +73,10 @@ namespace pizda {
 			// Text
 			const auto textWidth = Theme::fontNormal.getWidth(text);
 
-			renderer->renderText(
+			renderer->putText(
 				Point(
 					x - textWidth,
-					yCenter - Theme::fontNormal.getHeight() / 2
+					yCenter - Theme::fontNormal.getLineHeight() / 2
 				),
 				&Theme::fontNormal,
 				&Theme::bg1,
@@ -86,7 +86,7 @@ namespace pizda {
 			x -= textWidth + triangleMargin;
 
 			// Left triangle
-			renderer->renderFilledTriangle(
+			renderer->fillTriangle(
 				Point(x - triangleWidth, yCenter),
 				Point(x, yCenter - triangleHeight / 2),
 				Point(x, yCenter + triangleHeight / 2),
@@ -99,7 +99,7 @@ namespace pizda {
 	}
 
 	void MenuItem::renderRightCircle(Renderer* renderer, const Rectangle& bounds, const Color* color) const {
-		renderer->renderFilledCircle(
+		renderer->fillCircle(
 			Point(bounds.getX2() - padding - 3, bounds.getYCenter()),
 			3,
 			isActive() ? &Theme::bg1 : color

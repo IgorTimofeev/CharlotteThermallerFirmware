@@ -1,11 +1,11 @@
 #pragma once
 
-#include <YOBA/core.h>
-#include <YOBA/UI.h>
+#include <YOBA/Core.hpp>
+#include <YOBA/UI.hpp>
 
-#include "UI/menu/menuPage.h"
-#include "UI/menu/menuItem.h"
-#include "menuRoute.h"
+#include "UI/Menu/MenuPage.hpp"
+#include "UI/Menu/MenuItem.hpp"
+#include "UI/Menu/MenuRoute.hpp"
 
 namespace pizda {
 	class AutoHistogramMenuItem : public BoolMenuItem {

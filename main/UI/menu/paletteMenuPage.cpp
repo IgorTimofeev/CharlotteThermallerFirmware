@@ -1,6 +1,6 @@
-#include "UI/menu/paletteMenuPage.h"
+#include "UI/Menu/PaletteMenuPage.hpp"
 
-#include "thermaller.h"
+#include "Thermaller.hpp"
 
 namespace pizda {
 	PaletteMenuItem::PaletteMenuItem(const std::string_view text, const ThermalPalette palette) : _palette(palette) {

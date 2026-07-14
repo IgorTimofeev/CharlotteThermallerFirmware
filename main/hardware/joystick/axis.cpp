@@ -1,11 +1,11 @@
-#include "axis.h"
+#include "Axis.hpp"
 
 #include <limits>
 #include <algorithm>
 #include <esp_log.h>
 #include <esp_timer.h>
 
-#include <EMAFilter.h>
+#include <EMAFilter.hpp>
 
 namespace pizda {
 	using namespace YOBA;

@@ -1,6 +1,6 @@
-#include "UI/menu/histogramMenuPage.h"
+#include "UI/Menu/HistogramMenuPage.hpp"
 
-#include <thermaller.h>
+#include "Thermaller.hpp"
 
 namespace pizda {
 	AutoHistogramMenuItem::AutoHistogramMenuItem() {

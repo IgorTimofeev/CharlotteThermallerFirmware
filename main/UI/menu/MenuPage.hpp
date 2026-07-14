@@ -1,8 +1,8 @@
 #pragma once
 
-#include <YOBA/UI.h>
+#include <YOBA/UI.hpp>
 
-#include "UI/menu/menuItem.h"
+#include "UI/Menu/MenuItem.hpp"
 
 namespace pizda {
 	class MenuPage : public Selector {
@@ -16,7 +16,10 @@ namespace pizda {
 		private:
 			// ScrollView _scrollView {};
 			RelativeStackLayout _titleAndItemLayout {};
+
+			MarginTransform _titleMargin {};
 			TextView _title {};
+
 			StackLayout _itemRows {};
 	};
 }

@@ -1,24 +1,19 @@
-#include "thermalView.h"
-
 #include <ranges>
 #include <span>
 
-#include "thermaller.h"
-#include "UI/theme.h"
+#include "Thermaller.hpp"
+#include "UI/ThermalView.hpp"
+#include "UI/Theme.hpp"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-#include <EMAFilter.h>
-#include <resources/sounds.h>
+#include <EMAFilter.hpp>
+#include "Resources/Sounds.hpp"
 
-#include "hardware/MLX90640/MLX90640.h"
-#include "hardware/joystick/joystick.h"
+#include "hardware/MLX90640/MLX90640.hpp"
+#include "Hardware/Joystick/Joystick.hpp"
 
 namespace pizda {
-	ThermalView::ThermalView() {
-
-	}
-
 	void ThermalView::onTick() {
 		invalidate();
 	}
@@ -65,7 +60,7 @@ namespace pizda {
 			// Copying measured temperatures
 			xSemaphoreTake(th.MLX.frameMutex, portMAX_DELAY);
 
-			for (uint16_t i = 0; i < frame.size(); ++i) {
+			for (size_t i = 0; i < frame.size(); ++i) {
 				const auto sourceTemp = th.MLX.frame[i];
 
 				// NaN values is a common problem with MLX modules - it usually means that current pixel is broken
@@ -97,9 +92,9 @@ namespace pizda {
 			histogramAvg /= frame.size();
 
 			// Replacing all shitty pixels with computed average value
-			for (uint16_t i = 0; i < frame.size(); ++i) {
-				if (frame[i] == std::numeric_limits<int16_t>::min()) {
-					frame[i] = histogramAvg;
+			for (auto& i : frame) {
+				if (i == std::numeric_limits<int16_t>::min()) {
+					i = static_cast<int16_t>(histogramAvg);
 				}
 			}
 
@@ -114,7 +109,7 @@ namespace pizda {
 			}
 		}
 
-		const int16_t hMaxMinDelta = histogramMax - histogramMin;
+		const auto hMaxMinDelta = histogramMax - histogramMin;
 
 		// Determining which palette to use
 		std::span<const RGB565Color> palette;
@@ -203,9 +198,9 @@ namespace pizda {
 				        	const int32_t col2 = (t21 * weightYN + t22 * weightYP) >> 8;
 
 				            for (uint8_t subPixelX = 0; subPixelX < framePixelSize; ++subPixelX) {
-				            	const int32_t interpolatedTemperature = (col1 * weightsN[subPixelX] + col2 * weightsP[subPixelX]) >> 8;
+				            	const auto interpolatedTemperature = static_cast<int16_t>((col1 * weightsN[subPixelX] + col2 * weightsP[subPixelX]) >> 8);
 
-				            	renderer->renderPixel(
+				            	renderer->putPixel(
 				            		Point(screenX11 - subPixelY, screenY11 - subPixelX),
 				            		getTemperatureColor(interpolatedTemperature)
 				            	);
@@ -224,7 +219,7 @@ namespace pizda {
 					for (uint8_t frameX = 0; frameX < MLX90640::frameWidth; ++frameX) {
 						pBounds.setY(y2 - framePixelSize - frameX * framePixelSize);
 
-						renderer->renderFilledRectangle(
+						renderer->fillRectangle(
 							pBounds,
 							getTemperatureColor(frame[frameY * MLX90640::frameWidth + frameX])
 						);
@@ -239,7 +234,7 @@ namespace pizda {
 			constexpr static uint8_t crossLength = crossThickness * 4;
 
 			const auto renderCross = [renderer](const Point& position, const Color* color) {
-				renderer->renderFilledRectangle(
+				renderer->fillRectangle(
 					{
 						position.getX() - crossLength / 2,
 						position.getY() - crossThickness / 2,
@@ -249,7 +244,7 @@ namespace pizda {
 					color
 				);
 
-				renderer->renderFilledRectangle(
+				renderer->fillRectangle(
 					{
 						position.getX() - crossThickness / 2,
 						position.getY() - crossLength / 2,
@@ -278,8 +273,8 @@ namespace pizda {
 			renderShadowedText(
 				renderer,
 				{
-					center.getX() - _font->getWidth(text, _fontScale) / 2,
-					center.getY() - crossLength / 2 - 8 - _font->getHeight(_fontScale)
+					center.getX() - _font->getWidth(_fontScale, text) / 2,
+					center.getY() - crossLength / 2 - 8 - _font->getLineHeight(_fontScale)
 				},
 				text
 			);
@@ -312,13 +307,13 @@ namespace pizda {
 				float paletteIndex = 0;
 				const float paletteIndexStep = static_cast<float>(palette.size() - 1) / static_cast<float>(histogramWidth - 2);
 
-				renderer->renderFilledRectangle(
+				renderer->fillRectangle(
 					Rectangle(histogramX, histogramY, histogramWidth, histogramHeight),
 					&Theme::bg1
 				);
 
 				for (uint16_t i = 0; i < histogramWidth - 2; ++i) {
-					renderer->renderVerticalLine(
+					renderer->strokeVerticalLine(
 						Point(histogramX + 1 + i, histogramY + 1),
 						histogramHeight - 2,
 						&palette[static_cast<uint16_t>(paletteIndex)]
@@ -331,10 +326,10 @@ namespace pizda {
 				constexpr static uint8_t textLength = 8;
 				char text[textLength];
 
-				const auto textY = histogramY - histogramTextMargin - _font->getHeight(_fontScale);
+				const auto textY = histogramY - histogramTextMargin - _font->getLineHeight(_fontScale);
 
 				// Left
-				std::snprintf(text, textLength, "%.1f", static_cast<float>(histogramMin / 10.f));
+				std::snprintf(text, textLength, "%.1f", static_cast<float>(histogramMin) / 10.f);
 
 				renderShadowedText(
 					renderer,
@@ -346,12 +341,12 @@ namespace pizda {
 				);
 
 				// Right
-				std::snprintf(text, textLength, "%.1f", static_cast<float>(histogramMax / 10.f));
+				std::snprintf(text, textLength, "%.1f", static_cast<float>(histogramMax) / 10.f);
 
 				renderShadowedText(
 					renderer,
 					{
-						histogramX + histogramWidth - _font->getWidth(text, _fontScale),
+						histogramX + histogramWidth - _font->getWidth(_fontScale, text),
 						textY
 					},
 					text
@@ -361,13 +356,13 @@ namespace pizda {
 			// Rendering battery
 			{
 				// Tip
-				renderer->renderFilledRectangle(
+				renderer->fillRectangle(
 					Rectangle(batteryX, batteryYCenter - batteryTipHeight / 2, batteryTipWidth, batteryTipHeight),
 					&Theme::bg1
 				);
 
 				// Body
-				renderer->renderFilledRectangle(
+				renderer->fillRectangle(
 					Rectangle(batteryX + batteryTipWidth, batteryY, batteryWidth - batteryTipWidth, batteryHeight),
 					&Theme::bg1
 				);
@@ -389,7 +384,7 @@ namespace pizda {
 					batteryChargeColor = &Theme::red;
 				}
 
-				renderer->renderFilledRectangle(
+				renderer->fillRectangle(
 					Rectangle(batteryX + batteryWidth - 1 - batteryChargeWidth, batteryY + 1, batteryChargeWidth, batteryHeight - 1 * 2),
 					batteryChargeColor
 				);
@@ -398,20 +393,20 @@ namespace pizda {
 	}
 
 	void ThermalView::renderShadowedText(Renderer* renderer, const Point& position, const std::string_view text) {
-		renderer->renderText(
+		renderer->putText(
 			position + Point(_shadowOffset, _shadowOffset),
 			_font,
+			_fontScale,
 			&Theme::bg1,
-			text,
-			_fontScale
+			text
 		);
 
-		renderer->renderText(
+		renderer->putText(
 			position,
 			_font,
+			_fontScale,
 			&Theme::fg1,
-			text,
-			_fontScale
+			text
 		);
 	}
 }

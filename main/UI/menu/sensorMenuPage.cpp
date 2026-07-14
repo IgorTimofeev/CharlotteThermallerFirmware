@@ -1,7 +1,7 @@
-#include "UI/menu/sensorMenuPage.h"
+#include "UI/Menu/SensorMenuPage.hpp"
 
-#include "settings/settings.h"
-#include "thermaller.h"
+#include "Settings/Settings.hpp"
+#include "Thermaller.hpp"
 
 namespace pizda {
 	InterpolationMenuItem::InterpolationMenuItem() {

@@ -1,4 +1,4 @@
-#include "MLX90640I2CDriver.h"
+#include "Hardware/MLX90640/MLX90640I2CDriver.hpp"
 
 #include <bit>
 

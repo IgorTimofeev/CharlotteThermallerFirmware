@@ -2,7 +2,7 @@
 
 #include <array>
 
-#include <sound.h>
+#include <Sound.hpp>
 
 namespace pizda {
 	using namespace YOBA;

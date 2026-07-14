@@ -1,6 +1,6 @@
-#include "UI/menu/reflectedTemperatureSensorMenuPage.h"
+#include "UI/Menu/ReflectedTemperatureSensorMenuPage.hpp"
 
-#include <thermaller.h>
+#include "Thermaller.hpp"
 
 namespace pizda {
 	AutoReflectedTemperatureSensorMenuItem::AutoReflectedTemperatureSensorMenuItem() {

@@ -1,8 +1,6 @@
-#include "UI/menu/emissivityMenuPage.h"
-
-#include <resources/sounds.h>
-
-#include "thermaller.h"
+#include "UI/Menu/EmissivityMenuPage.hpp"
+#include "Resources/Sounds.hpp"
+#include "Thermaller.hpp"
 
 namespace pizda {
 	EmissivityMenuItem::EmissivityMenuItem() {

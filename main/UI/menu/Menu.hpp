@@ -1,10 +1,10 @@
 #pragma once
 
-#include <YOBA/core.h>
-#include <YOBA/UI.h>
+#include <YOBA/Core.hpp>
+#include <YOBA/UI.hpp>
 
-#include "menuRoute.h"
-#include "UI/menu/menuPage.h"
+#include "UI/Menu/MenuRoute.hpp"
+#include "UI/Menu/MenuPage.hpp"
 
 namespace pizda {
 	class Menu : public Layout {
@@ -15,7 +15,7 @@ namespace pizda {
 			void setRoute(const MenuRoute route);
 
 		private:
-			RectangleShape _backgroundRectangle {};
+			RectangularShape _backgroundRectangle {};
 
 			MenuRoute _route = MenuRoute::none;
 			MenuPage* _menuPage = nullptr;

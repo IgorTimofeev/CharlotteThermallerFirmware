@@ -8,14 +8,14 @@
 
 #include <driver/i2c_master.h>
 
-#include "thermaller.h"
+#include "Thermaller.hpp"
 
 #include <nvs_flash.h>
 
-#include "config.h"
-#include "UI/theme.h"
-#include "resources/images.h"
-#include "resources/sounds.h"
+#include "Config.hpp"
+#include "UI/Theme.hpp"
+#include "Resources/Images.hpp"
+#include "Resources/Sounds.hpp"
 
 namespace pizda {
 	using namespace YOBA;
@@ -45,26 +45,25 @@ namespace pizda {
 			ESP_ERROR_CHECK_WITHOUT_ABORT(state);
 		}
 
-		// SPI
-		{
-			spi_bus_config_t config {};
-			config.mosi_io_num = config::SPI::MOSI;
-			config.miso_io_num = GPIO_NUM_NC;
-			config.sclk_io_num = config::SPI::SCK;
-			config.quadwp_io_num = -1;
-			config.quadhd_io_num = -1;
-			config.max_transfer_sz = static_cast<int>(display.getSize().getSquare() * 2);
-
-			ESP_ERROR_CHECK(spi_bus_initialize(config::SPI::hostDevice, &config, SPI_DMA_CH_AUTO));
-		}
-
 		// Display
-		display.setup();
+		display.setup(
+			config::SPI::MOSI,
+			config::SPI::SCK,
+
+			config::screen::SS,
+			config::screen::DC,
+			config::screen::RST,
+			config::screen::SPIFrequency,
+
+			Size(240, 320),
+			Rotation::none
+		);
+
 		renderer.setTarget(&display);
 
 		// Rendering splash screen
 		renderer.clear(&Theme::bg1);
-		renderer.renderImage(Point(), &resources::images::splashScreen);
+		renderer.putImage(Point(), &resources::images::splashScreen);
 		renderer.flush();
 
 		// Turning display on
@@ -100,7 +99,21 @@ namespace pizda {
 		}
 
 		// Battery
-		battery.setup();
+		battery.setup(
+			config::battery::transistorPin,
+
+			config::battery::ADCUnit,
+			ADCOneshotUnit1,
+			config::battery::ADCChannel,
+
+			config::battery::voltageMin,
+			config::battery::voltageMax,
+
+			config::battery::dividerResistanceR1,
+			config::battery::dividerResistanceR2,
+
+			8
+		);
 
 		// Audio
 		audioPlayer.setup();

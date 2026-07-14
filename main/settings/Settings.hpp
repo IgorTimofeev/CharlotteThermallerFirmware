@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-#include <NVSSettings.h>
+#include <NVSSettings.hpp>
 
-#include "UI/thermalView.h"
+#include "UI/ThermalView.hpp"
 
 namespace pizda {
 	using namespace YOBA;

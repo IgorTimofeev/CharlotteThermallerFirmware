@@ -1,9 +1,9 @@
 #pragma once
 
-#include <YOBA/core.h>
-#include <YOBA/UI.h>
+#include <YOBA/Core.hpp>
+#include <YOBA/UI.hpp>
 
-#include "theme.h"
+#include "Theme.hpp"
 
 namespace pizda {
 	using namespace YOBA;
@@ -17,9 +17,6 @@ namespace pizda {
 	};
 
 	class ThermalView : public Control {
-		public:
-			ThermalView();
-
 		protected:
 			void onTick() override;
 			void onEvent(Event* event) override;

@@ -1,15 +1,15 @@
-#include "UI/menu/menuPage.h"
+#include "UI/Menu/MenuPage.hpp"
 
 #include <variant>
-#include <resources/sounds.h>
+#include "Resources/Sounds.hpp"
 
-#include <YOBA/core.h>
-#include <YOBA/UI.h>
-#include "menuRoute.h"
-#include "UI/theme.h"
-#include "hardware/joystick/joystick.h"
+#include <YOBA/Core.hpp>
+#include <YOBA/UI.hpp>
+#include "UI/Menu/MenuRoute.hpp"
+#include "UI/Theme.hpp"
+#include "Hardware/Joystick/Joystick.hpp"
 
-#include "thermaller.h"
+#include "Thermaller.hpp"
 
 namespace pizda {
 	MenuPage::MenuPage(const std::string_view title) {
@@ -17,10 +17,13 @@ namespace pizda {
 		*this += &_titleAndItemLayout;
 
 		// Title
-		_title.setMargin(Margin(MenuItem::padding, MenuItem::padding, 0, 10));
 		_title.setFont(&Theme::fontNormal);
 		_title.setTextColor(&Theme::fg1);
 		_title.setText(title);
+
+		_titleMargin.setMargin(Margin(MenuItem::padding, MenuItem::padding, 0, 10));
+		_title.setLayoutTransform(&_titleMargin);
+
 		_titleAndItemLayout.setAutoSize(&_title);
 		_titleAndItemLayout += &_title;
 
@@ -36,7 +39,7 @@ namespace pizda {
 		_titleAndItemLayout += &_itemRows;
 
 		// Selector
-		setItemsLayout(&_itemRows);
+		setItemLayout(&_itemRows);
 	}
 
 	void MenuPage::addItems(const std::initializer_list<MenuItem*>& items) {

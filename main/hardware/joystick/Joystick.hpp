@@ -1,8 +1,8 @@
 #pragma once
 
-#include <YOBA/core.h>
+#include <YOBA/Core.hpp>
 
-#include "hardware/joystick/axis.h"
+#include "Hardware/Joystick/Axis.hpp"
 
 namespace pizda {
 	using namespace YOBA;

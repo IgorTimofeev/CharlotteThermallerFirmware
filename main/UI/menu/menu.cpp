@@ -1,23 +1,23 @@
-#include "UI/menu/menu.h"
+#include "UI/Menu/Menu.hpp"
 
 #include <span>
 #include <functional>
 
-#include <YOBA/core.h>
-#include <YOBA/UI.h>
+#include <YOBA/Core.hpp>
+#include <YOBA/UI.hpp>
 
-#include "UI/theme.h"
-#include "UI/menu/menuRoute.h"
-#include "UI/menu/menuItem.h"
+#include "UI/Theme.hpp"
+#include "UI/Menu/MenuRoute.hpp"
+#include "UI/Menu/MenuItem.hpp"
 
-#include "UI/menu/mainMenuPage.h"
-#include "UI/menu/paletteMenuPage.h"
-#include "UI/menu/histogramMenuPage.h"
-#include "UI/menu/emissivityMenuPage.h"
-#include "UI/menu/sensorMenuPage.h"
-#include "UI/menu/reflectedTemperatureSensorMenuPage.h"
+#include "UI/Menu/MainMenuPage.hpp"
+#include "UI/Menu/PaletteMenuPage.hpp"
+#include "UI/Menu/HistogramMenuPage.hpp"
+#include "UI/Menu/EmissivityMenuPage.hpp"
+#include "UI/Menu/SensorMenuPage.hpp"
+#include "UI/Menu/ReflectedTemperatureSensorMenuPage.hpp"
 
-#include "thermaller.h"
+#include "Thermaller.hpp"
 
 namespace pizda {
 	Menu::Menu() {

@@ -1,6 +1,6 @@
-#include "UI/menu/mainMenuPage.h"
+#include "UI/Menu/MainMenuPage.hpp"
 
-#include "thermaller.h"
+#include "Thermaller.hpp"
 
 namespace pizda {
 	MainMenuPage::MainMenuPage() : MenuPage("Settings") {

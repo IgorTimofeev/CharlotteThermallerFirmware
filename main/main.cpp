@@ -1,4 +1,4 @@
-#include "thermaller.h"
+#include "Thermaller.hpp"
 
 extern "C" {
 	void app_main(void) {

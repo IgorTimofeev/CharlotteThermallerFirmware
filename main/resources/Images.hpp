@@ -1,6 +1,6 @@
 #pragma once
 
-#include "resources/images/splashScreenImage.h"
+#include "Resources/Images/SplashScreenImage.hpp"
 
 namespace pizda::resources {
 	class images {

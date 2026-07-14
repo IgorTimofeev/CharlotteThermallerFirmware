@@ -3,22 +3,22 @@
 #include <esp_log.h>
 #include <esp_adc/adc_oneshot.h>
 
-#include <YOBA/core.h>
-#include <YOBA/rendering.h>
-#include <YOBA/UI.h>
-#include <YOBA/hardware/displays/ST7789Display.h>
+#include <YOBA/Core.hpp>
+#include <YOBA/Rendering.hpp>
+#include <YOBA/UI.hpp>
+#include <YOBA/Hardware/Displays/ST7789Display.hpp>
 
-#include <audioPlayer.h>
-#include <buzzer.h>
-#include <ADCVoltmeter.h>
+#include <AudioPlayer.hpp>
+#include <Buzzer.hpp>
+#include <ADCVoltmeter.hpp>
 
-#include "config.h"
-#include "UI/menu/menuRoute.h"
-#include "UI/thermalView.h"
-#include "UI/menu/menu.h"
-#include "hardware/MLX90640/MLX90640.h"
-#include "hardware/joystick/joystick.h"
-#include "settings/settings.h"
+#include "Config.hpp"
+#include "UI/Menu/MenuRoute.hpp"
+#include "UI/thermalView.hpp"
+#include "UI/Menu/Menu.hpp"
+#include "hardware/MLX90640/MLX90640.hpp"
+#include "hardware/joystick/joystick.hpp"
+#include "settings/settings.hpp"
 
 namespace pizda {
 	using namespace YOBA;
@@ -31,40 +31,14 @@ namespace pizda {
 
 			// -------------------------------- Hardware --------------------------------
 
-			ST7789Display display {
-				config::SPI::MOSI,
-				config::SPI::SCK,
-
-				config::screen::SS,
-				config::screen::DC,
-				config::screen::RST,
-				config::screen::SPIFrequency,
-
-				Size(240, 320),
-				Rotation::none
-			};
-
-			RGB565Renderer renderer {};
+			ST7789Display display {};
+			RGB565TransactionalBufferedRenderer renderer {};
 
 			// Thermal sensor
 			MLX90640 MLX {};
 
 			// Battery
-			TransistorControlledADCVoltmeter battery {
-				config::battery::transistorPin,
-
-				config::battery::ADCUnit,
-				&ADCOneshotUnit1,
-				config::battery::ADCChannel,
-
-				config::battery::voltageMin,
-				config::battery::voltageMax,
-				
-				config::battery::dividerResistanceR1,
-				config::battery::dividerResistanceR2,
-
-				8
-			};
+			TransistorControlledADCVoltmeter battery {};
 
 			// Audio
 			Buzzer buzzer {

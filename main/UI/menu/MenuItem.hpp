@@ -2,14 +2,14 @@
 
 #include <span>
 #include <functional>
-#include <UI/thermalView.h>
 
-#include <YOBA/core.h>
-#include <YOBA/UI.h>
+#include <YOBA/Core.hpp>
+#include <YOBA/UI.hpp>
 
-#include "menuRoute.h"
-#include "UI/theme.h"
-#include "hardware/joystick/joystick.h"
+#include "UI/ThermalView.hpp"
+#include "UI/Menu/MenuRoute.hpp"
+#include "UI/Theme.hpp"
+#include "Hardware/Joystick/Joystick.hpp"
 
 namespace pizda {
 	class MenuItem : public SelectorItem, public TextElement, public TextColorElement {

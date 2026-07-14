@@ -1,7 +1,7 @@
 #pragma once
 
-#include "resources/sounds/bootSound.h"
-#include "resources/sounds/feedbackSound.h"
+#include "Resources/Sounds/BootSound.hpp"
+#include "Resources/Sounds/FeedbackSound.hpp"
 
 namespace pizda::resources {
 	class sounds {
