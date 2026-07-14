@@ -13,3 +13,9 @@
 [submodule "components/ESP-IDF-EMAFilter"]
 	path = components/ESP-IDF-EMAFilter
 	url = https://github.com/IgorTimofeev/ESP-IDF-EMAFilter.git
+[submodule "Firmware"]
+	path = Firmware
+	url = https://github.com/IgorTimofeev/CharlotteThermallerFirmware.git
+[submodule "CAD"]
+	path = CAD
+	url = https://github.com/IgorTimofeev/CharlotteThermallerCAD.git
