@@ -1,4 +1,4 @@
-#include "hardware/MLX90640/MLX90640.hpp"
+#include "Hardware/MLX90640/MLX90640.hpp"
 
 #include <array>
 

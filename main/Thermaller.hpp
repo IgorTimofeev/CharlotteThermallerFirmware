@@ -16,9 +16,9 @@
 #include "UI/Menu/MenuRoute.hpp"
 #include "UI/thermalView.hpp"
 #include "UI/Menu/Menu.hpp"
-#include "hardware/MLX90640/MLX90640.hpp"
-#include "hardware/joystick/joystick.hpp"
-#include "settings/settings.hpp"
+#include "Hardware/MLX90640/MLX90640.hpp"
+#include "Hardware/Joystick/Joystick.hpp"
+#include "Settings/Settings.hpp"
 
 namespace pizda {
 	using namespace YOBA;
@@ -32,7 +32,7 @@ namespace pizda {
 			// -------------------------------- Hardware --------------------------------
 
 			ST7789Display display {};
-			RGB565TransactionalBufferedRenderer renderer {};
+			RGB565BufferedRenderer renderer {};
 
 			// Thermal sensor
 			MLX90640 MLX {};

@@ -157,6 +157,7 @@ namespace pizda {
 			batteryTick();
 
 			application.tick();
+			application.updateLayout();
 			application.render();
 
 			vTaskDelay(settings.interpolation ? 1 : pdMS_TO_TICKS(1'000 / 32));
@@ -184,10 +185,16 @@ namespace pizda {
 				});
 
 				_menuAnimation.start();
+
+				// application -= _menu;
+				// delete _menu;
+				// _menu = nullptr;
 			}
 		}
 		else {
-			if (!_menu) {
+			const auto menuDoesntExist = _menu == nullptr;
+
+			if (menuDoesntExist) {
 				_menu = new Menu();
 				application += _menu;
 			}
@@ -198,12 +205,16 @@ namespace pizda {
 			_menuAnimation.setTarget(_menu);
 			_menuAnimation.stop();
 
-			_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
+			_menuAnimation.setFrom({ application.getSize().getWidth(), menuDoesntExist ? static_cast<uint16_t>(0) : Size::computed });
 			_menuAnimation.setTo({ application.getSize().getWidth(), Size::computed });
 			_menuAnimation.setDuration(150'000);
 			_menuAnimation.setOnStateChanged(nullptr);
 
 			_menuAnimation.start();
+
+			// _menu->setSize(Size(240, 0));
+			// application.updateLayout();
+			// ESP_LOGI("main", "from: %d x %d", _menu->getLayoutBounds().getWidth(), _menu->getLayoutBounds().getHeight());
 		}
 	}
 

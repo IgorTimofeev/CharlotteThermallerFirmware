@@ -1,16 +1,16 @@
 #include <ranges>
 #include <span>
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
+#include <EMAFilter.hpp>
+
 #include "Thermaller.hpp"
 #include "UI/ThermalView.hpp"
 #include "UI/Theme.hpp"
-
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#include <EMAFilter.hpp>
 #include "Resources/Sounds.hpp"
-
-#include "hardware/MLX90640/MLX90640.hpp"
+#include "Hardware/MLX90640/MLX90640.hpp"
 #include "Hardware/Joystick/Joystick.hpp"
 
 namespace pizda {
@@ -370,7 +370,7 @@ namespace pizda {
 				// Charge
 				const auto batteryCharge = th.battery.getCharge16();
 				const uint16_t batteryChargePercent = static_cast<uint16_t>(batteryCharge) * 100 / 0xFFFF;
-				const int32_t batteryChargeWidth = divideRounding<int32_t>(batteryCharge * batteryMaxChargeWidth, 0xFFFF);
+				const auto batteryChargeWidth = Math::divideRounding<int32_t>(batteryCharge * batteryMaxChargeWidth, 0xFFFF);
 
 				const Color* batteryChargeColor;
 
