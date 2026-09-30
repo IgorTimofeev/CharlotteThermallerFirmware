@@ -8,11 +8,11 @@
 namespace pizda {
 	using namespace YOBA;
 
-	class SplashScreenImage : public Image {
+	class SplashScreenImage : public EmbeddedImage {
 		public:
-			constexpr SplashScreenImage() : Image(
+			constexpr SplashScreenImage() : EmbeddedImage(
 				ColorModel::RGB565,
-				ImageOptions::none,
+				EmbeddedImageOptions::none,
 				Size(240, 320),
 				_bitmap
 			) {

@@ -1,3 +1,6 @@
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 file(GLOB_RECURSE pizda_sources
     "*.*"
 )
@@ -16,4 +19,4 @@ idf_component_register(
         ESP-IDF-BuzzerAudio
 )
 
-target_compile_options(${COMPONENT_LIB} PUBLIC -std=gnu++26)
+component_compile_options("-frtti")

@@ -63,7 +63,7 @@ namespace pizda {
 
 		// Rendering splash screen
 		renderer.clear(&Theme::bg1);
-		renderer.putImage(Point(), &resources::images::splashScreen);
+		renderer.putImage(Rectangle(display.getSize()), &Images::splashScreen);
 		renderer.flush();
 
 		// Turning display on
@@ -173,7 +173,7 @@ namespace pizda {
 
 				_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
 				_menuAnimation.setTo({ application.getSize().getWidth(), 0 });
-				_menuAnimation.setDuration(150'000);
+				_menuAnimation.setDuration(150'0000);
 
 				_menuAnimation.setOnStateChanged([this](const AnimationState state) {
 					if (state != AnimationState::completed)
@@ -207,7 +207,7 @@ namespace pizda {
 
 			_menuAnimation.setFrom({ application.getSize().getWidth(), menuDoesntExist ? static_cast<uint16_t>(0) : Size::computed });
 			_menuAnimation.setTo({ application.getSize().getWidth(), Size::computed });
-			_menuAnimation.setDuration(150'000);
+			_menuAnimation.setDuration(150'0000);
 			_menuAnimation.setOnStateChanged(nullptr);
 
 			_menuAnimation.start();
