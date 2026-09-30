@@ -173,7 +173,7 @@ namespace pizda {
 
 				_menuAnimation.setFrom({ application.getSize().getWidth(), Size::computed });
 				_menuAnimation.setTo({ application.getSize().getWidth(), 0 });
-				_menuAnimation.setDuration(150'0000);
+				_menuAnimation.setDuration(150'000);
 
 				_menuAnimation.setOnStateChanged([this](const AnimationState state) {
 					if (state != AnimationState::completed)
@@ -185,10 +185,6 @@ namespace pizda {
 				});
 
 				_menuAnimation.start();
-
-				// application -= _menu;
-				// delete _menu;
-				// _menu = nullptr;
 			}
 		}
 		else {
@@ -207,14 +203,10 @@ namespace pizda {
 
 			_menuAnimation.setFrom({ application.getSize().getWidth(), menuDoesntExist ? static_cast<uint16_t>(0) : Size::computed });
 			_menuAnimation.setTo({ application.getSize().getWidth(), Size::computed });
-			_menuAnimation.setDuration(150'0000);
+			_menuAnimation.setDuration(150'000);
 			_menuAnimation.setOnStateChanged(nullptr);
 
 			_menuAnimation.start();
-
-			// _menu->setSize(Size(240, 0));
-			// application.updateLayout();
-			// ESP_LOGI("main", "from: %d x %d", _menu->getLayoutBounds().getWidth(), _menu->getLayoutBounds().getHeight());
 		}
 	}
 
