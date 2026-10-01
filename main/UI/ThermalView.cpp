@@ -200,7 +200,7 @@ namespace pizda {
 				            for (uint8_t subPixelX = 0; subPixelX < framePixelSize; ++subPixelX) {
 				            	const auto interpolatedTemperature = static_cast<int16_t>((col1 * weightsN[subPixelX] + col2 * weightsP[subPixelX]) >> 8);
 
-				            	renderer->putPixel(
+				            	renderer->setPixel(
 				            		Point(screenX11 - subPixelY, screenY11 - subPixelX),
 				            		getTemperatureColor(interpolatedTemperature)
 				            	);
@@ -368,7 +368,7 @@ namespace pizda {
 				);
 
 				// Charge
-				const auto batteryCharge = th.battery.getCharge16();
+				const auto batteryCharge = th.battery.getChargeUint16();
 				const uint16_t batteryChargePercent = static_cast<uint16_t>(batteryCharge) * 100 / 0xFFFF;
 				const auto batteryChargeWidth = Math::divideRounding<int32_t>(batteryCharge * batteryMaxChargeWidth, 0xFFFF);
 

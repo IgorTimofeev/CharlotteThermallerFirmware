@@ -38,7 +38,8 @@ namespace pizda {
 			MLX90640 MLX {};
 
 			// Battery
-			TransistorControlledADCVoltmeter battery {};
+			TransistorControlledADCVoltmeter batteryVoltmeter {};
+			ADCBattery battery {};
 
 			// Audio
 			Buzzer buzzer {

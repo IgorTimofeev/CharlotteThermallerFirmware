@@ -99,19 +99,21 @@ namespace pizda {
 		}
 
 		// Battery
-		battery.setup(
+		batteryVoltmeter.setup(
 			config::battery::transistorPin,
 
 			config::battery::ADCUnit,
 			ADCOneshotUnit1,
 			config::battery::ADCChannel,
 
+			config::battery::dividerResistanceR1,
+			config::battery::dividerResistanceR2
+		);
+
+		battery.setup(
+			&batteryVoltmeter,
 			config::battery::voltageMin,
 			config::battery::voltageMax,
-
-			config::battery::dividerResistanceR1,
-			config::battery::dividerResistanceR2,
-
 			8
 		);
 
@@ -215,6 +217,7 @@ namespace pizda {
 			return;
 
 		battery.tick();
+		// ESP_LOGI("m", "volt: %d, charge: %f", battery.getVoltageMV(), battery.getChargeFloat());
 
 		_batteryTickTime = esp_timer_get_time() + 1'000'000 / battery.getMultisamplingThreshold();
 	}
