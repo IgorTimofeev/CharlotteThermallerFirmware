@@ -41,8 +41,8 @@ namespace pizda {
 					constexpr static adc_unit_t ADCUnit = ADC_UNIT_1;
 					constexpr static adc_channel_t ADCChannel = ADC_CHANNEL_0;
 
-					constexpr static uint32_t voltageMin = 3'000;
-					constexpr static uint32_t voltageMax = 4'100;
+					constexpr static uint32_t voltageMin = 2'900;
+					constexpr static uint32_t voltageMax = 4'000;
 
 					constexpr static uint32_t dividerResistanceR1 = 100'000;
 					constexpr static uint32_t dividerResistanceR2 = 330'000;

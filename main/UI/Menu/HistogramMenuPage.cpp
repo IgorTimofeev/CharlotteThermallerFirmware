@@ -38,7 +38,7 @@ namespace pizda {
 			return;
 
 		auto& th = Thermaller::getInstance();
-		th.settings.rangeMin = std::min<int32_t>(getValue(), th.settings.rangeMax);
+		th.settings.rangeMin = std::min<int32_t>(getValue(), th.settings.rangeMax - 1);
 		th.settings.writeLater();
 	}
 
@@ -54,7 +54,7 @@ namespace pizda {
 			return;
 
 		auto& th = Thermaller::getInstance();
-		th.settings.rangeMax = std::max<int32_t>(getValue(), th.settings.rangeMin);
+		th.settings.rangeMax = std::max<int32_t>(getValue(), th.settings.rangeMin + 1);
 		th.settings.writeLater();
 	}
 

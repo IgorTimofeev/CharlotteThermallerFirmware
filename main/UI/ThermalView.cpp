@@ -1,5 +1,6 @@
 #include <ranges>
 #include <span>
+#include <array>
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -71,7 +72,7 @@ namespace pizda {
 				else {
 					// Copying source float temperature and converting it to integer value with factor of 10
 					// So 36.6 deg Celsius will become 366 deca... Celsius? Whatever
-					auto frameTemp = static_cast<int16_t>(sourceTemp * 10.f);
+					const auto frameTemp = static_cast<int16_t>(sourceTemp * 10.f);
 
 					frame[i] = frameTemp;
 
@@ -104,8 +105,8 @@ namespace pizda {
 				histogramMax = maxTemp;
 			}
 			else {
-				histogramMin = th.settings.rangeMin;
-				histogramMax = th.settings.rangeMax;
+				histogramMin = th.settings.rangeMin * 10;
+				histogramMax = th.settings.rangeMax * 10;
 			}
 		}
 
@@ -259,12 +260,11 @@ namespace pizda {
 			renderCross(center, &Theme::fg1);
 
 			// Text
-			constexpr static uint8_t textLength = 8;
-			char text[textLength];
+			std::array<char, 8> text {};
 
 			std::snprintf(
-				text,
-				textLength,
+				text.data(),
+				text.size(),
 				"%.1f",
 				static_cast<float>(frame[MLX90640::frameHeight / 2 * MLX90640::frameWidth + MLX90640::frameWidth / 2])
 					/ 10.f
@@ -273,10 +273,10 @@ namespace pizda {
 			renderShadowedText(
 				renderer,
 				{
-					center.getX() - _font->getWidth(_fontScale, text) / 2,
-					center.getY() - crossLength / 2 - 8 - _font->getLineHeight(_fontScale)
+					center.getX() - _font->getWidth(_fontScale, text.data()) / 2,
+					center.getY() - crossLength / 2 - 6 - _font->getLineHeight(_fontScale)
 				},
-				text
+				text.data()
 			);
 		}
 
@@ -300,7 +300,7 @@ namespace pizda {
 			const int32_t batteryX = x2 - toolbarMargin - batteryWidth;
 			const int32_t batteryY = histogramY;
 			const int32_t batteryYCenter = batteryY + batteryHeight / 2;
-			constexpr int32_t batteryMaxChargeWidth = batteryWidth - batteryTipWidth - 1 * 2;
+			constexpr uint16_t batteryMaxChargeWidth = batteryWidth - batteryTipWidth - 1 * 2;
 
 			// Rendering histogram
 			{
@@ -323,13 +323,11 @@ namespace pizda {
 				}
 
 				// Texts
-				constexpr static uint8_t textLength = 8;
-				char text[textLength];
-
 				const auto textY = histogramY - histogramTextMargin - _font->getLineHeight(_fontScale);
+				std::array<char, 8> text {};
 
 				// Left
-				std::snprintf(text, textLength, "%.1f", static_cast<float>(histogramMin) / 10.f);
+				std::snprintf(text.data(), text.size(), "%.1f", static_cast<float>(histogramMin) / 10.f);
 
 				renderShadowedText(
 					renderer,
@@ -337,19 +335,19 @@ namespace pizda {
 						histogramX,
 						textY
 					},
-					text
+					text.data()
 				);
 
 				// Right
-				std::snprintf(text, textLength, "%.1f", static_cast<float>(histogramMax) / 10.f);
+				std::snprintf(text.data(), text.size(), "%.1f", static_cast<float>(histogramMax) / 10.f);
 
 				renderShadowedText(
 					renderer,
 					{
-						histogramX + histogramWidth - _font->getWidth(_fontScale, text),
+						histogramX + histogramWidth - _font->getWidth(_fontScale, text.data()),
 						textY
 					},
-					text
+					text.data()
 				);
 			}
 
@@ -369,24 +367,33 @@ namespace pizda {
 
 				// Charge
 				const auto batteryCharge = th.battery.getChargeUint16();
-				const uint16_t batteryChargePercent = static_cast<uint16_t>(batteryCharge) * 100 / 0xFFFF;
-				const auto batteryChargeWidth = Math::divideRounding<int32_t>(batteryCharge * batteryMaxChargeWidth, 0xFFFF);
+				const auto batteryChargeWidth = Math::divideRounding<uint32_t>(batteryCharge * batteryMaxChargeWidth, 0xFFFF);
 
-				const Color* batteryChargeColor;
-
-				if (batteryChargePercent > 40) {
-					batteryChargeColor = &Theme::green;
-				}
-				else if (batteryChargePercent > 20) {
-					batteryChargeColor = &Theme::orange;
-				}
-				else {
-					batteryChargeColor = &Theme::red;
-				}
+				constexpr static std::array<const Color*, 3> batteryChargeColors {
+					&Theme::red,
+					&Theme::orange,
+					&Theme::green
+				};
 
 				renderer->fillRectangle(
 					Rectangle(batteryX + batteryWidth - 1 - batteryChargeWidth, batteryY + 1, batteryChargeWidth, batteryHeight - 1 * 2),
-					batteryChargeColor
+					batteryChargeColors[Math::divideRounding<uint32_t>(batteryCharge * (batteryChargeColors.size() - 1), 0xFFFF)]
+				);
+
+				// Voltage
+				const auto batteryVoltageMV = th.battery.getVoltageMV();
+
+				std::array<char, 8> text {};
+				std::snprintf(text.data(), text.size(), "%d.%dV", static_cast<uint16_t>(batteryVoltageMV / 1'000), static_cast<uint16_t>(batteryVoltageMV % 1'000 / 100));
+
+				renderer->putText(
+					Point(
+						batteryX + batteryTipWidth + (batteryWidth - batteryTipWidth) / 2 - Theme::fontSmall.getWidth(text.data()) / 2,
+						batteryY + batteryHeight / 2 - Theme::fontSmall.getLineHeight() / 2
+					),
+					&Theme::fontSmall,
+					&Theme::bg3,
+					text.data()
 				);
 			}
 		}
