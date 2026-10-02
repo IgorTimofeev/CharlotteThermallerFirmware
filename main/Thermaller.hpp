@@ -31,6 +31,7 @@ namespace pizda {
 
 			// -------------------------------- Hardware --------------------------------
 
+			SPIDisplayInterface displayInterface {};
 			ST7789Display display {};
 			RGB565BufferedRenderer renderer {};
 

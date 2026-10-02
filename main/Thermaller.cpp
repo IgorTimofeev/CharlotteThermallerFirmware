@@ -46,17 +46,25 @@ namespace pizda {
 		}
 
 		// Display
-		display.setup(
+		displayInterface.setup(
+			SPI2_HOST,
+			0,
+
 			config::SPI::MOSI,
 			config::SPI::SCK,
-
 			config::screen::SS,
-			config::screen::DC,
-			config::screen::RST,
 			config::screen::SPIFrequency,
 
+			config::screen::DC,
+			config::screen::RST
+		);
+
+		display.setup(
+			&displayInterface,
+
 			Size(240, 320),
-			Rotation::none
+			Rotation::none,
+			ColorModel::RGB565
 		);
 
 		renderer.setTarget(&display);
