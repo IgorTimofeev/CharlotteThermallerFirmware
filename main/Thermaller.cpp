@@ -47,16 +47,15 @@ namespace pizda {
 
 		// Display
 		displayInterface.setup(
-			SPI2_HOST,
-			0,
-
 			config::SPI::MOSI,
 			config::SPI::SCK,
 			config::Screen::SS,
-			config::Screen::SPIFrequency,
-
 			config::Screen::DC,
-			config::Screen::RST
+			config::Screen::RST,
+
+			SPI2_HOST,
+			0,
+			config::Screen::SPIFrequency
 		);
 
 		display.setup(

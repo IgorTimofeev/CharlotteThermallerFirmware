@@ -31,7 +31,7 @@ namespace pizda {
 					constexpr static gpio_num_t DC = GPIO_NUM_18;
 					constexpr static gpio_num_t RST = GPIO_NUM_48;
 
-					constexpr static uint32_t SPIFrequency = 60'000'000;
+					constexpr static uint32_t SPIFrequency = 80'000'000;
 			};
 
 			class Battery {
