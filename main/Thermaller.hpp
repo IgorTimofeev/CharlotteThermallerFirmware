@@ -6,7 +6,7 @@
 #include <YOBA/Core.hpp>
 #include <YOBA/Rendering.hpp>
 #include <YOBA/UI.hpp>
-#include <YOBA/Hardware/Displays/ST7789Display.hpp>
+#include <YOBA/Hardware.hpp>
 
 #include <AudioPlayer.hpp>
 #include <Buzzer.hpp>
@@ -14,7 +14,7 @@
 
 #include "Config.hpp"
 #include "UI/Menu/MenuRoute.hpp"
-#include "UI/thermalView.hpp"
+#include "UI/ThermalView.hpp"
 #include "UI/Menu/Menu.hpp"
 #include "Hardware/MLX90640/MLX90640.hpp"
 #include "Hardware/Joystick/Joystick.hpp"
