@@ -17,20 +17,20 @@ namespace pizda {
 
 		_axisX.setup(
 			&th.ADCOneshotUnit1,
-			config::joystick::axisX::channel,
-			config::joystick::axisX::invertInput
+			config::Joystick::AxisX::channel,
+			config::Joystick::AxisX::invertInput
 		);
 
 		_axisY.setup(
 			&th.ADCOneshotUnit1,
-			config::joystick::axisY::channel,
-			config::joystick::axisY::invertInput
+			config::Joystick::AxisY::channel,
+			config::Joystick::AxisY::invertInput
 		);
 
 		// Button
 		{
 			gpio_config_t g = {};
-			g.pin_bit_mask = 1ULL << config::joystick::button;
+			g.pin_bit_mask = 1ULL << config::Joystick::button;
 			g.mode = GPIO_MODE_INPUT;
 			g.pull_up_en = GPIO_PULLUP_ENABLE;
 			g.pull_down_en = GPIO_PULLDOWN_DISABLE;
@@ -65,7 +65,7 @@ namespace pizda {
 		handleAxis(_axisY, JoystickEventType::up, JoystickEventType::down);
 
 		// Button
-		const auto buttonPressed = !gpio_get_level(config::joystick::button);
+		const auto buttonPressed = !gpio_get_level(config::Joystick::button);
 
 		if (buttonPressed && !_buttonPressed) {
 			JoystickEvent event { JoystickEventType::press };

@@ -52,11 +52,11 @@ namespace pizda {
 
 			config::SPI::MOSI,
 			config::SPI::SCK,
-			config::screen::SS,
-			config::screen::SPIFrequency,
+			config::Screen::SS,
+			config::Screen::SPIFrequency,
 
-			config::screen::DC,
-			config::screen::RST
+			config::Screen::DC,
+			config::Screen::RST
 		);
 
 		display.setup(
@@ -67,6 +67,7 @@ namespace pizda {
 			ColorModel::RGB565
 		);
 
+		renderer.setup();
 		renderer.setTarget(&display);
 
 		// Rendering splash screen
@@ -79,22 +80,7 @@ namespace pizda {
 
 		// -------------------------------- Hardware --------------------------------
 
-		// NVS is required by settings & Wi-Fi
-		{
-			const auto status = nvs_flash_init();
-
-			if (status == ESP_ERR_NVS_NO_FREE_PAGES || status == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-				// NVS partition was truncated and needs to be erased
-				ESP_ERROR_CHECK(nvs_flash_erase());
-				// Retry init
-				ESP_ERROR_CHECK(nvs_flash_init());
-			}
-			else {
-				ESP_ERROR_CHECK(status);
-			}
-		}
-
-		// Settings come first because they contain XCVR modulation params, ADC axes calibration data, etc.
+		// Settings come first
 		settings.read();
 
 		// ADC
@@ -108,20 +94,20 @@ namespace pizda {
 
 		// Battery
 		batteryVoltmeter.setup(
-			config::battery::transistorPin,
+			config::Battery::transistorPin,
 
-			config::battery::ADCUnit,
+			config::Battery::ADCUnit,
 			ADCOneshotUnit1,
-			config::battery::ADCChannel,
+			config::Battery::ADCChannel,
 
-			config::battery::dividerResistanceR1,
-			config::battery::dividerResistanceR2
+			config::Battery::dividerResistanceR1,
+			config::Battery::dividerResistanceR2
 		);
 
 		battery.setup(
 			&batteryVoltmeter,
-			config::battery::voltageMin,
-			config::battery::voltageMax,
+			config::Battery::voltageMin,
+			config::Battery::voltageMax,
 			8
 		);
 

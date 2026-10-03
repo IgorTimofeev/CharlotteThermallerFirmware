@@ -44,8 +44,8 @@ namespace pizda {
 
 			// Audio
 			Buzzer buzzer {
-				config::buzzer::gpio,
-				config::buzzer::channel
+				config::Buzzer::gpio,
+				config::Buzzer::channel
 			};
 
 			AudioPlayer audioPlayer { &buzzer };

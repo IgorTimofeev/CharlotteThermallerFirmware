@@ -25,7 +25,7 @@ namespace pizda {
 					constexpr static gpio_num_t MOSI = GPIO_NUM_16;
 			};
 
-			class screen {
+			class Screen {
 				public:
 					constexpr static gpio_num_t SS = GPIO_NUM_17;
 					constexpr static gpio_num_t DC = GPIO_NUM_18;
@@ -34,7 +34,7 @@ namespace pizda {
 					constexpr static uint32_t SPIFrequency = 60'000'000;
 			};
 
-			class battery {
+			class Battery {
 				public:
 					constexpr static gpio_num_t transistorPin = GPIO_NUM_6;
 
@@ -48,22 +48,22 @@ namespace pizda {
 					constexpr static uint32_t dividerResistanceR2 = 330'000;
 			};
 
-			class buzzer {
+			class Buzzer {
 				public:
 					constexpr static gpio_num_t gpio = GPIO_NUM_5;
 					constexpr static ledc_channel_t channel = LEDC_CHANNEL_0;
 			};
 
-			class joystick {
+			class Joystick {
 				public:
-					class axisX {
+					class AxisX {
 						public:
 							constexpr static adc_unit_t unit = ADC_UNIT_1;
 							constexpr static adc_channel_t channel = ADC_CHANNEL_2;
 							constexpr static bool invertInput = true;
 					};
 
-					class axisY {
+					class AxisY {
 						public:
 							constexpr static adc_unit_t unit = ADC_UNIT_1;
 							constexpr static adc_channel_t channel = ADC_CHANNEL_1;
